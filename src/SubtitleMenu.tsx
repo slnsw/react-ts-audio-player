@@ -3,28 +3,30 @@
 
 import React from 'react';
 
-import Menu from './Menu';
-import MenuItem from './MenuItem';
+import Menu from './Menu.tsx';
+import MenuItem from './MenuItem.tsx';
 
-type Props = {
+interface IProps {
   visible: boolean;
   id: string;
-  subtitleTracks: any[];
+  subtitleTracks: TextTrack[];
   selected?: string;
-  onSelect: Function;
-};
+  onSelect: (track: number) => void;
+  className?: string;
+}
 
-const SubtitleMenu: React.FunctionalComponent<Props> = ({
-  visible,
+const SubtitleMenu: React.FunctionalComponent<IProps> = ({
+  visible = false,
   id,
-  subtitleTracks,
+  subtitleTracks = [],
   selected,
   onSelect,
+  className,
 }) => {
   const onSelectLang = (e) => {
-    const track = parseInt(e.target.getAttribute('data-value'), 10);
+    const selectedTrack = parseInt(e.target.getAttribute('data-value'), 10);
     if (typeof onSelect === 'function') {
-      onSelect(track);
+      onSelect(selectedTrack);
     }
   };
 
@@ -39,16 +41,16 @@ const SubtitleMenu: React.FunctionalComponent<Props> = ({
   ];
   let track;
   let i;
-  for (i = 0; i < subtitleTracks.length; i++) {
+  for (i = 0; i < subtitleTracks.length; i += 1) {
     track = subtitleTracks[i];
     languageOptions.push(
       <MenuItem
         key={`${track.language}-${i}`}
         label={track.label}
         value={track.language}
-        selected={track.language === selected}
+        selected={selected && track.language === selected}
         onSelect={onSelectLang}
-      />
+      />,
     );
   }
 

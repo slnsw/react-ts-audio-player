@@ -1,6 +1,18 @@
 import React from 'react';
 
-export default ({ label, value, selected = false, onSelect }) => {
+interface IProps {
+  label: string;
+  value: string | number | null;
+  selected: boolean;
+  onSelect: (e: Event) => void;
+}
+
+const MenuItem: React.FunctionalComponent<IProps> = ({
+  label,
+  value,
+  selected = false,
+  onSelect,
+}) => {
   return (
     <li>
       <button
@@ -13,3 +25,5 @@ export default ({ label, value, selected = false, onSelect }) => {
     </li>
   );
 };
+
+export default MenuItem;

@@ -1,19 +1,30 @@
 // @file
 // Menu container.
 
-import React, { Children } from 'react';
+import React from 'react';
 
-const Menu = ({
+import MenuItem from './MenuItem.tsx';
+
+interface IProps {
+  id?: string;
+  visible?: boolean;
+  className?: string;
+  children?: MenuItem[];
+}
+
+const Menu: React.FunctionalComponent<IProps> = ({
   id,
   visible = false,
   className,
-  children,
+  children = [],
 }) => {
+  if (!children.length) {
+    return [];
+  }
+
   return (
     <ol
-      className={['video-wrapper__popup-menu', className || ''].join(
-        ' ',
-      )}
+      className={['video-wrapper__popup-menu', className || ''].join(' ')}
       id={id}
       hidden={!visible}
       aria-expanded={visible}

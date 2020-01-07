@@ -3,32 +3,45 @@
 
 import React from 'react';
 
-import Menu from './Menu';
-import MenuItem from './MenuItem';
+import Menu from './Menu.tsx';
+import MenuItem from './MenuItem.tsx';
 
-const TracklistMenu = ({
+interface IProps {
+  tracklist?: AudioTrack[];
+  selected?: number;
+  onSelect?: (track: AudioTrack) => void;
+  id?: string;
+  visible?: boolean;
+  className?: string;
+}
+
+const TracklistMenu: React.FunctionalComponent<IProps> = ({
   tracklist = [],
   selected = 0,
+  visible = false,
   onSelect,
   id,
-  visible,
   className,
 }) => {
-  const onSelectTrack = (e) => {
-    const track = parseInt(e.target.getAttribute('data-value'), 10);
+  const onSelectTrack = (e: Event) => {
+    const itemElem = e.target as HTMLElement;
+    const indexAttr = itemElem.getAttribute('data-value') || null;
+    if (indexAttr === null) {
+      return;
+    }
+    const index = parseInt(indexAttr, 10);
     if (typeof onSelect === 'function') {
-      onSelect(track);
+      onSelect(tracklist[index]);
     }
   };
 
-  const trackOptions = tracklist.map((track, index) => {
-    track = tracklist[index];
-    trackOptions.push(
+  const trackOptions = tracklist.map((track: AudioTrack, index: number) => {
+    return (
       <MenuItem
-        key={i}
+        key={index}
         label={track.label}
-        value={track.index}
-        selected={track.index === selected}
+        value={index}
+        selected={index === selected}
         onSelect={onSelectTrack}
       />
     );

@@ -13,7 +13,7 @@ interface IProps {
   children?: React.ReactNode;
   onClick?: () => void;
   className?: string;
-};
+}
 
 const ToggleButton: React.FunctionalComponent<IProps> = ({
   enabled = true,
@@ -25,14 +25,12 @@ const ToggleButton: React.FunctionalComponent<IProps> = ({
   children,
   onClick,
   className,
-  ...restProps
 }) => (
   <button
-    className={[className || '', `btn`, `btn-${props.btnType}`].join(' ')}
+    className={[className || '', `btn`, `btn-${btnType}`].join(' ')}
     disabled={!enabled}
     hidden={hidden}
     onClick={onClick}
-    {...restProps}
   >
     <span className="sr-only">{children}</span>
     <span

@@ -3,9 +3,17 @@
 
 import React from 'react';
 
-import { excludeProps } from './Utilities';
+interface IProps {
+  enabled?: boolean;
+  hidden?: boolean;
+  icon: string;
+  btnType: string;
+  onClick?: (e: Event) => void;
+  children?: React.ChildNode;
+  className?: string;
+}
 
-const ActionButton = ({
+const ActionButton: React.FunctionalComponent<IProps> = ({
   enabled = true,
   hidden = false,
   icon,
@@ -13,15 +21,13 @@ const ActionButton = ({
   onClick,
   children,
   className,
-  ...restProps
 }) => {
   return (
     <button
-      className={[className || '', `btn`, `btn-${props.btnType}`].join(' ')}
+      className={[className || '', `btn`, `btn-${btnType}`].join(' ')}
       disabled={!enabled}
       hidden={hidden}
       onClick={onClick}
-      {...restProps}
     >
       <span className="sr-only">{children}</span>
       <span className={[`fa`, `fa-${icon}`].join(' ')}></span>

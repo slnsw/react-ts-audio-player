@@ -7,7 +7,7 @@ interface IProps {
   defaultValue: number;
   className?: string;
   onClick?: (pos: number) => void;
-};
+}
 
 const ScrubBar: React.FunctionalComponent<IProps> = ({
   defaultValue = 0,

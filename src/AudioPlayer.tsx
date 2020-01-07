@@ -4,27 +4,27 @@
 import Emitter from 'eventemitter3';
 import React from 'react';
 
-import ActionButton from './ActionButton';
-import ScrubBar from './ScrubBar';
-import SubtitleContainer from './SubtitleContainer';
-import SubtitleMenu from './SubtitleMenu';
-import ToggleButton from './ToggleButton';
-import TracklistMenu from './TracklistMenu';
+import ActionButton from './ActionButton.tsx';
+import ScrubBar from './ScrubBar.tsx';
+import SubtitleContainer from './SubtitleContainer.tsx';
+import SubtitleMenu from './SubtitleMenu.tsx';
+import ToggleButton from './ToggleButton.tsx';
+import TracklistMenu from './TracklistMenu.tsx';
 
-import { toMMSS } from './TimeUtils';
+import { toMMSS } from './TimeUtils.ts';
 
 interface IPlaylistItem {
   index: number;
   label: string;
   audioUrl: string;
   transcriptUrl: string | null;
-};
+}
 
 interface IProps {
   playlist: IPlaylistItem[];
   id?: string;
   eventRouter?: Emitter;
-};
+}
 
 const AudioPlayer: React.FunctionComponent<IProps> = ({
   playlist = [],
@@ -162,7 +162,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       <audio
         className="video-element"
         data-oh-audio-player="1"
-        crossorigin="anonymous"
+        crossOrigin="anonymous"
         playsinline
         preload="metadata"
         ref={audioElem}
@@ -177,7 +177,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             src={currentFile.transcriptUrl}
             kind="captions"
             label="English"
-            srclang="en"
+            srcLang="en"
           />
         )}
       </audio>
@@ -197,7 +197,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
         <input
           className="video-controls__time-elapsed"
           id={timeIndicatorId}
-          readonly
+          readOnly
           ref={timeElapsedElem}
           value={timestamp}
         />
@@ -284,7 +284,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             Closed captioning
           </ToggleButton>
 
-          <div class="video-controls__button-wrapper__space" />
+          <div className="video-controls__button-wrapper__space" />
 
           <ToggleButton
             btnType="mute"

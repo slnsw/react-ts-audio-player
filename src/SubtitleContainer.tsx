@@ -17,7 +17,7 @@ interface IProps {
   tracks: any[];
   id: string;
   className?: string;
-};
+}
 
 const SubtitleContainer: React.FunctionalComponent<IProps> = ({
   visible = true,
@@ -32,18 +32,13 @@ const SubtitleContainer: React.FunctionalComponent<IProps> = ({
   const cueChange = (e) => {
     let newText = '';
     let cue;
-    let i;
-    for (i in e.target.activeCues) {
-      if (typeof e.target.activeCues[i] === 'undefined') {
-        continue;
-      }
-      cue = e.target.activeCues[i];
-      // if (cue.toString() !== '[object VTTCue]') {
-      // }
+
+    Object.keys(e.target.activeCues).forEach((key) => {
+      cue = e.target.activeCues[key];
       if (typeof cue.text !== 'undefined') {
         newText += cue.text;
       }
-    }
+    });
     setText(newText);
   };
 
@@ -62,7 +57,7 @@ const SubtitleContainer: React.FunctionalComponent<IProps> = ({
     if (lang && lang.length && tracks && tracks.length) {
       let track = null;
       let i;
-      for (i = 0; i < tracks.length; i++) {
+      for (i = 0; i < tracks.length; i += 1) {
         if (tracks[i].language === lang) {
           track = tracks[i];
           break;
