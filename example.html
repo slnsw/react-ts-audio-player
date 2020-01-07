@@ -7,32 +7,266 @@
     <script src="./dist/index.dev.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
     <style>
-      [hidden] {display: none}
-      .sr-only { border: 0 !important;
-	clip: rect(1px, 1px, 1px, 1px) !important; /* 1 */
-	-webkit-clip-path: inset(50%) !important;
-		clip-path: inset(50%) !important;  /* 2 */
-	height: 1px !important;
-	margin: -1px !important;
-	overflow: hidden !important;
-	padding: 0 !important;
-	position: absolute !important;
-	width: 1px !important;
-	white-space: nowrap !important;            /* 3 */ }
-      .video-wrapper{position:absolute;top:calc(61.8047vw - 61px);bottom:auto;max-width:619px;width:90%;left:5%}
-      @media (max-width:480px){.video-wrapper{top:47% !important}}
-      @media (max-width:320px){.video-wrapper{top:43% !important}}
-      @media (max-height:480px){.video-wrapper{top:calc(61.8047vw - 100px)}}
-      @media (min-width:768px){.video-wrapper{margin-left:-309px;top:calc(61.8047vw - 86px);left:50%;width:100%}}
-      @media (min-width:992px){.video-wrapper{overflow:visible;top:auto;bottom:10px}}
-      .video-wrapper .video-element{width:100%;-webkit-appearance:none;-moz-appearance:none;appearance:none}
-      .video-wrapper .w-100{height:0px}
-      .video-controls{position:relative;margin:0;padding:2px 7px;background:rgba(34,34,34,0.75);border-radius:38px;height:56px;width:100%;transition:bottom .25s ease-in;display:flex;flex-wrap:wrap}@media (min-width:768px){.video-controls{max-width:619px;margin:0 auto;height:76px;padding:7px}}.video-controls .btn{padding:5px 0;width:31px;font-size:18px;text-align:center;color:#fff;background-color:transparent;border:0;cursor:pointer;transition:opacity .175s ease-in;margin:0 5.3px}@media (max-width:767px){.video-controls .btn{padding:0;margin:0}}.video-controls .btn:focus{outline:0}.video-controls .btn:hover{opacity:0.25}.video-controls .btn-play{color:#77d0cb}@media (max-width:767px){.video-controls .btn-backward,.video-controls .btn-forward{display:none}}.sticky-top .video-controls{width:160px;height:40px;margin:0 auto}.sticky-top .video-controls .btn:first-child{margin-left:auto}.sticky-top .video-controls .btn:last-child{margin-right:auto}@media (max-width:767px){.sticky-top .video-controls .btn-backward,.sticky-top .video-controls .btn-forward{display:block}}
-      .video-controls__button-wrapper{width:100%;display:flex;flex-direction:row;margin:0}
-      @media (min-width:768px){.video-controls__button-wrapper{margin:0 72px}}
-      .video-controls__button-wrapper .btn{flex:0 0 auto}
-      .video-controls__button-wrapper .video-controls__button-wrapper__space{flex:1 1 auto}
-      .video-controls__progress-bar{background-color:#F9F9F9;position:relative;cursor:pointer;flex:0 0 100%;max-width:90%;margin-top:16px;margin-left:auto;margin-right:auto;height:5px}@media (min-width:768px){.video-controls__progress-bar{max-width:444px;max-width:80%}}.video-controls__progress-bar-fill{width:0;height:5px;background-color:#b5f5f1;transition:width .35s linear;position:relative}.video-controls__progress-bar-fill::after{content:'';border-radius:100%;height:11px;width:11px;background:#77d0cb;position:absolute;right:0;top:0;margin-top:-3.4px}.video-wrapper__track-list{background:#f00}.video-wrapper__popup-menu{position:absolute;bottom:120px;left:0%;right:0%;background:#666;list-style-type:none;margin:0;padding:0;min-width:100px;padding:10px}@media (min-width:768px){.video-wrapper__popup-menu{left:25%;right:25%}}.video-wrapper__popup-menu li{padding:0;margin:0;text-align:center}.video-wrapper__popup-menu li button{border:0 none;background:#000;color:#fff;cursor:pointer;width:100%;padding:2px 5px;border-radius:2px}.video-wrapper__popup-menu li button:hover,.video-wrapper__popup-menu li button:focus,.video-wrapper__popup-menu li button:active{background:#222}.video-wrapper__popup-menu li button[data-state="active"]{background:#333}.video-wrapper__popup-menu li button[data-state="active"]:hover,.video-wrapper__popup-menu li button[data-state="active"]:focus,.video-wrapper__popup-menu li button[data-state="active"]:active{background:#333}.video-controls__time-elapsed{background:transparent;color:white;border:0 none;font-size:12px;position:absolute;text-align:center;top:0;left:32px;width:42px}@media (min-width:768px){.video-controls__time-elapsed{top:29px;left:0;width:72px}}.video-wrapper__subtitle-container{position:fixed;z-index:2;bottom:0;left:0;width:100%;padding:8px;font-weight:bold;text-align:center;background:rgba(0,0,0,0.8);color:#ff6}
+      [hidden] {
+          display: none
+      }
+      .sr-only {
+          border: 0 !important;
+          clip: rect(1px, 1px, 1px, 1px) !important;
+          /* 1 */
+          -webkit-clip-path: inset(50%) !important;
+          clip-path: inset(50%) !important;
+          /* 2 */
+          height: 1px !important;
+          margin: -1px !important;
+          overflow: hidden !important;
+          padding: 0 !important;
+          position: absolute !important;
+          width: 1px !important;
+          white-space: nowrap !important;
+          /* 3 */
+      }
+      .video-wrapper{
+          position:absolute;
+          top:calc(61.8047vw - 61px);
+          bottom:auto;
+          max-width:619px;
+          width:90%;
+          left:5%
+      }
+      @media (max-width:480px){
+          .video-wrapper{
+              top:47% !important
+          }
+      }
+      @media (max-width:320px){
+          .video-wrapper{
+              top:43% !important
+          }
+      }
+      @media (max-height:480px){
+          .video-wrapper{
+              top:calc(61.8047vw - 100px)
+          }
+      }
+      @media (min-width:768px){
+          .video-wrapper{
+              margin-left:-309px;
+              top:calc(61.8047vw - 86px);
+              left:50%;
+              width:100%
+          }
+      }
+      @media (min-width:992px){
+          .video-wrapper{
+              overflow:visible;
+              top:auto;
+              bottom:10px
+          }
+      }
+      .video-wrapper .video-element{
+          width:100%;
+          -webkit-appearance:none;
+          -moz-appearance:none;
+          appearance:none
+      }
+      .video-wrapper .w-100{
+          height:0px
+      }
+      .video-controls{
+          position:relative;
+          margin:0;
+          padding:2px 7px;
+          background:rgba(34,34,34,0.75);
+          border-radius:38px;
+          height:56px;
+          width:100%;
+          transition:bottom .25s ease-in;
+          display:flex;
+          flex-wrap:wrap
+      }
+      @media (min-width:768px){
+          .video-controls{
+              max-width:619px;
+              margin:0 auto;
+              height:76px;
+              padding:7px
+          }
+      }
+      .video-controls .btn{
+          padding:5px 0;
+          width:31px;
+          font-size:18px;
+          text-align:center;
+          color:#fff;
+          background-color:transparent;
+          border:0;
+          cursor:pointer;
+          transition:opacity .175s ease-in;
+          margin:0 5.3px
+      }
+      @media (max-width:767px){
+          .video-controls .btn{
+              padding:0;
+              margin:0
+          }
+      }
+      .video-controls .btn:focus{
+          outline:0
+      }
+      .video-controls .btn:hover{
+          opacity:0.25
+      }
+      .video-controls .btn-play{
+          color:#77d0cb
+      }
+      @media (max-width:767px){
+          .video-controls .btn-backward,.video-controls .btn-forward{
+              display:none
+          }
+      }
+      .sticky-top .video-controls{
+          width:160px;
+          height:40px;
+          margin:0 auto
+      }
+      .sticky-top .video-controls .btn:first-child{
+          margin-left:auto
+      }
+      .sticky-top .video-controls .btn:last-child{
+          margin-right:auto
+      }
+      @media (max-width:767px){
+          .sticky-top .video-controls .btn-backward,.sticky-top .video-controls .btn-forward{
+              display:block
+          }
+      }
+      .video-controls__button-wrapper{
+          width:100%;
+          display:flex;
+          flex-direction:row;
+          margin:0
+      }
+      @media (min-width:768px){
+          .video-controls__button-wrapper{
+              margin:0 72px
+          }
+      }
+      .video-controls__button-wrapper .btn{
+          flex:0 0 auto
+      }
+      .video-controls__button-wrapper .video-controls__button-wrapper__space{
+          flex:1 1 auto
+      }
+      .video-controls__progress-bar{
+          background-color:#F9F9F9;
+          position:relative;
+          cursor:pointer;
+          flex:0 0 100%;
+          max-width:90%;
+          margin-top:16px;
+          margin-left:auto;
+          margin-right:auto;
+          height:5px
+      }
+      @media (min-width:768px){
+          .video-controls__progress-bar{
+              max-width:444px;
+              max-width:80%
+          }
+      }
+      .video-controls__progress-bar__fill{
+          width:0;
+          height:5px;
+          background-color:#3333ff;
+          transition:width .35s linear;
+          position:relative
+      }
+      .video-controls__progress-bar__fill::after{
+          content:'';
+          border-radius:100%;
+          height:11px;
+          width:11px;
+          background:#3333ff;
+          position:absolute;
+          right:0;
+          top:0;
+          margin-top:-3.4px
+      }
+      .video-wrapper__track-list{
+          background:#f00
+      }
+      .video-wrapper__popup-menu{
+          position:absolute;
+          bottom:120px;
+          left:0%;
+          right:0%;
+          background:#666;
+          list-style-type:none;
+          margin:0;
+          padding:0;
+          min-width:100px;
+          padding:10px
+      }
+      @media (min-width:768px){
+          .video-wrapper__popup-menu{
+              left:25%;
+              right:25%
+          }
+      }
+      .video-wrapper__popup-menu li{
+          padding:0;
+          margin:0;
+          text-align:center
+      }
+      .video-wrapper__popup-menu li button{
+          border:0 none;
+          background:#000;
+          color:#fff;
+          cursor:pointer;
+          width:100%;
+          padding:2px 5px;
+          border-radius:2px
+      }
+      .video-wrapper__popup-menu li button:hover,.video-wrapper__popup-menu li button:focus,.video-wrapper__popup-menu li button:active{
+          background:#222
+      }
+      .video-wrapper__popup-menu li button[data-state="active"]{
+          background:#333
+      }
+      .video-wrapper__popup-menu li button[data-state="active"]:hover,.video-wrapper__popup-menu li button[data-state="active"]:focus,.video-wrapper__popup-menu li button[data-state="active"]:active{
+          background:#333
+      }
+      .video-controls__time-elapsed{
+          background:transparent;
+          color:white;
+          border:0 none;
+          font-size:12px;
+          position:absolute;
+          text-align:center;
+          top:0;
+          left:32px;
+          width:42px
+      }
+      @media (min-width:768px){
+          .video-controls__time-elapsed{
+              top:29px;
+              left:0;
+              width:72px
+          }
+      }
+      .video-wrapper__subtitle-container{
+          position:fixed;
+          z-index:2;
+          bottom:0;
+          left:0;
+          width:100%;
+          padding:8px;
+          font-weight:bold;
+          text-align:center;
+          background:rgba(0,0,0,0.8);
+          color:#ff6
+      }
     </style>
   </head>
   <body>
@@ -42,7 +276,14 @@
       document.addEventListener('DOMContentLoaded', () => {
         ReactDOM.render(
           React.createElement(window.AudioPlayer, {
-            playlist: [],
+            playlist: [
+              {
+                index: 0,
+                label: 'Interview with Rim Jezan by Louise Whelan, 30th May 2004',
+                audioUrl: 'https://s3.ap-southeast-2.amazonaws.com/slnsw.oral-histories/production/s3fs-public/2019-01/t102.m4a',
+                transcriptUrl: 'https://s3.ap-southeast-2.amazonaws.com/slnsw.oral-histories/production/s3fs-public/2019-02/rj_correctedcues_final.vtt'
+              }
+            ],
             id: 'audio-player',
             onEndNextFile: false,
           }),

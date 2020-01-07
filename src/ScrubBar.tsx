@@ -10,16 +10,14 @@ interface IProps {
 }
 
 const getOffsetX = (e: React.TouchEvent | React.MouseEvent) => {
-  /* eslint-disable no-prototype-builtins */
-  if (e.hasOwnProperty('offsetX')) {
+  if (typeof (e as React.MouseEvent).nativeEvent.offsetX === 'number') {
     return (e as React.MouseEvent).nativeEvent.offsetX;
   }
-  if (e.hasOwnProperty('targetTouches')) {
+  if (typeof (e as React.TouchEvent).targetTouches === 'object') {
     const touchE = e as React.TouchEvent;
     const rect = (touchE.target as HTMLDivElement).getBoundingClientRect();
     return touchE.targetTouches[0].pageX - rect.left;
   }
-  /* eslint-enable no-prototype-builtins */
   return 0;
 };
 
@@ -41,10 +39,10 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
   React.useEffect(() => {
     if (scrubbing) {
       const pos = offsetX / outer.current.clientWidth;
+      setValue(pos * 100);
       if (typeof onClick === 'function') {
         onClick(pos);
       }
-      setValue(pos);
     }
   }, [scrubbing, offsetX]);
 

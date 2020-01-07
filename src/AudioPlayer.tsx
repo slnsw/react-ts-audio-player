@@ -54,6 +54,10 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   const timeElapsedElem = React.useRef(null);
 
   React.useEffect(() => {
+    audioElem.current.setAttribute('playsinline', 'playsinline');
+  }, []);
+
+  React.useEffect(() => {
     setFileData(playlist);
     setSelectedFile(0);
   }, [playlist]);
@@ -102,10 +106,12 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   };
 
   const onTimeUpdate = () => {
-    const value =
-      (100 / audioElem.current.duration) * audioElem.current.currentTime;
-    setProgress(value);
-    timeElapsedElem.current.value = toMMSS(audioElem.current.currentTime);
+    if (audioElem.current.duration > 0) {
+      const value =
+        (100 / audioElem.current.duration) * audioElem.current.currentTime;
+      setProgress(value);
+      setTimestamp(toMMSS(audioElem.current.currentTime));
+    }
   };
 
   const playPauseAction = () => {
@@ -223,7 +229,6 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
         className="video-element"
         data-oh-audio-player="1"
         crossOrigin="anonymous"
-        playsInline
         preload="metadata"
         ref={audioElem}
         onLoadedMetadata={onLoadedMetadata}
