@@ -3,13 +3,13 @@
 
 import React from 'react';
 
-type Props = {
+interface IProps {
   defaultValue: number;
   className?: string;
-  onClick?: Function;
+  onClick?: (pos: number) => void;
 };
 
-const ScrubBar: React.FunctionalComponent<Props> = ({
+const ScrubBar: React.FunctionalComponent<IProps> = ({
   defaultValue = 0,
   className,
   onClick,
@@ -39,16 +39,14 @@ const ScrubBar: React.FunctionalComponent<Props> = ({
     e.preventDefault();
     e.stopPropagation();
     setScrubbing(true);
+    setOffsetX(e.offsetX);
   };
 
   const onMove = (e) => {
     if (!scrubbing) {
       return;
     }
-    const pos = e.offsetX / outer.current.clientWidth;
-    if (typeof onClick === 'function') {
-      onClick(pos);
-    }
+    setOffsetX(e.offsetX);
   };
 
   const onUp = (e) => {

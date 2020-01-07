@@ -3,7 +3,7 @@
 
 import React from 'react';
 
-type Props = {
+interface IProps {
   enabled?: boolean;
   hidden?: boolean;
   btnType: string;
@@ -11,11 +11,11 @@ type Props = {
   iconTrue?: string;
   toggleState?: boolean;
   children?: React.ReactNode;
-  onClick?: Function;
+  onClick?: () => void;
   className?: string;
 };
 
-const ToggleButton: React.FunctionalComponent<Props> = ({
+const ToggleButton: React.FunctionalComponent<IProps> = ({
   enabled = true,
   hidden = false,
   btnType,

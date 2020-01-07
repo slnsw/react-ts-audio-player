@@ -3,6 +3,9 @@
 
 import React from 'react';
 
+import Menu from './Menu';
+import MenuItem from './MenuItem';
+
 const TracklistMenu = ({
   tracklist = [],
   selected = 0,
@@ -12,7 +15,7 @@ const TracklistMenu = ({
   className,
 }) => {
   const onSelectTrack = (e) => {
-    let track = parseInt(e.target.getAttribute('data-track-index'), 10);
+    const track = parseInt(e.target.getAttribute('data-value'), 10);
     if (typeof onSelect === 'function') {
       onSelect(track);
     }
@@ -21,29 +24,24 @@ const TracklistMenu = ({
   const trackOptions = tracklist.map((track, index) => {
     track = tracklist[index];
     trackOptions.push(
-      <li key={i}>
-        <button
-          data-track-index={track.index}
-          data-state={track.index === selected ? 'active' : 'inactive'}
-          onClick={onSelectTrack}
-        >
-          {track.label}
-        </button>
-      </li>,
+      <MenuItem
+        key={i}
+        label={track.label}
+        value={track.index}
+        selected={track.index === selected}
+        onSelect={onSelectTrack}
+      />
     );
   });
 
   return (
-    <ol
-      className={[className || '', 'video-wrapper__popup-menu track-menu'].join(
-        ' ',
-      )}
+    <Menu
+      className={[className || '', 'track-menu'].join(' ')}
       id={id}
-      hidden={!visible}
-      aria-expanded={visible}
+      visible={visible}
     >
       {trackOptions}
-    </ol>
+    </Menu>
   );
 };
 

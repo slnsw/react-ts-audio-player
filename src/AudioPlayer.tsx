@@ -1,8 +1,8 @@
 // @file
 // Audio player base component.
 
-import React from 'react';
 import Emitter from 'eventemitter3';
+import React from 'react';
 
 import ActionButton from './ActionButton';
 import ScrubBar from './ScrubBar';
@@ -13,20 +13,20 @@ import TracklistMenu from './TracklistMenu';
 
 import { toMMSS } from './TimeUtils';
 
-type PlaylistItem = {
+interface IPlaylistItem {
   index: number;
   label: string;
   audioUrl: string;
   transcriptUrl: string | null;
 };
 
-type Props = {
-  playlist: PlaylistItem[];
+interface IProps {
+  playlist: IPlaylistItem[];
   id?: string;
   eventRouter?: Emitter;
 };
 
-const AudioPlayer: React.FunctionComponent<Props> = ({
+const AudioPlayer: React.FunctionComponent<IProps> = ({
   playlist = [],
   id = 'audio-player',
   eventRouter,

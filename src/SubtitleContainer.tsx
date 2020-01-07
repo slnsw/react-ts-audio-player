@@ -11,7 +11,15 @@ const memoiseTrack = (track) => {
   return [kind, mode, language, cues.length].join(',');
 };
 
-const SubtitleContainer = ({
+interface IProps {
+  visible?: boolean;
+  lang?: string;
+  tracks: any[];
+  id: string;
+  className?: string;
+};
+
+const SubtitleContainer: React.FunctionalComponent<IProps> = ({
   visible = true,
   lang,
   tracks = [],
@@ -22,18 +30,21 @@ const SubtitleContainer = ({
   const [currentTrack, setCurrentTrack] = React.useState(null);
 
   const cueChange = (e) => {
-    let text = '',
-      cue,
-      i;
+    let newText = '';
+    let cue;
+    let i;
     for (i in e.target.activeCues) {
+      if (typeof e.target.activeCues[i] === 'undefined') {
+        continue;
+      }
       cue = e.target.activeCues[i];
       // if (cue.toString() !== '[object VTTCue]') {
       // }
       if (typeof cue.text !== 'undefined') {
-        text += cue.text;
+        newText += cue.text;
       }
     }
-    setText(text);
+    setText(newText);
   };
 
   React.useEffect(() => {
@@ -49,10 +60,10 @@ const SubtitleContainer = ({
 
   React.useEffect(() => {
     if (lang && lang.length && tracks && tracks.length) {
-      let track = null,
-        i;
+      let track = null;
+      let i;
       for (i = 0; i < tracks.length; i++) {
-        if (tracks[i].language == lang) {
+        if (tracks[i].language === lang) {
           track = tracks[i];
           break;
         }
