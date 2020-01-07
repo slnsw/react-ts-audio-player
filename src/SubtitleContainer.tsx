@@ -3,7 +3,7 @@
 
 import React from 'react';
 
-const memoiseTrack = (track) => {
+const memoiseTrack = (track: TextTrack): string => {
   if (!track) {
     return '';
   }
@@ -14,31 +14,34 @@ const memoiseTrack = (track) => {
 interface IProps {
   visible?: boolean;
   lang?: string;
-  tracks: any[];
+  tracks: TextTrack[];
   id: string;
   className?: string;
 }
 
-const SubtitleContainer: React.FunctionalComponent<IProps> = ({
+const SubtitleContainer: React.FunctionComponent<IProps> = ({
   visible = true,
   lang,
   tracks = [],
   id,
   className,
-}) => {
+}: IProps) => {
   const [text, setText] = React.useState('');
   const [currentTrack, setCurrentTrack] = React.useState(null);
 
-  const cueChange = (e) => {
+  const cueChange = (e: Event) => {
+    const eventTarget = e.target as TextTrack;
+
     let newText = '';
     let cue;
 
-    Object.keys(e.target.activeCues).forEach((key) => {
-      cue = e.target.activeCues[key];
+    let i;
+    for (i = 0; i < eventTarget.activeCues.length; i += 1) {
+      cue = eventTarget.activeCues[i];
       if (typeof cue.text !== 'undefined') {
         newText += cue.text;
       }
-    });
+    }
     setText(newText);
   };
 

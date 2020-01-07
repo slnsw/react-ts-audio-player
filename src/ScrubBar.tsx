@@ -9,13 +9,26 @@ interface IProps {
   onClick?: (pos: number) => void;
 }
 
-const ScrubBar: React.FunctionalComponent<IProps> = ({
+const getOffsetX = (e: React.TouchEvent | React.MouseEvent) => {
+  /* eslint-disable no-prototype-builtins */
+  if (e.hasOwnProperty('offsetX')) {
+    return (e as React.MouseEvent).nativeEvent.offsetX;
+  }
+  if (e.hasOwnProperty('targetTouches')) {
+    const touchE = e as React.TouchEvent;
+    const rect = (touchE.target as HTMLDivElement).getBoundingClientRect();
+    return touchE.targetTouches[0].pageX - rect.left;
+  }
+  /* eslint-enable no-prototype-builtins */
+  return 0;
+};
+
+const ScrubBar: React.FunctionComponent<IProps> = ({
   defaultValue = 0,
   className,
   onClick,
-}) => {
+}: IProps) => {
   const outer = React.useRef(null);
-  const inner = React.useRef(null);
 
   const [value, setValue] = React.useState(defaultValue);
   const [offsetX, setOffsetX] = React.useState(0);
@@ -35,41 +48,35 @@ const ScrubBar: React.FunctionalComponent<IProps> = ({
     }
   }, [scrubbing, offsetX]);
 
-  const onDown = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const onDown = (e: React.TouchEvent | React.MouseEvent) => {
     setScrubbing(true);
-    setOffsetX(e.offsetX);
+    setOffsetX(getOffsetX(e));
   };
 
-  const onMove = (e) => {
-    if (!scrubbing) {
-      return;
-    }
-    setOffsetX(e.offsetX);
-  };
-
-  const onUp = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setScrubbing(false);
-  };
+  const onUp = () => setScrubbing(false);
 
   return (
     <div
       className={[className || ''].join(' ')}
       onMouseDown={onDown}
       onMouseUp={onUp}
-      onMouseMove={onMove}
+      onMouseMove={(e: React.MouseEvent) => {
+        if (scrubbing) {
+          setOffsetX(getOffsetX(e));
+        }
+      }}
       onTouchStart={onDown}
       onTouchEnd={onUp}
-      onTouchMove={onMove}
+      onTouchMove={(e: React.TouchEvent) => {
+        if (scrubbing) {
+          setOffsetX(getOffsetX(e));
+        }
+      }}
       ref={outer}
     >
       <div
         className={[`${className}__fill`].join(' ')}
         style={{ width: `${value}%` }}
-        ref={inner}
       >
         <span className="sr-only">{`${value} percent`}</span>
       </div>

@@ -4,16 +4,16 @@
 import React from 'react';
 
 interface IProps {
+  btnType: string;
   enabled?: boolean;
   hidden?: boolean;
-  icon: string;
-  btnType: string;
-  onClick?: (e: Event) => void;
-  children?: React.ChildNode;
+  icon?: string;
+  onClick?: (e: React.MouseEvent) => void;
+  children?: React.ReactNode;
   className?: string;
 }
 
-const ActionButton: React.FunctionalComponent<IProps> = ({
+const ActionButton: React.FunctionComponent<IProps> = ({
   enabled = true,
   hidden = false,
   icon,
@@ -30,7 +30,7 @@ const ActionButton: React.FunctionalComponent<IProps> = ({
       onClick={onClick}
     >
       <span className="sr-only">{children}</span>
-      <span className={[`fa`, `fa-${icon}`].join(' ')}></span>
+      <span className={[`fa`, `fa-${icon || btnType}`].join(' ')}></span>
     </button>
   );
 };

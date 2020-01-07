@@ -3,25 +3,19 @@
 
 import React from 'react';
 
-import MenuItem from './MenuItem.tsx';
-
 interface IProps {
   id?: string;
   visible?: boolean;
   className?: string;
-  children?: MenuItem[];
+  children?: React.ReactNode;
 }
 
-const Menu: React.FunctionalComponent<IProps> = ({
+const Menu: React.FunctionComponent<IProps> = ({
   id,
   visible = false,
   className,
-  children = [],
-}) => {
-  if (!children.length) {
-    return [];
-  }
-
+  children,
+}: IProps) => {
   return (
     <ol
       className={['video-wrapper__popup-menu', className || ''].join(' ')}

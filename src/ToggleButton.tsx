@@ -11,11 +11,11 @@ interface IProps {
   iconTrue?: string;
   toggleState?: boolean;
   children?: React.ReactNode;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent) => void;
   className?: string;
 }
 
-const ToggleButton: React.FunctionalComponent<IProps> = ({
+const ToggleButton: React.FunctionComponent<IProps> = ({
   enabled = true,
   hidden = false,
   btnType,
@@ -25,7 +25,7 @@ const ToggleButton: React.FunctionalComponent<IProps> = ({
   children,
   onClick,
   className,
-}) => (
+}: IProps) => (
   <button
     className={[className || '', `btn`, `btn-${btnType}`].join(' ')}
     disabled={!enabled}

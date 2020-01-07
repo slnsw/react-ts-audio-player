@@ -3,30 +3,35 @@
 
 import React from 'react';
 
-import Menu from './Menu.tsx';
-import MenuItem from './MenuItem.tsx';
+import Menu from './Menu';
+import MenuItem from './MenuItem';
 
 interface IProps {
   visible: boolean;
   id: string;
   subtitleTracks: TextTrack[];
   selected?: string;
-  onSelect: (track: number) => void;
+  onSelect: (selectedLang: string) => void;
   className?: string;
 }
 
-const SubtitleMenu: React.FunctionalComponent<IProps> = ({
+const SubtitleMenu: React.FunctionComponent<IProps> = ({
   visible = false,
   id,
   subtitleTracks = [],
   selected,
   onSelect,
   className,
-}) => {
-  const onSelectLang = (e) => {
-    const selectedTrack = parseInt(e.target.getAttribute('data-value'), 10);
+}: IProps) => {
+  const onSelectLang = (e: React.MouseEvent | React.KeyboardEvent) => {
+    const itemElem = e.target as HTMLElement;
+    const indexAttr = itemElem.getAttribute('data-value') || null;
+    if (indexAttr === null) {
+      return;
+    }
+    const selectedLang = indexAttr;
     if (typeof onSelect === 'function') {
-      onSelect(selectedTrack);
+      onSelect(selectedLang);
     }
   };
 

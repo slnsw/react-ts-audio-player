@@ -3,27 +3,27 @@
 
 import React from 'react';
 
-import Menu from './Menu.tsx';
-import MenuItem from './MenuItem.tsx';
+import Menu from './Menu';
+import MenuItem from './MenuItem';
 
 interface IProps {
   tracklist?: AudioTrack[];
   selected?: number;
-  onSelect?: (track: AudioTrack) => void;
+  onSelect?: (track: number) => void;
   id?: string;
   visible?: boolean;
   className?: string;
 }
 
-const TracklistMenu: React.FunctionalComponent<IProps> = ({
+const TracklistMenu: React.FunctionComponent<IProps> = ({
   tracklist = [],
   selected = 0,
   visible = false,
   onSelect,
   id,
   className,
-}) => {
-  const onSelectTrack = (e: Event) => {
+}: IProps) => {
+  const onSelectTrack = (e: React.MouseEvent | React.KeyboardEvent) => {
     const itemElem = e.target as HTMLElement;
     const indexAttr = itemElem.getAttribute('data-value') || null;
     if (indexAttr === null) {
@@ -31,7 +31,7 @@ const TracklistMenu: React.FunctionalComponent<IProps> = ({
     }
     const index = parseInt(indexAttr, 10);
     if (typeof onSelect === 'function') {
-      onSelect(tracklist[index]);
+      onSelect(index);
     }
   };
 

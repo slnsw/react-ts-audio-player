@@ -4,14 +4,14 @@
 import Emitter from 'eventemitter3';
 import React from 'react';
 
-import ActionButton from './ActionButton.tsx';
-import ScrubBar from './ScrubBar.tsx';
-import SubtitleContainer from './SubtitleContainer.tsx';
-import SubtitleMenu from './SubtitleMenu.tsx';
-import ToggleButton from './ToggleButton.tsx';
-import TracklistMenu from './TracklistMenu.tsx';
+import ActionButton from './ActionButton';
+import ScrubBar from './ScrubBar';
+import SubtitleContainer from './SubtitleContainer';
+import SubtitleMenu from './SubtitleMenu';
+import ToggleButton from './ToggleButton';
+import TracklistMenu from './TracklistMenu';
 
-import { toMMSS } from './TimeUtils.ts';
+import { toMMSS } from './TimeUtils';
 
 interface IPlaylistItem {
   index: number;
@@ -24,15 +24,16 @@ interface IProps {
   playlist: IPlaylistItem[];
   id?: string;
   eventRouter?: Emitter;
+  onEndNextFile?: boolean;
 }
 
 const AudioPlayer: React.FunctionComponent<IProps> = ({
   playlist = [],
   id = 'audio-player',
   eventRouter,
-}) => {
+  onEndNextFile = false,
+}: IProps) => {
   const audioElem = React.useRef(null);
-  const progressBarElem = React.useRef(null);
   const timeElapsedElem = React.useRef(null);
 
   const [fileData, setFileData] = React.useState([]);
@@ -52,6 +53,11 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   const tracklistId = `${id}__track-list`;
   const subtitleMenuId = `${id}__subtitle-menu`;
 
+  React.useEffect(() => {
+    setFileData(playlist);
+    setSelectedFile(0);
+  }, [playlist]);
+
   const canPlayPrev = selectedFile > 0;
   const canPlayNext = selectedFile < fileData.length - 1;
 
@@ -61,15 +67,15 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
     setProgress(0);
   }, [selectedFile]);
 
-  const selectTrack = (trackNumber) => {
+  const selectTrack = (trackNumber: number) => {
     setPlaying(false);
     setEnded(false);
     setVideoMetadataLoaded(false);
     setSelectedFile(trackNumber);
   };
 
-  const hasVtt = (file) => {
-    return file.transcriptUrl && file.transcriptUrl.length;
+  const hasVtt = (file: IPlaylistItem) => {
+    return file.transcriptUrl && file.transcriptUrl.length > 0;
   };
 
   const subtitleTracks = () => {
@@ -81,31 +87,26 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
 
   const playable = fileData && fileData.length && videoMetadataLoaded;
 
-  const onLoadedMetadata = (e) => {};
-
-  const onTimeUpdate = (e) => {};
-
-  const onEnded = (e) => {};
-
-  const progressBarClickAction = (pos) => {};
-
-  const prevTrackAction = () => {
-    if (!canPlayPrev) {
-      return;
-    }
-    selectTrack(selectedFile - 1);
+  const selectSubtitleLanguage = (lang?: string) => {
+    setShowSubtitleMenu(false);
+    setSelectedLanguage(lang && lang.length ? lang : null);
   };
 
-  const nextTrackAction = () => {
-    if (canPlayNext) {
-      return false;
-    }
-    selectTrack(selectedFile + 1);
+  const onLoadedMetadata = () => {
+    setVideoMetadataLoaded(true);
+    selectSubtitleLanguage(selectedLanguage);
+
+    // this.highlighter.selectedFile = this.state.selectedFile;
+    // this.highlighter.updateVideoElement(this.videoElement);
+    // this.highlighter.onVideoElementLoad();
   };
 
-  const moveBackwardAction = () => {};
-
-  const moveForwardAction = () => {};
+  const onTimeUpdate = () => {
+    const value =
+      (100 / audioElem.current.duration) * audioElem.current.currentTime;
+    setProgress(value);
+    timeElapsedElem.current.value = toMMSS(audioElem.current.currentTime);
+  };
 
   const playPauseAction = () => {
     if (!playable) {
@@ -121,27 +122,63 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
     setPlaying(newPlaying);
     setTimestamp(toMMSS(audioElem.current.currentTime));
     if (eventRouter) {
-      eventRouter.emit('state.playing', playing);
+      eventRouter.emit('state.playing', newPlaying);
     }
   };
 
-  const playPauseAction = () => {};
-
-  const rewindAction = () => {};
-
-  const selectTrackAction = (trackNumber) => {
-    setShowTrackListMenu(false);
-    selectTrack(trackNumber);
+  const nextTrackAction = () => {
+    if (canPlayNext) {
+      selectTrack(selectedFile + 1);
+    }
   };
 
-  const selectSubtitleLanguage = () => {
-    setShowSubtitleMenu(false);
-    setSelectedLanguage(lang && lang.length ? lang : null);
+  const nextTrackAndPlayAction = () => {
+    if (canPlayNext) {
+      nextTrackAction();
+      setTimeout(() => playPauseAction(), 500);
+    }
+  };
+
+  const onEnded = () => {
+    if (onEndNextFile) {
+      nextTrackAndPlayAction();
+      return;
+    }
+    setEnded(true);
+    setTimestamp(toMMSS(audioElem.current.currentTime));
+    if (eventRouter) {
+      eventRouter.emit('state.playing', false);
+      eventRouter.emit('state.ended', true);
+    }
+  };
+
+  const moveBackwardAction = () => {
+    if (!playable) {
+      return;
+    }
+    audioElem.current.currentTime -= 5;
+  };
+
+  const moveForwardAction = () => {
+    if (!playable) {
+      return;
+    }
+    audioElem.current.currentTime += 5;
+  };
+
+  const rewindAction = () => {
+    audioElem.current.currentTime = 0;
+    setEnded(false);
+    setTimestamp(toMMSS(audioElem.current.currentTime));
+    setProgress(0);
+    if (eventRouter) {
+      eventRouter.emit('state.ended', false);
+    }
   };
 
   React.useEffect(() => {
     let i;
-    for (i = 0; i < audioElem.current.textTracks.length; i++) {
+    for (i = 0; i < audioElem.current.textTracks.length; i += 1) {
       audioElem.current.textTracks[i].mode =
         audioElem.current.textTracks[i].language === selectedLanguage
           ? 'showing'
@@ -154,6 +191,29 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
     audioElem.current.muted = newMute;
     setMuted(newMute);
   };
+
+  const handleRemoteAction = (action: string) => {
+    if (action === 'backward') {
+      moveBackwardAction();
+    } else if (action === 'play_pause') {
+      playPauseAction();
+    } else if (action === 'reset') {
+      rewindAction();
+    } else if (action === 'forward') {
+      moveForwardAction();
+    }
+  };
+
+  React.useEffect(() => {
+    if (eventRouter) {
+      eventRouter.on('remote.action', handleRemoteAction);
+    }
+    return () => {
+      if (eventRouter) {
+        eventRouter.off('remote.action', handleRemoteAction);
+      }
+    };
+  }, []);
 
   const currentFile = fileData[selectedFile] || null;
 
@@ -186,8 +246,9 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
         <ScrubBar
           defaultValue={progress}
           className="video-controls__progress-bar"
-          onClick={progressBarClickAction}
-          ref={progressBarElem}
+          onClick={(pos: number) => {
+            audioElem.current.currentTime = pos * audioElem.current.duration;
+          }}
         />
 
         <label className="sr-only" htmlFor={timeIndicatorId}>
@@ -208,7 +269,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
           <ToggleButton
             btnType="tracklist"
             aria-controls={tracklistId}
-            disabled={!fileData.length}
+            enabled={fileData.length > 0}
             onClick={() => {
               setShowSubtitleMenu(false);
               setShowTrackListMenu(!showTrackListMenu);
@@ -225,7 +286,11 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
           <ActionButton
             btnType="previous-audio"
             enabled={fileData.length > 1 && canPlayPrev}
-            onClick={prevTrackAction}
+            onClick={() => {
+              if (canPlayPrev) {
+                selectTrack(selectedFile - 1);
+              }
+            }}
             icon="step-backward"
           >
             Previous track
@@ -272,7 +337,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
           <ToggleButton
             btnType="closed-captioning"
             aria-controls={subtitleMenuId}
-            enabled={videoMetadataLoaded && this.hasVtt(file)}
+            enabled={videoMetadataLoaded && hasVtt(currentFile)}
             onClick={() => {
               setShowTrackListMenu(false);
               setShowSubtitleMenu(!showSubtitleMenu);
@@ -311,7 +376,10 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
         id={tracklistId}
         tracklist={fileData}
         selected={selectedFile}
-        onSelect={selectTrackAction}
+        onSelect={(trackNumber) => {
+          setShowTrackListMenu(false);
+          selectTrack(trackNumber);
+        }}
       />
 
       <SubtitleContainer
