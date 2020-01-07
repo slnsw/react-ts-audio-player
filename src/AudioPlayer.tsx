@@ -33,9 +33,6 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   eventRouter,
   onEndNextFile = false,
 }: IProps) => {
-  const audioElem = React.useRef(null);
-  const timeElapsedElem = React.useRef(null);
-
   const [fileData, setFileData] = React.useState([]);
   const [selectedFile, setSelectedFile] = React.useState(0);
   const [progress, setProgress] = React.useState(0);
@@ -52,6 +49,9 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   const timeIndicatorId = `${id}__time-indicator`;
   const tracklistId = `${id}__track-list`;
   const subtitleMenuId = `${id}__subtitle-menu`;
+
+  const audioElem = React.useRef(null);
+  const timeElapsedElem = React.useRef(null);
 
   React.useEffect(() => {
     setFileData(playlist);
@@ -223,7 +223,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
         className="video-element"
         data-oh-audio-player="1"
         crossOrigin="anonymous"
-        playsinline
+        playsInline
         preload="metadata"
         ref={audioElem}
         onLoadedMetadata={onLoadedMetadata}

@@ -28,6 +28,10 @@ const config = {
     filename: `[name]${suffix}.js`,
     path: path.resolve(__dirname, 'dist'),
   },
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+  },
   mode: process.env.NODE_ENV === 'production' ?
     'production' : 'development',
 };

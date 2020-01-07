@@ -1,4 +1,5 @@
-module.exports = require('./dist/AudioPlayer');
+const AudioPlayer = require('./dist/AudioPlayer');
+module.exports = AudioPlayer.default;
 if (typeof window !== 'undefined') {
-  window = module.exports;
+  window.AudioPlayer = AudioPlayer.default;
 }
