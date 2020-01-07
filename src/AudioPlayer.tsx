@@ -29,12 +29,12 @@ type Props = {
 const AudioPlayer: React.FunctionComponent<Props> = ({
   playlist = [],
   id = 'audio-player',
-  eventRouter
+  eventRouter,
 }) => {
   const audioElem = React.useRef(null);
   const progressBarElem = React.useRef(null);
   const timeElapsedElem = React.useRef(null);
-  
+
   const [fileData, setFileData] = React.useState([]);
   const [selectedFile, setSelectedFile] = React.useState(0);
   const [progress, setProgress] = React.useState(0);
@@ -142,11 +142,10 @@ const AudioPlayer: React.FunctionComponent<Props> = ({
   React.useEffect(() => {
     let i;
     for (i = 0; i < audioElem.current.textTracks.length; i++) {
-      audioElem.current.textTracks[i].mode = (
-        audioElem.current.textTracks[i].language === selectedLanguage ?
-        'showing' :
-        'hidden'
-      );
+      audioElem.current.textTracks[i].mode =
+        audioElem.current.textTracks[i].language === selectedLanguage
+          ? 'showing'
+          : 'hidden';
     }
   }, [selectedLanguage]);
 
@@ -172,7 +171,7 @@ const AudioPlayer: React.FunctionComponent<Props> = ({
         onTimeUpdate={onTimeUpdate}
         aria-describedby={captionsContainerId}
       >
-        {currentFile && (<source src={currentFile.audioUrl} type="audio/mpeg" />)}
+        {currentFile && <source src={currentFile.audioUrl} type="audio/mpeg" />}
         {currentFile && hasVtt(currentFile) && (
           <track
             src={currentFile.transcriptUrl}
@@ -191,10 +190,7 @@ const AudioPlayer: React.FunctionComponent<Props> = ({
           ref={progressBarElem}
         />
 
-        <label
-          className="sr-only"
-          htmlFor={timeIndicatorId}
-        >
+        <label className="sr-only" htmlFor={timeIndicatorId}>
           Time elapsed
         </label>
 
@@ -235,10 +231,7 @@ const AudioPlayer: React.FunctionComponent<Props> = ({
             Previous track
           </ActionButton>
 
-          <ActionButton
-            btnType="backward"
-            onClick={moveBackwardAction}
-          >
+          <ActionButton btnType="backward" onClick={moveBackwardAction}>
             Rewind
           </ActionButton>
 
@@ -263,10 +256,7 @@ const AudioPlayer: React.FunctionComponent<Props> = ({
             Restart
           </ActionButton>
 
-          <ActionButton
-            btnType="forward"
-            onClick={moveForwardAction}
-          >
+          <ActionButton btnType="forward" onClick={moveForwardAction}>
             Fast forward
           </ActionButton>
 

@@ -12,7 +12,7 @@ type Props = {
 const ScrubBar: React.FunctionalComponent<Props> = ({
   defaultValue = 0,
   className,
-  onClick
+  onClick,
 }) => {
   const outer = React.useRef(null);
   const inner = React.useRef(null);
@@ -70,7 +70,7 @@ const ScrubBar: React.FunctionalComponent<Props> = ({
     >
       <div
         className={[`${className}__fill`].join(' ')}
-        style={{width: `${value}%`}}
+        style={{ width: `${value}%` }}
         ref={inner}
       >
         <span className="sr-only">{`${value} percent`}</span>
