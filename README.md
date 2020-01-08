@@ -15,3 +15,16 @@ You'll be using something like the following:
 ```typescript
 import AudioPlayer from '@slnsw/react-ts-audio-player';
 ```
+
+## What isn't supported yet
+
+* Remote controls for the player
+* Highlighting supplied transcripts
+
+## About the example content
+
+The example content is sourced from our [Stories from our Migrant and Refugee Communities oral history & sound collection](https://oralhistories.sl.nsw.gov.au/) and consists of oral histories
+from refugees and members of migrant communities who have come to Australia.
+The interviews were conducted by Louise Whelan. Copyright on these recordings
+is held by the State Library of New South Wales. For more information,
+[see the catalogue record for the oral history interviews](https://search.sl.nsw.gov.au/permalink/f/15rjecp/ADLIB110372407).
