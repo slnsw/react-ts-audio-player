@@ -38,6 +38,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   crossOrigin,
   onEndNextFile = false,
   config = {},
+  singleTrack = false,
 }: IProps) => {
   const [fileData, setFileData] = React.useState([]);
   const [selectedFile, setSelectedFile] = React.useState(0);
@@ -280,7 +281,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
           <ToggleButton
             btnType="tracklist"
             aria-controls={tracklistId}
-            enabled={fileData.length > 0}
+            enabled={fileData.length > 0 && !singleTrack}
             onClick={() => {
               setShowSubtitleMenu(false);
               setShowTrackListMenu(!showTrackListMenu);
@@ -379,7 +380,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       />
 
       <TracklistMenu
-        visible={showTrackListMenu}
+        visible={!singleTrack && showTrackListMenu}
         id={tracklistId}
         tracklist={fileData}
         selected={selectedFile}
