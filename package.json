@@ -2,7 +2,7 @@
   "name": "@slnsw/react-ts-media-player",
   "version": "0.0.1",
   "description": "React component representing an audio/video player.",
-  "main": "index.js",
+  "main": "src/AudioPlayer.tsx",
   "scripts": {
     "build": "tsc",
     "bundle": "tsc && webpack",

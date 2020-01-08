@@ -3,45 +3,57 @@
 
 import React from 'react';
 
+import SrOnly from './SrOnly';
+
+import { IAudioPlayerConfig } from './Types';
+
 interface IProps {
   enabled?: boolean;
   hidden?: boolean;
   btnType: string;
-  iconFalse?: string;
-  iconTrue?: string;
   toggleState?: boolean;
   children?: React.ReactNode;
   onClick?: (e: React.MouseEvent) => void;
   className?: string;
+  config?: IAudioPlayerConfig;
 }
 
 const ToggleButton: React.FunctionComponent<IProps> = ({
   enabled = true,
   hidden = false,
   btnType,
-  iconFalse,
-  iconTrue,
   toggleState = false,
   children,
   onClick,
   className,
-}: IProps) => (
-  <button
-    className={[className || '', `btn`, `btn-${btnType}`].join(' ')}
-    disabled={!enabled}
-    hidden={hidden}
-    onClick={onClick}
-  >
-    <span className="sr-only">{children}</span>
-    <span
-      className={[`fa fa-${iconFalse || btnType}`].join(' ')}
-      hidden={toggleState}
-    />
-    <span
-      className={[`fa fa-${iconTrue || btnType}`].join(' ')}
-      hidden={!toggleState}
-    />
-  </button>
-);
+  config = {},
+}: IProps) => {
+  const classNames = [className || '']
+    .concat(config.classNames[btnType] || []);
+  const iconFalseClassNames = []
+    .concat(config.icons[btnType] || [])
+    .concat(config.icons[`${btnType}__false`] || []);
+  const iconTrueClassNames = []
+    .concat(config.icons[btnType] || [])
+    .concat(config.icons[`${btnType}__true`] || []);
+  return (
+    <button
+      className={classNames.join(' ')}
+      disabled={!enabled}
+      hidden={hidden}
+      onClick={onClick}
+    >
+      <SrOnly config={config}>{children}</SrOnly>
+      <span
+        className={iconFalseClassNames.join(' ')}
+        hidden={toggleState}
+      />
+      <span
+        className={iconTrueClassNames.join(' ')}
+        hidden={!toggleState}
+      />
+    </button>
+  );
+};
 
 export default ToggleButton;

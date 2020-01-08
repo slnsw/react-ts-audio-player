@@ -3,34 +3,42 @@
 
 import React from 'react';
 
+import SrOnly from './SrOnly';
+
+import { IAudioPlayerConfig } from './Types';
+
 interface IProps {
   btnType: string;
   enabled?: boolean;
   hidden?: boolean;
-  icon?: string;
   onClick?: (e: React.MouseEvent) => void;
   children?: React.ReactNode;
   className?: string;
+  config?: IAudioPlayerConfig;
 }
 
 const ActionButton: React.FunctionComponent<IProps> = ({
   enabled = true,
   hidden = false,
-  icon,
   btnType,
   onClick,
   children,
   className,
+  config = {},
 }) => {
+  const classNames = [className || '']
+    .concat(config.classNames[btnType] || []);
+  const iconClassNames = []
+    .concat(config.icons[btnType] || []);
   return (
     <button
-      className={[className || '', `btn`, `btn-${btnType}`].join(' ')}
+      className={classNames.join(' ')}
       disabled={!enabled}
       hidden={hidden}
       onClick={onClick}
     >
-      <span className="sr-only">{children}</span>
-      <span className={[`fa`, `fa-${icon || btnType}`].join(' ')}></span>
+      <SrOnly config={config}>{children}</SrOnly>
+      <span className={iconClassNames.join(' ')}></span>
     </button>
   );
 };

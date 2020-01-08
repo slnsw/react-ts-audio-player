@@ -1,0 +1,11 @@
+// @file
+// Generic types.
+
+interface IStringListDict {
+  [key: string]: string[];
+};
+
+export interface IAudioPlayerConfig {
+  classNames?: IStringListDict;
+  icons?: IStringListDict;
+}

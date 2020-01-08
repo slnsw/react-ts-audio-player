@@ -11,7 +11,9 @@ import SubtitleMenu from './SubtitleMenu';
 import ToggleButton from './ToggleButton';
 import TracklistMenu from './TracklistMenu';
 
+import FontAwesome5 from './Configs/FontAwesome5';
 import { toMMSS } from './TimeUtils';
+import { IAudioPlayerConfig } from './Types';
 
 interface IPlaylistItem {
   index: number;
@@ -25,6 +27,7 @@ interface IProps {
   id?: string;
   eventRouter?: Emitter;
   onEndNextFile?: boolean;
+  config?: IAudioPlayerConfig;
 }
 
 const AudioPlayer: React.FunctionComponent<IProps> = ({
@@ -32,6 +35,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   id = 'audio-player',
   eventRouter,
   onEndNextFile = false,
+  config = {},
 }: IProps) => {
   const [fileData, setFileData] = React.useState([]);
   const [selectedFile, setSelectedFile] = React.useState(0);
@@ -92,13 +96,11 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   const playable = fileData && fileData.length && videoMetadataLoaded;
 
   const selectSubtitleLanguage = (lang?: string) => {
-    console.log('selectSubtitleLanguage', lang);
     setShowSubtitleMenu(false);
     setSelectedLanguage(lang && lang.length ? lang : null);
   };
 
   const onLoadedMetadata = () => {
-    console.log('onLoadedMetadata');
     setVideoMetadataLoaded(true);
     selectSubtitleLanguage(selectedLanguage);
 
@@ -282,8 +284,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
               setShowTrackListMenu(!showTrackListMenu);
             }}
             toggleState={showTrackListMenu}
-            iconFalse="list-ol"
-            iconTrue="window-close"
+            config={config}
           >
             Tracklist
           </ToggleButton>
@@ -298,12 +299,12 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
                 selectTrack(selectedFile - 1);
               }
             }}
-            icon="step-backward"
+            config={config}
           >
             Previous track
           </ActionButton>
 
-          <ActionButton btnType="backward" onClick={moveBackwardAction}>
+          <ActionButton btnType="backward" onClick={moveBackwardAction} config={config}>
             Rewind
           </ActionButton>
 
@@ -312,8 +313,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             hidden={ended}
             onClick={playPauseAction}
             toggleState={playing}
-            iconFalse="play"
-            iconTrue="pause"
+            config={config}
           >
             {playing ? 'Pause' : 'Play'}
           </ToggleButton>
@@ -323,12 +323,12 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             enabled={ended}
             hidden={!ended}
             onClick={rewindAction}
-            icon="undo"
+            config={config}
           >
             Restart
           </ActionButton>
 
-          <ActionButton btnType="forward" onClick={moveForwardAction}>
+          <ActionButton btnType="forward" onClick={moveForwardAction} config={config}>
             Fast forward
           </ActionButton>
 
@@ -336,7 +336,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             btnType="next-audio"
             enabled={fileData.length > 1 && canPlayNext}
             onClick={nextTrackAction}
-            icon="step-forward"
+            config={config}
           >
             Next track
           </ActionButton>
@@ -350,8 +350,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
               setShowSubtitleMenu(!showSubtitleMenu);
             }}
             toggleState={showSubtitleMenu}
-            iconFalse="closed-captioning"
-            iconTrue="window-close"
+            config={config}
           >
             Closed captioning
           </ToggleButton>
@@ -362,8 +361,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             btnType="mute"
             onClick={toggleMuteAction}
             toggleState={muted}
-            iconFalse="volume-up"
-            iconTrue="volume-off"
+            config={config}
           >
             Mute
           </ToggleButton>
@@ -400,3 +398,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
 };
 
 export default AudioPlayer;
+
+export const defaultConfigs = {
+  FontAwesome5,
+};
