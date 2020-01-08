@@ -20,15 +20,16 @@ interface IPlaylistItem {
   label: string;
   audioUrl: string;
   transcriptUrl: string | null;
-  crossOrigin?: 'anonymous' | 'use-credentials',
 }
 
 interface IProps {
   playlist: IPlaylistItem[];
   id?: string;
   eventRouter?: Emitter;
+  crossOrigin?: 'anonymous' | 'use-credentials',
   onEndNextFile?: boolean;
   config?: IAudioPlayerConfig;
+  singleTrack?: boolean;
 }
 
 const AudioPlayer: React.FunctionComponent<IProps> = ({
