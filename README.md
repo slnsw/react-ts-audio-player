@@ -13,7 +13,7 @@ project, you should probably just include the library directly.
 You'll be using something like the following:
 
 ```typescript
-import AudioPlayer from '@slnsw/react-ts-audio-player';
+import AudioPlayer from '@slnsw/react-ts-media-player';
 ```
 
 ## What isn't supported yet
