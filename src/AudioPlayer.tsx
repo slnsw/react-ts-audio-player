@@ -20,6 +20,7 @@ interface IPlaylistItem {
   label: string;
   audioUrl: string;
   transcriptUrl: string | null;
+  crossOrigin?: 'anonymous' | 'use-credentials',
 }
 
 interface IProps {
@@ -34,6 +35,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   playlist = [],
   id = 'audio-player',
   eventRouter,
+  crossOrigin,
   onEndNextFile = false,
   config = {},
 }: IProps) => {
@@ -232,7 +234,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       <audio
         className="video-element"
         data-oh-audio-player="1"
-        crossOrigin="anonymous"
+        crossOrigin={crossOrigin}
         preload="metadata"
         ref={audioElem}
         onLoadedMetadata={onLoadedMetadata}
