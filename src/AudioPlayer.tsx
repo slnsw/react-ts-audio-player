@@ -92,11 +92,13 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   const playable = fileData && fileData.length && videoMetadataLoaded;
 
   const selectSubtitleLanguage = (lang?: string) => {
+    console.log('selectSubtitleLanguage', lang);
     setShowSubtitleMenu(false);
     setSelectedLanguage(lang && lang.length ? lang : null);
   };
 
   const onLoadedMetadata = () => {
+    console.log('onLoadedMetadata');
     setVideoMetadataLoaded(true);
     selectSubtitleLanguage(selectedLanguage);
 
@@ -371,7 +373,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       <SubtitleMenu
         visible={showSubtitleMenu}
         id={subtitleMenuId}
-        subtitleTracks={subtitleTracks()}
+        tracks={subtitleTracks()}
         selected={selectedLanguage}
         onSelect={selectSubtitleLanguage}
       />

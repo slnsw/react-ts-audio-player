@@ -30,14 +30,14 @@ const SubtitleContainer: React.FunctionComponent<IProps> = ({
   const [currentTrack, setCurrentTrack] = React.useState(null);
 
   const cueChange = (e: Event) => {
-    const eventTarget = e.target as TextTrack;
+    const activeCues = (e.target as TextTrack).activeCues;
 
     let newText = '';
     let cue;
 
     let i;
-    for (i = 0; i < eventTarget.activeCues.length; i += 1) {
-      cue = eventTarget.activeCues[i];
+    for (i = 0; i < activeCues.length; i += 1) {
+      cue = activeCues[i];
       if (typeof cue.text !== 'undefined') {
         newText += cue.text;
       }
@@ -75,8 +75,8 @@ const SubtitleContainer: React.FunctionComponent<IProps> = ({
       className={[className || '', 'video-wrapper__subtitle-container'].join(
         ' ',
       )}
-      hidden={visible}
-      aria-hidden={visible}
+      hidden={!visible}
+      aria-hidden={!visible}
       lang={lang}
       id={id}
       aria-atomic="true"

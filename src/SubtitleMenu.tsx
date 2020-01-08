@@ -9,7 +9,7 @@ import MenuItem from './MenuItem';
 interface IProps {
   visible: boolean;
   id: string;
-  subtitleTracks: TextTrack[];
+  tracks: TextTrackList;
   selected?: string;
   onSelect: (selectedLang: string) => void;
   className?: string;
@@ -18,18 +18,14 @@ interface IProps {
 const SubtitleMenu: React.FunctionComponent<IProps> = ({
   visible = false,
   id,
-  subtitleTracks = [],
+  tracks,
   selected,
   onSelect,
   className,
 }: IProps) => {
   const onSelectLang = (e: React.MouseEvent | React.KeyboardEvent) => {
     const itemElem = e.target as HTMLElement;
-    const indexAttr = itemElem.getAttribute('data-value') || null;
-    if (indexAttr === null) {
-      return;
-    }
-    const selectedLang = indexAttr;
+    const selectedLang = itemElem.getAttribute('data-value') || null;
     if (typeof onSelect === 'function') {
       onSelect(selectedLang);
     }
@@ -46,17 +42,19 @@ const SubtitleMenu: React.FunctionComponent<IProps> = ({
   ];
   let track;
   let i;
-  for (i = 0; i < subtitleTracks.length; i += 1) {
-    track = subtitleTracks[i];
-    languageOptions.push(
-      <MenuItem
-        key={`${track.language}-${i}`}
-        label={track.label}
-        value={track.language}
-        selected={selected && track.language === selected}
-        onSelect={onSelectLang}
-      />,
-    );
+  if (tracks && tracks.length) {
+    for (i = 0; i < tracks.length; i += 1) {
+      track = tracks[i];
+      languageOptions.push(
+        <MenuItem
+          key={`${track.language}-${i}`}
+          label={track.label}
+          value={track.language}
+          selected={selected && track.language === selected}
+          onSelect={onSelectLang}
+        />,
+      );
+    }
   }
 
   return (
