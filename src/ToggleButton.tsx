@@ -28,8 +28,7 @@ const ToggleButton: React.FunctionComponent<IProps> = ({
   className,
   config = {},
 }: IProps) => {
-  const classNames = [className || '']
-    .concat(config.classNames[btnType] || []);
+  const classNames = [className || ''].concat(config.classNames[btnType] || []);
   const iconFalseClassNames = []
     .concat(config.icons[btnType] || [])
     .concat(config.icons[`${btnType}__false`] || []);
@@ -44,14 +43,8 @@ const ToggleButton: React.FunctionComponent<IProps> = ({
       onClick={onClick}
     >
       <SrOnly config={config}>{children}</SrOnly>
-      <span
-        className={iconFalseClassNames.join(' ')}
-        hidden={toggleState}
-      />
-      <span
-        className={iconTrueClassNames.join(' ')}
-        hidden={!toggleState}
-      />
+      <span className={iconFalseClassNames.join(' ')} hidden={toggleState} />
+      <span className={iconTrueClassNames.join(' ')} hidden={!toggleState} />
     </button>
   );
 };

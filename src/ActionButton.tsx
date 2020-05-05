@@ -26,10 +26,8 @@ const ActionButton: React.FunctionComponent<IProps> = ({
   className,
   config = {},
 }) => {
-  const classNames = [className || '']
-    .concat(config.classNames[btnType] || []);
-  const iconClassNames = []
-    .concat(config.icons[btnType] || []);
+  const classNames = [className || ''].concat(config.classNames[btnType] || []);
+  const iconClassNames = [].concat(config.icons[btnType] || []);
   const iconElem = config.icons[btnType] || null;
   return (
     <button

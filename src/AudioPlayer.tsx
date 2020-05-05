@@ -26,7 +26,7 @@ interface IProps {
   playlist: IPlaylistItem[];
   id?: string;
   eventRouter?: Emitter;
-  crossOrigin?: 'anonymous' | 'use-credentials',
+  crossOrigin?: 'anonymous' | 'use-credentials';
   onEndNextFile?: boolean;
   config?: IAudioPlayerConfig;
   singleTrack?: boolean;
@@ -308,7 +308,11 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             Previous track
           </ActionButton>
 
-          <ActionButton btnType="backward" onClick={moveBackwardAction} config={config}>
+          <ActionButton
+            btnType="backward"
+            onClick={moveBackwardAction}
+            config={config}
+          >
             Rewind
           </ActionButton>
 
@@ -332,7 +336,11 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             Restart
           </ActionButton>
 
-          <ActionButton btnType="forward" onClick={moveForwardAction} config={config}>
+          <ActionButton
+            btnType="forward"
+            onClick={moveForwardAction}
+            config={config}
+          >
             Fast forward
           </ActionButton>
 
