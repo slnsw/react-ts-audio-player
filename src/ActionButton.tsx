@@ -30,6 +30,7 @@ const ActionButton: React.FunctionComponent<IProps> = ({
     .concat(config.classNames[btnType] || []);
   const iconClassNames = []
     .concat(config.icons[btnType] || []);
+  const iconElem = config.icons[btnType] || null;
   return (
     <button
       className={classNames.join(' ')}
@@ -38,7 +39,8 @@ const ActionButton: React.FunctionComponent<IProps> = ({
       onClick={onClick}
     >
       <SrOnly config={config}>{children}</SrOnly>
-      <span className={iconClassNames.join(' ')}></span>
+      {!iconElem && <span className={iconClassNames.join(' ')}></span>}
+      {iconElem}
     </button>
   );
 };

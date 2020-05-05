@@ -23,6 +23,7 @@ var ActionButton = function ActionButton(_ref) {
       config = _ref$config === void 0 ? {} : _ref$config;
   var classNames = [className || ''].concat(config.classNames[btnType] || []);
   var iconClassNames = [].concat(config.icons[btnType] || []);
+  var iconElem = config.icons[btnType] || null;
   return React.createElement("button", {
     className: classNames.join(' '),
     disabled: !enabled,
@@ -30,9 +31,9 @@ var ActionButton = function ActionButton(_ref) {
     onClick: onClick
   }, React.createElement(SrOnly, {
     config: config
-  }, children), React.createElement("span", {
+  }, children), !iconElem && React.createElement("span", {
     className: iconClassNames.join(' ')
-  }));
+  }), iconElem);
 };
 
 var getOffsetX = function getOffsetX(e) {

@@ -26,5 +26,20 @@ declare const _default: {
         mute__false: string[];
         mute__true: string[];
     };
+    iconElements: {
+        tracklist__false: any;
+        tracklist__true: any;
+        'previous-audio': any;
+        backward: any;
+        play__false: any;
+        play__true: any;
+        reset: any;
+        forward: any;
+        'next-audio': any;
+        'closed-captioning__false': any;
+        'closed-captioning__true': any;
+        mute__false: any;
+        mute__true: any;
+    };
 };
 export default _default;
