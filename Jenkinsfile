@@ -5,8 +5,7 @@ pipeline {
       steps {
         echo 'Setting up repo...'
         sh 'npm i'
-        sh 'npm link react'
-        sh 'npm link react-dom'
+        sh 'npm i react react-dom'
         sh 'mkdir -p reports/eslint'
         sh 'mkdir -p reports/jest'
       }
