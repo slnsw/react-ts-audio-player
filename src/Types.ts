@@ -15,4 +15,6 @@ export interface IAudioPlayerConfig {
   classNames?: IStringListDict;
   icons?: IStringListDict;
   iconElements?: IReactNodeListDict;
+  fastForwardTime?: number;
+  rewindTime?: number;
 }

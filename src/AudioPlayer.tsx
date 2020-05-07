@@ -170,14 +170,14 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
     if (!playable) {
       return;
     }
-    audioElem.current.currentTime -= 5;
+    audioElem.current.currentTime -= (config.rewindTime || 5);
   };
 
   const moveForwardAction = () => {
     if (!playable) {
       return;
     }
-    audioElem.current.currentTime += 5;
+    audioElem.current.currentTime += (config.fastForwardTime || 5);
   };
 
   const rewindAction = () => {
