@@ -17,4 +17,5 @@ export interface IAudioPlayerConfig {
   iconElements?: IReactNodeListDict;
   fastForwardTime?: number;
   rewindTime?: number;
+  showDuration?: bool;
 }
