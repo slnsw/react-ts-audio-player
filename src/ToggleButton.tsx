@@ -4,6 +4,7 @@
 import React from 'react';
 
 import SrOnly from './SrOnly';
+import CssClasses from './Util/CssClasses';
 
 import { IAudioPlayerConfig } from './Types';
 
@@ -28,23 +29,23 @@ const ToggleButton: React.FunctionComponent<IProps> = ({
   className,
   config = {},
 }: IProps) => {
-  const classNames = [className || ''].concat(config.classNames[btnType] || []);
-  const iconFalseClassNames = []
-    .concat(config.icons[btnType] || [])
-    .concat(config.icons[`${btnType}__false`] || []);
-  const iconTrueClassNames = []
-    .concat(config.icons[btnType] || [])
-    .concat(config.icons[`${btnType}__true`] || []);
+  const defaultClassName = (config.classNames[btnType] || []).join(' ');
   return (
     <button
-      className={classNames.join(' ')}
+      className={CssClasses(defaultClassName, className || '')}
       disabled={!enabled}
       hidden={hidden}
       onClick={onClick}
     >
       <SrOnly config={config}>{children}</SrOnly>
-      <span className={iconFalseClassNames.join(' ')} hidden={toggleState} />
-      <span className={iconTrueClassNames.join(' ')} hidden={!toggleState} />
+      <span
+        className={CssClasses(defaultClassName, '', 'icon', ['false'])}
+        hidden={toggleState}
+      />
+      <span
+        className={CssClasses(defaultClassName, '', 'icon', ['false'])}
+        hidden={!toggleState}
+      />
     </button>
   );
 };
