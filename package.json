@@ -7,11 +7,11 @@
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",
-    "bundle": "tsc && webpack",
+    "web-bundle": "tsc && webpack",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "lint": "tslint -p tsconfig.json",
     "eslint": "eslint --fix \"src/**/*.{ts,tsx}\"",
-    "browsersync": "browser-sync start --server --startPath example.html --files .",
+    "browsersync": "browser-sync start --server --startPath example.html --files . --config bs-config.js",
     "test": "jest"
   },
   "author": "",

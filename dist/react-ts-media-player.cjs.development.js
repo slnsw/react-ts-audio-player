@@ -289,6 +289,33 @@ var SubtitleMenu = function SubtitleMenu(_ref) {
   }, languageOptions);
 };
 
+var CssClasses = function CssClasses(defaultClassName, optionalClassName, suffix, states) {
+  if (optionalClassName === void 0) {
+    optionalClassName = '';
+  }
+
+  if (suffix === void 0) {
+    suffix = '';
+  }
+
+  if (states === void 0) {
+    states = [];
+  }
+
+  var classes = [].concat(defaultClassName.split(/\s+/)).concat(optionalClassName.split(/\s+/)).filter(function (c) {
+    return c && c.length;
+  }).map(function (c) {
+    return suffix.length ? c + "__" + suffix : c;
+  });
+  return classes.reduce(function (agg, className) {
+    return agg.concat([''].concat(states.filter(function (s) {
+      return s && s.length;
+    })).map(function (state) {
+      return "" + className + (state.length ? "--" + state : '');
+    }));
+  }, []).join(' ');
+};
+
 var ToggleButton = function ToggleButton(_ref) {
   var _ref$enabled = _ref.enabled,
       enabled = _ref$enabled === void 0 ? true : _ref$enabled,
@@ -302,21 +329,19 @@ var ToggleButton = function ToggleButton(_ref) {
       className = _ref.className,
       _ref$config = _ref.config,
       config = _ref$config === void 0 ? {} : _ref$config;
-  var classNames = [className || ''].concat(config.classNames[btnType] || []);
-  var iconFalseClassNames = [].concat(config.icons[btnType] || []).concat(config.icons[btnType + "__false"] || []);
-  var iconTrueClassNames = [].concat(config.icons[btnType] || []).concat(config.icons[btnType + "__true"] || []);
+  var defaultClassName = (config.classNames[btnType] || []).join(' ');
   return React.createElement("button", {
-    className: classNames.join(' '),
+    className: CssClasses(defaultClassName, className || ''),
     disabled: !enabled,
     hidden: hidden,
     onClick: onClick
   }, React.createElement(SrOnly, {
     config: config
   }, children), React.createElement("span", {
-    className: iconFalseClassNames.join(' '),
+    className: CssClasses(defaultClassName, '', 'icon', ['false']),
     hidden: toggleState
   }), React.createElement("span", {
-    className: iconTrueClassNames.join(' '),
+    className: CssClasses(defaultClassName, '', 'icon', ['false']),
     hidden: !toggleState
   }));
 };
@@ -382,6 +407,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
       playlist = _ref$playlist === void 0 ? [] : _ref$playlist,
       _ref$id = _ref.id,
       id = _ref$id === void 0 ? 'audio-player' : _ref$id,
+      className = _ref.className,
       eventRouter = _ref.eventRouter,
       crossOrigin = _ref.crossOrigin,
       _ref$onEndNextFile = _ref.onEndNextFile,
@@ -437,10 +463,12 @@ var AudioPlayer = function AudioPlayer(_ref) {
 
   var captionsContainerId = id + "__captions";
   var timeIndicatorId = id + "__time-indicator";
+  var durationIndicatorId = id + "__duration-indicator";
   var tracklistId = id + "__track-list";
   var subtitleMenuId = id + "__subtitle-menu";
   var audioElem = React.useRef(null);
   var timeElapsedElem = React.useRef(null);
+  var durationElem = React.useRef(null);
   React.useEffect(function () {
     audioElem.current.setAttribute('playsinline', 'playsinline');
   }, []);
@@ -552,7 +580,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
       return;
     }
 
-    audioElem.current.currentTime -= 5;
+    audioElem.current.currentTime -= config.rewindTime || 5;
   };
 
   var moveForwardAction = function moveForwardAction() {
@@ -560,7 +588,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
       return;
     }
 
-    audioElem.current.currentTime += 5;
+    audioElem.current.currentTime += config.fastForwardTime || 5;
   };
 
   var rewindAction = function rewindAction() {
@@ -613,9 +641,9 @@ var AudioPlayer = function AudioPlayer(_ref) {
   }, []);
   var currentFile = fileData[selectedFile] || null;
   return React.createElement("div", {
-    className: "video-wrapper"
+    className: CssClasses('video-wrapper', className)
   }, React.createElement("audio", {
-    className: "video-element",
+    className: CssClasses('video-element', className),
     "data-oh-audio-player": "1",
     crossOrigin: crossOrigin,
     preload: "metadata",
@@ -633,7 +661,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     label: "English",
     srcLang: "en"
   })), React.createElement("div", {
-    className: "video-controls"
+    className: CssClasses('video-controls', className)
   }, React.createElement(ScrubBar, {
     defaultValue: progress,
     className: "video-controls__progress-bar",
@@ -644,15 +672,24 @@ var AudioPlayer = function AudioPlayer(_ref) {
     className: "sr-only",
     htmlFor: timeIndicatorId
   }, "Time elapsed"), React.createElement("input", {
-    className: "video-controls__time-elapsed",
+    className: CssClasses('video-controls', className, 'time-elapsed'),
     id: timeIndicatorId,
     readOnly: true,
-    ref: timeElapsedElem,
+    ref: durationElem,
     value: timestamp
-  }), React.createElement("div", {
+  }), config.showDuration && React.createElement(React.Fragment, null, React.createElement("label", {
+    className: "sr-only",
+    htmlFor: durationIndicatorId
+  }, "Duration"), React.createElement("input", {
+    className: CssClasses('video-controls', className, 'duration'),
+    id: durationIndicatorId,
+    readOnly: true,
+    ref: timeElapsedElem,
+    value: toMMSS(audioElem.current ? audioElem.current.duration : 0)
+  })), React.createElement("div", {
     className: "w-100"
   }), React.createElement("div", {
-    className: "video-controls__button-wrapper"
+    className: CssClasses('video-controls', className, 'button-wrapper')
   }, React.createElement(ToggleButton, {
     btnType: "tracklist",
     "aria-controls": tracklistId,
@@ -664,7 +701,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     toggleState: showTrackListMenu,
     config: config
   }, "Tracklist"), React.createElement("div", {
-    className: "video-controls__button-wrapper__space"
+    className: CssClasses('video-controls', className, 'button-wrapper__space')
   }), React.createElement(ActionButton, {
     btnType: "previous-audio",
     enabled: fileData.length > 1 && canPlayPrev,
@@ -710,7 +747,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     toggleState: showSubtitleMenu,
     config: config
   }, "Closed captioning"), React.createElement("div", {
-    className: "video-controls__button-wrapper__space"
+    className: CssClasses('video-controls', className, 'button-wrapper__space')
   }), React.createElement(ToggleButton, {
     btnType: "mute",
     onClick: toggleMuteAction,

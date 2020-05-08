@@ -10,6 +10,7 @@ interface IPlaylistItem {
 interface IProps {
     playlist: IPlaylistItem[];
     id?: string;
+    className?: string;
     eventRouter?: Emitter;
     crossOrigin?: 'anonymous' | 'use-credentials';
     onEndNextFile?: boolean;

@@ -4,6 +4,7 @@
 import React from 'react';
 
 import SrOnly from './SrOnly';
+import CssClasses from './Util/CssClasses';
 
 import { IAudioPlayerConfig } from './Types';
 
@@ -26,18 +27,18 @@ const ActionButton: React.FunctionComponent<IProps> = ({
   className,
   config = {},
 }) => {
-  const classNames = [className || ''].concat(config.classNames[btnType] || []);
-  const iconClassNames = [].concat(config.icons[btnType] || []);
-  const iconElem = config.icons[btnType] || null;
+  const defaultClassName = (config.classNames[btnType] || []).join(' ');
+  const iconClassNames = (config.icons[btnType] || []).join(' ');
+  const iconElem = config.iconElements[btnType] || null;
   return (
     <button
-      className={classNames.join(' ')}
+      className={CssClasses(defaultClassName, className || '')}
       disabled={!enabled}
       hidden={hidden}
       onClick={onClick}
     >
       <SrOnly config={config}>{children}</SrOnly>
-      {!iconElem && <span className={iconClassNames.join(' ')}></span>}
+      {!iconElem && <span className={CssClasses(iconClassNames, '')}></span>}
       {iconElem}
     </button>
   );

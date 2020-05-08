@@ -276,9 +276,12 @@
     <h1>Audio player test</h1>
     <div id="player"></div>
     <script>
+      const AudioPlayer = window.AudioPlayer;
+      console.log(AudioPlayer);
+
       document.addEventListener('DOMContentLoaded', () => {
         ReactDOM.render(
-          React.createElement(window.AudioPlayer, {
+          React.createElement(AudioPlayer, {
             playlist: [
               {
                 index: 0,
@@ -315,7 +318,7 @@
             onEndNextFile: false,
             crossOrigin: 'anonymous',
             singleTrack: false,
-            config: window.AudioPlayer.defaultConfigs.FontAwesome5,
+            config: AudioPlayer.defaultConfigs.FontAwesome5,
           }),
           document.getElementById('player'),
         );

@@ -30,6 +30,10 @@ const ToggleButton: React.FunctionComponent<IProps> = ({
   config = {},
 }: IProps) => {
   const defaultClassName = (config.classNames[btnType] || []).join(' ');
+  const iconClassNamesFalse = (config.icons[`${btnType}__false`] || []).join(' ');
+  const iconClassNamesTrue = (config.icons[`${btnType}__true`] || []).join(' ');
+  const iconElemFalse = config.iconElements[`${btnType}__false`] || null;
+  const iconElemTrue = config.iconElements[`${btnType}__true`] || null;
   return (
     <button
       className={CssClasses(defaultClassName, className || '')}
@@ -38,14 +42,16 @@ const ToggleButton: React.FunctionComponent<IProps> = ({
       onClick={onClick}
     >
       <SrOnly config={config}>{children}</SrOnly>
-      <span
-        className={CssClasses(defaultClassName, '', 'icon', ['false'])}
+      {!iconElemFalse && (<span
+        className={CssClasses(iconClassNamesFalse)}
         hidden={toggleState}
-      />
-      <span
-        className={CssClasses(defaultClassName, '', 'icon', ['false'])}
+      />)}
+      {iconElemFalse}
+      {!iconElemTrue && (<span
+        className={CssClasses(iconClassNamesTrue)}
         hidden={!toggleState}
-      />
+      />)}
+      {iconElemTrue}
     </button>
   );
 };
