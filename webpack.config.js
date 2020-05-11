@@ -26,14 +26,13 @@ const config = {
   },
   output: {
     filename: `[name]${suffix}.js`,
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'build'),
   },
   externals: {
     react: 'React',
     'react-dom': 'ReactDOM',
   },
-  mode: process.env.NODE_ENV === 'production' ?
-    'production' : 'development',
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
 };
 
 module.exports = config;

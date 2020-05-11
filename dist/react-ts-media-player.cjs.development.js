@@ -16,6 +16,33 @@ var SrOnly = function SrOnly(_ref) {
   }, children);
 };
 
+var CssClasses = function CssClasses(defaultClassName, optionalClassName, suffix, states) {
+  if (optionalClassName === void 0) {
+    optionalClassName = '';
+  }
+
+  if (suffix === void 0) {
+    suffix = '';
+  }
+
+  if (states === void 0) {
+    states = [];
+  }
+
+  var classes = [].concat(defaultClassName.split(/\s+/)).concat(optionalClassName.split(/\s+/)).filter(function (c) {
+    return c && c.length;
+  }).map(function (c) {
+    return suffix.length ? c + "__" + suffix : c;
+  });
+  return classes.reduce(function (agg, className) {
+    return agg.concat([''].concat(states.filter(function (s) {
+      return s && s.length;
+    })).map(function (state) {
+      return "" + className + (state.length ? "--" + state : '');
+    }));
+  }, []).join(' ');
+};
+
 var ActionButton = function ActionButton(_ref) {
   var _ref$enabled = _ref.enabled,
       enabled = _ref$enabled === void 0 ? true : _ref$enabled,
@@ -27,18 +54,18 @@ var ActionButton = function ActionButton(_ref) {
       className = _ref.className,
       _ref$config = _ref.config,
       config = _ref$config === void 0 ? {} : _ref$config;
-  var classNames = [className || ''].concat(config.classNames[btnType] || []);
-  var iconClassNames = [].concat(config.icons[btnType] || []);
-  var iconElem = config.icons[btnType] || null;
+  var defaultClassName = (config.classNames[btnType] || []).join(' ');
+  var iconClassNames = (config.icons[btnType] || []).join(' ');
+  var iconElem = config.iconElements[btnType] || null;
   return React.createElement("button", {
-    className: classNames.join(' '),
+    className: CssClasses(defaultClassName, className || ''),
     disabled: !enabled,
     hidden: hidden,
     onClick: onClick
   }, React.createElement(SrOnly, {
     config: config
   }, children), !iconElem && React.createElement("span", {
-    className: iconClassNames.join(' ')
+    className: CssClasses(iconClassNames, '')
   }), iconElem);
 };
 
@@ -289,33 +316,6 @@ var SubtitleMenu = function SubtitleMenu(_ref) {
   }, languageOptions);
 };
 
-var CssClasses = function CssClasses(defaultClassName, optionalClassName, suffix, states) {
-  if (optionalClassName === void 0) {
-    optionalClassName = '';
-  }
-
-  if (suffix === void 0) {
-    suffix = '';
-  }
-
-  if (states === void 0) {
-    states = [];
-  }
-
-  var classes = [].concat(defaultClassName.split(/\s+/)).concat(optionalClassName.split(/\s+/)).filter(function (c) {
-    return c && c.length;
-  }).map(function (c) {
-    return suffix.length ? c + "__" + suffix : c;
-  });
-  return classes.reduce(function (agg, className) {
-    return agg.concat([''].concat(states.filter(function (s) {
-      return s && s.length;
-    })).map(function (state) {
-      return "" + className + (state.length ? "--" + state : '');
-    }));
-  }, []).join(' ');
-};
-
 var ToggleButton = function ToggleButton(_ref) {
   var _ref$enabled = _ref.enabled,
       enabled = _ref$enabled === void 0 ? true : _ref$enabled,
@@ -330,6 +330,10 @@ var ToggleButton = function ToggleButton(_ref) {
       _ref$config = _ref.config,
       config = _ref$config === void 0 ? {} : _ref$config;
   var defaultClassName = (config.classNames[btnType] || []).join(' ');
+  var iconClassNamesFalse = (config.icons[btnType + "__false"] || []).join(' ');
+  var iconClassNamesTrue = (config.icons[btnType + "__true"] || []).join(' ');
+  var iconElemFalse = config.iconElements[btnType + "__false"] || null;
+  var iconElemTrue = config.iconElements[btnType + "__true"] || null;
   return React.createElement("button", {
     className: CssClasses(defaultClassName, className || ''),
     disabled: !enabled,
@@ -337,13 +341,13 @@ var ToggleButton = function ToggleButton(_ref) {
     onClick: onClick
   }, React.createElement(SrOnly, {
     config: config
-  }, children), React.createElement("span", {
-    className: CssClasses(defaultClassName, '', 'icon', ['false']),
+  }, children), !iconElemFalse && React.createElement("span", {
+    className: CssClasses(iconClassNamesFalse),
     hidden: toggleState
-  }), React.createElement("span", {
-    className: CssClasses(defaultClassName, '', 'icon', ['false']),
+  }), iconElemFalse, !iconElemTrue && React.createElement("span", {
+    className: CssClasses(iconClassNamesTrue),
     hidden: !toggleState
-  }));
+  }), iconElemTrue);
 };
 
 var TracklistMenu = function TracklistMenu(_ref) {

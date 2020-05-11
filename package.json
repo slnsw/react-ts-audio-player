@@ -11,7 +11,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "lint": "tslint -p tsconfig.json",
     "eslint": "eslint --fix \"src/**/*.{ts,tsx}\"",
-    "browsersync": "browser-sync start --server --startPath example.html --files . --config bs-config.js",
+    "browsersync": "npm run web-bundle && browser-sync start --server --startPath example.html --files . --config bs-config.js",
     "test": "jest"
   },
   "author": "",

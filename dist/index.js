@@ -1,3 +1,8 @@
-import AudioPlayer from './AudioPlayer';
-export default AudioPlayer;
-//# sourceMappingURL=index.js.map
+
+'use strict'
+
+if (process.env.NODE_ENV === 'production') {
+  module.exports = require('./react-ts-media-player.cjs.production.min.js')
+} else {
+  module.exports = require('./react-ts-media-player.cjs.development.js')
+}
