@@ -12,6 +12,7 @@ import ToggleButton from './ToggleButton';
 import TracklistMenu from './TracklistMenu';
 
 import FontAwesome5 from './Configs/FontAwesome5';
+import CssClasses from './Util/CssClasses';
 import { toMMSS } from './TimeUtils';
 import { IAudioPlayerConfig } from './Types';
 
@@ -25,8 +26,9 @@ interface IPlaylistItem {
 interface IProps {
   playlist: IPlaylistItem[];
   id?: string;
+  className?: string;
   eventRouter?: Emitter;
-  crossOrigin?: 'anonymous' | 'use-credentials',
+  crossOrigin?: 'anonymous' | 'use-credentials';
   onEndNextFile?: boolean;
   config?: IAudioPlayerConfig;
   singleTrack?: boolean;
@@ -35,6 +37,7 @@ interface IProps {
 const AudioPlayer: React.FunctionComponent<IProps> = ({
   playlist = [],
   id = 'audio-player',
+  className,
   eventRouter,
   crossOrigin,
   onEndNextFile = false,
@@ -55,11 +58,13 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
 
   const captionsContainerId = `${id}__captions`;
   const timeIndicatorId = `${id}__time-indicator`;
+  const durationIndicatorId = `${id}__duration-indicator`;
   const tracklistId = `${id}__track-list`;
   const subtitleMenuId = `${id}__subtitle-menu`;
 
   const audioElem = React.useRef(null);
   const timeElapsedElem = React.useRef(null);
+  const durationElem = React.useRef(null);
 
   React.useEffect(() => {
     audioElem.current.setAttribute('playsinline', 'playsinline');
@@ -170,14 +175,14 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
     if (!playable) {
       return;
     }
-    audioElem.current.currentTime -= 5;
+    audioElem.current.currentTime -= (config.rewindTime || 5);
   };
 
   const moveForwardAction = () => {
     if (!playable) {
       return;
     }
-    audioElem.current.currentTime += 5;
+    audioElem.current.currentTime += (config.fastForwardTime || 5);
   };
 
   const rewindAction = () => {
@@ -232,9 +237,9 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   const currentFile = fileData[selectedFile] || null;
 
   return (
-    <div className="video-wrapper">
+    <div className={CssClasses('video-wrapper', className)}>
       <audio
-        className="video-element"
+        className={CssClasses('video-element', className)}
         data-oh-audio-player="1"
         crossOrigin={crossOrigin}
         preload="metadata"
@@ -255,7 +260,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
         )}
       </audio>
 
-      <div className="video-controls">
+      <div className={CssClasses('video-controls', className)}>
         <ScrubBar
           defaultValue={progress}
           className="video-controls__progress-bar"
@@ -269,16 +274,32 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
         </label>
 
         <input
-          className="video-controls__time-elapsed"
+          className={CssClasses('video-controls', className, 'time-elapsed')}
           id={timeIndicatorId}
           readOnly
-          ref={timeElapsedElem}
+          ref={durationElem}
           value={timestamp}
         />
 
+        {config.showDuration && (
+          <>
+            <label className="sr-only" htmlFor={durationIndicatorId}>
+              Duration
+            </label>
+
+            <input
+              className={CssClasses('video-controls', className, 'duration')}
+              id={durationIndicatorId}
+              readOnly
+              ref={timeElapsedElem}
+              value={toMMSS(audioElem.current ? audioElem.current.duration : 0)}
+            />
+          </>
+        )}
+
         <div className="w-100" />
 
-        <div className="video-controls__button-wrapper">
+        <div className={CssClasses('video-controls', className, 'button-wrapper')}>
           <ToggleButton
             btnType="tracklist"
             aria-controls={tracklistId}
@@ -293,7 +314,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             Tracklist
           </ToggleButton>
 
-          <div className="video-controls__button-wrapper__space" />
+          <div className={CssClasses('video-controls', className, 'button-wrapper__space')} />
 
           <ActionButton
             btnType="previous-audio"
@@ -308,7 +329,11 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             Previous track
           </ActionButton>
 
-          <ActionButton btnType="backward" onClick={moveBackwardAction} config={config}>
+          <ActionButton
+            btnType="backward"
+            onClick={moveBackwardAction}
+            config={config}
+          >
             Rewind
           </ActionButton>
 
@@ -332,7 +357,11 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             Restart
           </ActionButton>
 
-          <ActionButton btnType="forward" onClick={moveForwardAction} config={config}>
+          <ActionButton
+            btnType="forward"
+            onClick={moveForwardAction}
+            config={config}
+          >
             Fast forward
           </ActionButton>
 
@@ -359,7 +388,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             Closed captioning
           </ToggleButton>
 
-          <div className="video-controls__button-wrapper__space" />
+          <div className={CssClasses('video-controls', className, 'button-wrapper__space')} />
 
           <ToggleButton
             btnType="mute"

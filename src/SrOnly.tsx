@@ -10,9 +10,9 @@ interface IProps {
   config?: IAudioPlayerConfig;
 }
 
-const SrOnly: React.FunctionComponent<IProps> = ({config = {}, children}) => {
+const SrOnly: React.FunctionComponent<IProps> = ({ config = {}, children }) => {
   const classNames = [].concat(config.classNames['sr-only'] || []);
-  return <span className={classNames.join(' ')}>{children}</span>
+  return <span className={classNames.join(' ')}>{children}</span>;
 };
 
 export default SrOnly;

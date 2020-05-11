@@ -30,7 +30,7 @@ const SubtitleContainer: React.FunctionComponent<IProps> = ({
   const [currentTrack, setCurrentTrack] = React.useState(null);
 
   const cueChange = (e: Event) => {
-    const activeCues = (e.target as TextTrack).activeCues;
+    const { activeCues } = e.target as TextTrack;
 
     let newText = '';
     let cue;

@@ -20,6 +20,7 @@ import AudioPlayer from '@slnsw/react-ts-media-player';
 
 * Remote controls for the player
 * Highlighting supplied transcripts
+* A unified build method for local testing
 
 ## About the example content
 
