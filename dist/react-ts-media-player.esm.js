@@ -393,6 +393,14 @@ var strPadLeft = function strPadLeft(n) {
 
   return n.toString();
 };
+
+var toHHMMSS = function toHHMMSS(str) {
+  var secNum = parseInt(str, 10);
+  var hours = Math.floor(secNum / 3600);
+  var minutes = Math.floor((secNum - hours * 3600) / 60);
+  var seconds = secNum - hours * 3600 - minutes * 60;
+  return strPadLeft(hours) + ":" + strPadLeft(minutes) + ":" + strPadLeft(seconds);
+};
 var toMMSS = function toMMSS(str) {
   var secNum = parseInt(str, 10);
   var minutes = Math.floor(secNum / 60);
@@ -414,59 +422,80 @@ var AudioPlayer = function AudioPlayer(_ref) {
       config = _ref$config === void 0 ? {} : _ref$config,
       _ref$singleTrack = _ref.singleTrack,
       singleTrack = _ref$singleTrack === void 0 ? false : _ref$singleTrack;
+  var audioElem = React.useRef(null);
+  var timeElapsedElem = React.useRef(null);
+  var durationElem = React.useRef(null);
 
-  var _React$useState = React.useState([]),
-      fileData = _React$useState[0],
-      setFileData = _React$useState[1];
+  var _React$useState = React.useState(0),
+      duration = _React$useState[0],
+      setDuration = _React$useState[1];
 
   var _React$useState2 = React.useState(0),
-      selectedFile = _React$useState2[0],
-      setSelectedFile = _React$useState2[1];
+      timestamp = _React$useState2[0],
+      setTimestamp = _React$useState2[1];
 
-  var _React$useState3 = React.useState(0),
-      progress = _React$useState3[0],
-      setProgress = _React$useState3[1];
+  var _React$useState3 = React.useState([]),
+      fileData = _React$useState3[0],
+      setFileData = _React$useState3[1];
 
-  var _React$useState4 = React.useState('00:00'),
-      timestamp = _React$useState4[0],
-      setTimestamp = _React$useState4[1];
+  var _React$useState4 = React.useState(0),
+      selectedFile = _React$useState4[0],
+      setSelectedFile = _React$useState4[1];
 
-  var _React$useState5 = React.useState(false),
-      playing = _React$useState5[0],
-      setPlaying = _React$useState5[1];
+  var _React$useState5 = React.useState(0),
+      progress = _React$useState5[0],
+      setProgress = _React$useState5[1];
 
   var _React$useState6 = React.useState(false),
-      ended = _React$useState6[0],
-      setEnded = _React$useState6[1];
+      playing = _React$useState6[0],
+      setPlaying = _React$useState6[1];
 
   var _React$useState7 = React.useState(false),
-      muted = _React$useState7[0],
-      setMuted = _React$useState7[1];
+      ended = _React$useState7[0],
+      setEnded = _React$useState7[1];
 
-  var _React$useState8 = React.useState(null),
-      selectedLanguage = _React$useState8[0],
-      setSelectedLanguage = _React$useState8[1];
+  var _React$useState8 = React.useState(false),
+      muted = _React$useState8[0],
+      setMuted = _React$useState8[1];
 
-  var _React$useState9 = React.useState(false),
-      showTrackListMenu = _React$useState9[0],
-      setShowTrackListMenu = _React$useState9[1];
+  var _React$useState9 = React.useState(null),
+      selectedLanguage = _React$useState9[0],
+      setSelectedLanguage = _React$useState9[1];
 
   var _React$useState10 = React.useState(false),
-      showSubtitleMenu = _React$useState10[0],
-      setShowSubtitleMenu = _React$useState10[1];
+      showTrackListMenu = _React$useState10[0],
+      setShowTrackListMenu = _React$useState10[1];
 
   var _React$useState11 = React.useState(false),
-      videoMetadataLoaded = _React$useState11[0],
-      setVideoMetadataLoaded = _React$useState11[1];
+      showSubtitleMenu = _React$useState11[0],
+      setShowSubtitleMenu = _React$useState11[1];
+
+  var _React$useState12 = React.useState(false),
+      videoMetadataLoaded = _React$useState12[0],
+      setVideoMetadataLoaded = _React$useState12[1];
 
   var captionsContainerId = id + "__captions";
   var timeIndicatorId = id + "__time-indicator";
   var durationIndicatorId = id + "__duration-indicator";
   var tracklistId = id + "__track-list";
   var subtitleMenuId = id + "__subtitle-menu";
-  var audioElem = React.useRef(null);
-  var timeElapsedElem = React.useRef(null);
-  var durationElem = React.useRef(null);
+
+  var getTimestampString = function getTimestampString(seconds, isDuration) {
+    if (seconds === void 0) {
+      seconds = 0;
+    }
+
+    if (isDuration === void 0) {
+      isDuration = false;
+    }
+
+    if (config.useHoursInTimestamps && (isDuration && seconds >= 3600 || duration >= 3600)) {
+      return toHHMMSS(seconds.toString());
+    }
+
+    return toMMSS(seconds.toString());
+  };
+
   React.useEffect(function () {
     audioElem.current.setAttribute('playsinline', 'playsinline');
   }, []);
@@ -511,13 +540,14 @@ var AudioPlayer = function AudioPlayer(_ref) {
   var onLoadedMetadata = function onLoadedMetadata() {
     setVideoMetadataLoaded(true);
     selectSubtitleLanguage(selectedLanguage);
+    setDuration(audioElem.current.duration);
   };
 
   var onTimeUpdate = function onTimeUpdate() {
-    if (audioElem.current.duration > 0) {
-      var value = 100 / audioElem.current.duration * audioElem.current.currentTime;
+    if (duration > 0) {
+      var value = 100 / duration * audioElem.current.currentTime;
       setProgress(value);
-      setTimestamp(toMMSS(audioElem.current.currentTime));
+      setTimestamp(audioElem.current.currentTime);
     }
   };
 
@@ -536,7 +566,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     }
 
     setPlaying(newPlaying);
-    setTimestamp(toMMSS(audioElem.current.currentTime));
+    setTimestamp(audioElem.current.currentTime);
 
     if (eventRouter) {
       eventRouter.emit('state.playing', newPlaying);
@@ -565,7 +595,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     }
 
     setEnded(true);
-    setTimestamp(toMMSS(audioElem.current.currentTime));
+    setTimestamp(audioElem.current.currentTime);
 
     if (eventRouter) {
       eventRouter.emit('state.playing', false);
@@ -592,7 +622,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
   var rewindAction = function rewindAction() {
     audioElem.current.currentTime = 0;
     setEnded(false);
-    setTimestamp(toMMSS(audioElem.current.currentTime));
+    setTimestamp(audioElem.current.currentTime);
     setProgress(0);
 
     if (eventRouter) {
@@ -664,7 +694,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     defaultValue: progress,
     className: "video-controls__progress-bar",
     onClick: function onClick(pos) {
-      audioElem.current.currentTime = pos * audioElem.current.duration;
+      audioElem.current.currentTime = pos * duration;
     }
   }), React.createElement("label", {
     className: "sr-only",
@@ -673,8 +703,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
     className: CssClasses('video-controls', className, 'time-elapsed'),
     id: timeIndicatorId,
     readOnly: true,
-    ref: durationElem,
-    value: timestamp
+    ref: timeElapsedElem,
+    value: getTimestampString(timestamp)
   }), config.showDuration && React.createElement(React.Fragment, null, React.createElement("label", {
     className: "sr-only",
     htmlFor: durationIndicatorId
@@ -682,8 +712,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
     className: CssClasses('video-controls', className, 'duration'),
     id: durationIndicatorId,
     readOnly: true,
-    ref: timeElapsedElem,
-    value: toMMSS(audioElem.current ? audioElem.current.duration : 0)
+    ref: durationElem,
+    value: getTimestampString(duration, true)
   })), React.createElement("div", {
     className: "w-100"
   }), React.createElement("div", {
