@@ -9,10 +9,10 @@ const ToggleButton = ({ enabled = true, hidden = false, btnType, toggleState = f
     const iconElemTrue = config.iconElements[`${btnType}__true`] || null;
     return (React.createElement("button", { className: CssClasses(defaultClassName, className || ''), disabled: !enabled, hidden: hidden, onClick: onClick },
         React.createElement(SrOnly, { config: config }, children),
-        !iconElemFalse && (React.createElement("span", { className: CssClasses(iconClassNamesFalse), hidden: toggleState })),
-        iconElemFalse,
-        !iconElemTrue && (React.createElement("span", { className: CssClasses(iconClassNamesTrue), hidden: !toggleState })),
-        iconElemTrue));
+        !toggleState && !iconElemFalse && (React.createElement("span", { className: CssClasses(iconClassNamesFalse) })),
+        !toggleState && iconElemFalse,
+        toggleState && !iconElemTrue && (React.createElement("span", { className: CssClasses(iconClassNamesTrue) })),
+        toggleState && iconElemTrue));
 };
 export default ToggleButton;
 //# sourceMappingURL=ToggleButton.js.map

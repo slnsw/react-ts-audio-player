@@ -335,13 +335,11 @@ var ToggleButton = function ToggleButton(_ref) {
     onClick: onClick
   }, React.createElement(SrOnly, {
     config: config
-  }, children), !iconElemFalse && React.createElement("span", {
-    className: CssClasses(iconClassNamesFalse),
-    hidden: toggleState
-  }), iconElemFalse, !iconElemTrue && React.createElement("span", {
-    className: CssClasses(iconClassNamesTrue),
-    hidden: !toggleState
-  }), iconElemTrue);
+  }, children), !toggleState && !iconElemFalse && React.createElement("span", {
+    className: CssClasses(iconClassNamesFalse)
+  }), !toggleState && iconElemFalse, toggleState && !iconElemTrue && React.createElement("span", {
+    className: CssClasses(iconClassNamesTrue)
+  }), toggleState && iconElemTrue);
 };
 
 var TracklistMenu = function TracklistMenu(_ref) {

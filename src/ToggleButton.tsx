@@ -42,16 +42,14 @@ const ToggleButton: React.FunctionComponent<IProps> = ({
       onClick={onClick}
     >
       <SrOnly config={config}>{children}</SrOnly>
-      {!iconElemFalse && (<span
+      {!toggleState && !iconElemFalse && (<span
         className={CssClasses(iconClassNamesFalse)}
-        hidden={toggleState}
       />)}
-      {iconElemFalse}
-      {!iconElemTrue && (<span
+      {!toggleState && iconElemFalse}
+      {toggleState && !iconElemTrue && (<span
         className={CssClasses(iconClassNamesTrue)}
-        hidden={!toggleState}
       />)}
-      {iconElemTrue}
+      {toggleState && iconElemTrue}
     </button>
   );
 };
