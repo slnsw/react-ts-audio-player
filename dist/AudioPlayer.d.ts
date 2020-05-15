@@ -63,5 +63,6 @@ export declare const defaultConfigs: {
             mute__false: any;
             mute__true: any;
         };
+        useHoursInTimestamps: boolean;
     };
 };

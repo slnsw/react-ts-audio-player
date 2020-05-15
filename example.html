@@ -292,7 +292,9 @@
     <div id="player"></div>
     <script>
       const AudioPlayer = window.AudioPlayer;
-      console.log(AudioPlayer);
+
+      const config = Object.assign(AudioPlayer.defaultConfigs.FontAwesome5, { useHoursInTimestamps: true });
+      console.log(config);
 
       document.addEventListener('DOMContentLoaded', () => {
         ReactDOM.render(
@@ -345,7 +347,7 @@
             onEndNextFile: false,
             crossOrigin: 'anonymous',
             singleTrack: false,
-            config: AudioPlayer.defaultConfigs.FontAwesome5,
+            config: config,
           }),
           document.getElementById('player'),
         );

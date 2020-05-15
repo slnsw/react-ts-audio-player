@@ -18,4 +18,5 @@ export interface IAudioPlayerConfig {
   fastForwardTime?: number;
   rewindTime?: number;
   showDuration?: boolean;
+  useHoursInTimestamps?: boolean;
 }
