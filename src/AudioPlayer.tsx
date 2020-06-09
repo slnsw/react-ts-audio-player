@@ -67,7 +67,13 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   const tracklistId = `${id}__track-list`;
   const subtitleMenuId = `${id}__subtitle-menu`;
 
-  const getTimestampString = (seconds: number = 0, isDuration: boolean = false): string => {
+  const getTimestampString = (
+    seconds: number = 0,
+    isDuration: boolean = false,
+  ): string => {
+    if (typeof seconds !== 'number') {
+      return '';
+    }
     if (
       config.useHoursInTimestamps
       && ((isDuration && seconds >= 3600) || duration >= 3600)
@@ -277,9 +283,16 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
           defaultValue={progress}
           className="video-controls__progress-bar"
           onClick={(pos: number) => {
+            console.log(pos);
             audioElem.current.currentTime = pos * duration;
             setTimestamp(pos * duration);
           }}
+          useTooltip={true}
+          valueToTooltipString={(pos) => getTimestampString(
+            audioElem.current
+              ? pos * audioElem.current.duration
+              : 0
+          )}
         />
 
         <label className="sr-only" htmlFor={timeIndicatorId}>

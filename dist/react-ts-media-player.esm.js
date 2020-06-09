@@ -99,25 +99,85 @@ var getOffsetX = function getOffsetX(e) {
 
 var ON_CLICK_DEBOUNCE = 250;
 
-var ScrubBar = function ScrubBar(_ref) {
-  var _ref$defaultValue = _ref.defaultValue,
-      defaultValue = _ref$defaultValue === void 0 ? 0 : _ref$defaultValue,
+var ScrubBarTooltip = function ScrubBarTooltip(_ref) {
+  var title = _ref.title,
       className = _ref.className,
-      onClick = _ref.onClick;
-  var outer = React.useRef(null);
-  var scrubbing = React.useRef(false);
+      _ref$style = _ref.style,
+      style = _ref$style === void 0 ? {} : _ref$style;
+  return React.createElement("div", {
+    style: style,
+    className: className || ''
+  }, title);
+};
 
-  var _React$useState = React.useState(clampNumber(defaultValue, 0, 1)),
+var ScrubBarTooltipOuter = function ScrubBarTooltipOuter(_ref2) {
+  var tooltipClassName = _ref2.tooltipClassName,
+      _ref2$valueToTooltipS = _ref2.valueToTooltipString,
+      valueToTooltipString = _ref2$valueToTooltipS === void 0 ? function () {
+    return '';
+  } : _ref2$valueToTooltipS,
+      _ref2$defaultValue = _ref2.defaultValue,
+      defaultValue = _ref2$defaultValue === void 0 ? 0 : _ref2$defaultValue,
+      _ref2$show = _ref2.show,
+      show = _ref2$show === void 0 ? false : _ref2$show;
+  var outer = React.useRef(null);
+
+  var _React$useState = React.useState(defaultValue),
       value = _React$useState[0],
       setValue = _React$useState[1];
 
-  var _React$useState2 = React.useState(0),
-      offsetX = _React$useState2[0],
-      setOffsetX = _React$useState2[1];
+  var outerWidth = outer.current ? outer.current.clientWidth : 0;
+  var content = valueToTooltipString(value) || '';
+  return React.createElement("div", {
+    ref: outer,
+    style: {
+      position: 'absolute',
+      top: '-100%',
+      left: 0,
+      width: '100%',
+      height: '300%'
+    },
+    onMouseMove: function onMouseMove(e) {
+      setValue(getOffsetX(e) / outerWidth);
+    }
+  }, show && content.length > 0 && React.createElement(ScrubBarTooltip, {
+    title: valueToTooltipString(value),
+    className: tooltipClassName,
+    style: {
+      left: outerWidth * value + "px"
+    }
+  }));
+};
 
-  var _React$useState3 = React.useState(0),
-      lastUpdate = _React$useState3[0],
-      setLastUpdate = _React$useState3[1];
+var ScrubBar = function ScrubBar(_ref3) {
+  var _ref3$defaultValue = _ref3.defaultValue,
+      defaultValue = _ref3$defaultValue === void 0 ? 0 : _ref3$defaultValue,
+      _ref3$useTooltip = _ref3.useTooltip,
+      useTooltip = _ref3$useTooltip === void 0 ? false : _ref3$useTooltip,
+      _ref3$valueToTooltipS = _ref3.valueToTooltipString,
+      valueToTooltipString = _ref3$valueToTooltipS === void 0 ? function () {
+    return '';
+  } : _ref3$valueToTooltipS,
+      className = _ref3.className,
+      onClick = _ref3.onClick;
+  var outer = React.useRef(null);
+  var scrubbing = React.useRef(false);
+
+  var _React$useState2 = React.useState(false),
+      hover = _React$useState2[0],
+      setHover = _React$useState2[1];
+
+  var _React$useState3 = React.useState(clampNumber(defaultValue, 0, 1)),
+      value = _React$useState3[0],
+      setValue = _React$useState3[1];
+
+  var _React$useState4 = React.useState(0),
+      offsetX = _React$useState4[0],
+      setOffsetX = _React$useState4[1];
+
+  var _React$useState5 = React.useState(0),
+      lastUpdate = _React$useState5[0],
+      setLastUpdate = _React$useState5[1];
 
   var debouncedOnClick = typeof onClick === 'function' ? debounce(onClick, ON_CLICK_DEBOUNCE) : function () {};
 
@@ -158,7 +218,7 @@ var ScrubBar = function ScrubBar(_ref) {
     };
   }, []);
   React.useEffect(function () {
-    setValue(clampNumber(defaultValue, 0, 1));
+    setValue(clampNumber(defaultValue, 0, 100));
   }, [defaultValue]);
   React.useEffect(function () {
     if (scrubbing.current) {
@@ -169,10 +229,21 @@ var ScrubBar = function ScrubBar(_ref) {
   }, [lastUpdate, offsetX]);
   return React.createElement("div", {
     className: [className || ''].join(' '),
+    onMouseOver: function onMouseOver() {
+      return setHover(true);
+    },
+    onMouseLeave: function onMouseLeave() {
+      return setHover(false);
+    },
     onMouseDown: onDown,
     onTouchStart: onDown,
     ref: outer
-  }, React.createElement("div", {
+  }, useTooltip && React.createElement(ScrubBarTooltipOuter, {
+    tooltipClassName: className + "__tooltip",
+    show: hover || scrubbing.current,
+    valueToTooltipString: valueToTooltipString,
+    defaultValue: value
+  }), React.createElement("div", {
     className: [className + "__fill"].join(' '),
     style: {
       width: value + "%"
@@ -430,6 +501,11 @@ var strPadLeft = function strPadLeft(n) {
 
 var toHHMMSS = function toHHMMSS(str) {
   var secNum = parseInt(str, 10);
+
+  if (isNaN(secNum)) {
+    return '';
+  }
+
   var hours = Math.floor(secNum / 3600);
   var minutes = Math.floor((secNum - hours * 3600) / 60);
   var seconds = secNum - hours * 3600 - minutes * 60;
@@ -437,6 +513,11 @@ var toHHMMSS = function toHHMMSS(str) {
 };
 var toMMSS = function toMMSS(str) {
   var secNum = parseInt(str, 10);
+
+  if (isNaN(secNum)) {
+    return '';
+  }
+
   var minutes = Math.floor(secNum / 60);
   var seconds = secNum - minutes * 60;
   return strPadLeft(minutes) + ":" + strPadLeft(seconds);
@@ -521,6 +602,10 @@ var AudioPlayer = function AudioPlayer(_ref) {
 
     if (isDuration === void 0) {
       isDuration = false;
+    }
+
+    if (typeof seconds !== 'number') {
+      return '';
     }
 
     if (config.useHoursInTimestamps && (isDuration && seconds >= 3600 || duration >= 3600)) {
@@ -728,8 +813,13 @@ var AudioPlayer = function AudioPlayer(_ref) {
     defaultValue: progress,
     className: "video-controls__progress-bar",
     onClick: function onClick(pos) {
+      console.log(pos);
       audioElem.current.currentTime = pos * duration;
       setTimestamp(pos * duration);
+    },
+    useTooltip: true,
+    valueToTooltipString: function valueToTooltipString(pos) {
+      return getTimestampString(audioElem.current ? pos * audioElem.current.duration : 0);
     }
   }), React.createElement("label", {
     className: "sr-only",

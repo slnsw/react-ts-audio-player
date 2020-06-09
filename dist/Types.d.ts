@@ -13,5 +13,6 @@ export interface IAudioPlayerConfig {
     rewindTime?: number;
     showDuration?: boolean;
     useHoursInTimestamps?: boolean;
+    useTooltip?: boolean;
 }
 export {};

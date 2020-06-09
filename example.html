@@ -207,6 +207,17 @@
         top: 0;
         margin-top: -3.4px;
       }
+      .video-controls__progress-bar__tooltip {
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        transform: translateX(-50%);
+        background: #333;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 5px;
+        pointer-events: none;
+      }
       .video-wrapper__track-list {
         background: #f00;
       }
@@ -293,7 +304,10 @@
     <script>
       const AudioPlayer = window.AudioPlayer;
 
-      const config = Object.assign(AudioPlayer.defaultConfigs.FontAwesome5, { useHoursInTimestamps: true });
+      const config = Object.assign(AudioPlayer.defaultConfigs.FontAwesome5, {
+        useHoursInTimestamps: true,
+        useTooltip: true
+      });
       console.log(config);
 
       document.addEventListener('DOMContentLoaded', () => {
