@@ -1,4 +1,5 @@
 import React from 'react';
+import debounce from 'debounce';
 
 var SrOnly = function SrOnly(_ref) {
   var _ref$config = _ref.config,
@@ -63,6 +64,25 @@ var ActionButton = function ActionButton(_ref) {
   }), iconElem);
 };
 
+var clampNumber = function clampNumber(num, min, max) {
+  return Math.max(min, Math.min(max, num));
+};
+
+var getOffsetXNative = function getOffsetXNative(e, container) {
+  var offsetX = 0;
+  var rect = container.getBoundingClientRect();
+
+  if (e.type === 'mousemove') {
+    offsetX = e.pageX - rect.left;
+  }
+
+  if (e.type === 'touchmove') {
+    offsetX = e.targetTouches[0].pageX - rect.left;
+  }
+
+  return offsetX;
+};
+
 var getOffsetX = function getOffsetX(e) {
   if (typeof e.nativeEvent.offsetX === 'number') {
     return e.nativeEvent.offsetX;
@@ -77,14 +97,17 @@ var getOffsetX = function getOffsetX(e) {
   return 0;
 };
 
+var ON_CLICK_DEBOUNCE = 250;
+
 var ScrubBar = function ScrubBar(_ref) {
   var _ref$defaultValue = _ref.defaultValue,
       defaultValue = _ref$defaultValue === void 0 ? 0 : _ref$defaultValue,
       className = _ref.className,
       onClick = _ref.onClick;
   var outer = React.useRef(null);
+  var scrubbing = React.useRef(false);
 
-  var _React$useState = React.useState(defaultValue),
+  var _React$useState = React.useState(clampNumber(defaultValue, 0, 1)),
       value = _React$useState[0],
       setValue = _React$useState[1];
 
@@ -92,49 +115,62 @@ var ScrubBar = function ScrubBar(_ref) {
       offsetX = _React$useState2[0],
       setOffsetX = _React$useState2[1];
 
-  var _React$useState3 = React.useState(false),
-      scrubbing = _React$useState3[0],
-      setScrubbing = _React$useState3[1];
+  var _React$useState3 = React.useState(0),
+      lastUpdate = _React$useState3[0],
+      setLastUpdate = _React$useState3[1];
 
-  React.useEffect(function () {
-    setValue(defaultValue);
-  }, [defaultValue]);
-  React.useEffect(function () {
-    if (scrubbing) {
-      var pos = offsetX / outer.current.clientWidth;
-      setValue(pos * 100);
-
-      if (typeof onClick === 'function') {
-        onClick(pos);
-      }
-    }
-  }, [scrubbing, offsetX]);
+  var debouncedOnClick = typeof onClick === 'function' ? debounce(onClick, ON_CLICK_DEBOUNCE) : function () {};
 
   var onDown = function onDown(e) {
-    setScrubbing(true);
+    scrubbing.current = true;
     setOffsetX(getOffsetX(e));
   };
 
   var onUp = function onUp() {
-    return setScrubbing(false);
+    if (scrubbing.current) {
+      scrubbing.current = false;
+      setLastUpdate(new Date().getTime());
+    }
   };
 
+  var onMouseMove = function onMouseMove(e) {
+    if (scrubbing.current) {
+      setOffsetX(getOffsetXNative(e, outer.current));
+    }
+  };
+
+  var onTouchMove = function onTouchMove(e) {
+    if (scrubbing.current) {
+      setOffsetX(getOffsetXNative(e, outer.current));
+    }
+  };
+
+  React.useEffect(function () {
+    document.addEventListener('mousemove', onMouseMove, false);
+    document.addEventListener('touchmove', onTouchMove, false);
+    document.addEventListener('mouseup', onUp, false);
+    document.addEventListener('touchend', onUp, false);
+    return function () {
+      document.removeEventListener('mousemove', onMouseMove, false);
+      document.removeEventListener('touchmove', onTouchMove, false);
+      document.removeEventListener('mouseup', onUp, false);
+      document.removeEventListener('touchend', onUp, false);
+    };
+  }, []);
+  React.useEffect(function () {
+    setValue(clampNumber(defaultValue, 0, 1));
+  }, [defaultValue]);
+  React.useEffect(function () {
+    if (scrubbing.current) {
+      var pos = clampNumber(offsetX / outer.current.clientWidth, 0, 1);
+      setValue(pos * 100);
+      debouncedOnClick(pos);
+    }
+  }, [lastUpdate, offsetX]);
   return React.createElement("div", {
     className: [className || ''].join(' '),
     onMouseDown: onDown,
-    onMouseUp: onUp,
-    onMouseMove: function onMouseMove(e) {
-      if (scrubbing) {
-        setOffsetX(getOffsetX(e));
-      }
-    },
     onTouchStart: onDown,
-    onTouchEnd: onUp,
-    onTouchMove: function onTouchMove(e) {
-      if (scrubbing) {
-        setOffsetX(getOffsetX(e));
-      }
-    },
     ref: outer
   }, React.createElement("div", {
     className: [className + "__fill"].join(' '),
@@ -693,6 +729,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     className: "video-controls__progress-bar",
     onClick: function onClick(pos) {
       audioElem.current.currentTime = pos * duration;
+      setTimestamp(pos * duration);
     }
   }), React.createElement("label", {
     className: "sr-only",

@@ -190,6 +190,7 @@ const AudioPlayer = ({ playlist = [], id = 'audio-player', className, eventRoute
         React.createElement("div", { className: CssClasses('video-controls', className) },
             React.createElement(ScrubBar, { defaultValue: progress, className: "video-controls__progress-bar", onClick: (pos) => {
                     audioElem.current.currentTime = pos * duration;
+                    setTimestamp(pos * duration);
                 } }),
             React.createElement("label", { className: "sr-only", htmlFor: timeIndicatorId }, "Time elapsed"),
             React.createElement("input", { className: CssClasses('video-controls', className, 'time-elapsed'), id: timeIndicatorId, readOnly: true, ref: timeElapsedElem, value: getTimestampString(timestamp) }),

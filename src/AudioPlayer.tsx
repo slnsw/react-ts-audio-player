@@ -278,6 +278,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
           className="video-controls__progress-bar"
           onClick={(pos: number) => {
             audioElem.current.currentTime = pos * duration;
+            setTimestamp(pos * duration);
           }}
         />
 
