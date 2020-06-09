@@ -817,7 +817,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
       audioElem.current.currentTime = pos * duration;
       setTimestamp(pos * duration);
     },
-    useTooltip: true,
+    useTooltip: config.useTooltip || false,
     valueToTooltipString: function valueToTooltipString(pos) {
       return getTimestampString(audioElem.current ? pos * audioElem.current.duration : 0);
     }
