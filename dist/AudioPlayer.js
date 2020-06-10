@@ -191,7 +191,7 @@ const AudioPlayer = ({ playlist = [], id = 'audio-player', className, eventRoute
             currentFile && React.createElement("source", { src: currentFile.audioUrl, type: "audio/mpeg" }),
             currentFile && hasVtt(currentFile) && (React.createElement("track", { src: currentFile.transcriptUrl, kind: "captions", label: "English", srcLang: "en" }))),
         React.createElement("div", { className: CssClasses('video-controls', className) },
-            React.createElement(ScrubBar, { defaultValue: progress, className: "video-controls__progress-bar", onClick: (pos) => {
+            React.createElement(ScrubBar, { defaultValue: progress, className: CssClasses('video-controls', className, 'progress-bar'), onClick: (pos) => {
                     console.log(pos);
                     audioElem.current.currentTime = pos * duration;
                     setTimestamp(pos * duration);

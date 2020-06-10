@@ -281,9 +281,8 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       <div className={CssClasses('video-controls', className)}>
         <ScrubBar
           defaultValue={progress}
-          className="video-controls__progress-bar"
+          className={CssClasses('video-controls', className, 'progress-bar')}
           onClick={(pos: number) => {
-            console.log(pos);
             audioElem.current.currentTime = pos * duration;
             setTimestamp(pos * duration);
           }}
