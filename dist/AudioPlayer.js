@@ -30,6 +30,9 @@ const AudioPlayer = ({ playlist = [], id = 'audio-player', className, eventRoute
     const tracklistId = `${id}__track-list`;
     const subtitleMenuId = `${id}__subtitle-menu`;
     const getTimestampString = (seconds = 0, isDuration = false) => {
+        if (typeof seconds !== 'number') {
+            return '';
+        }
         if (config.useHoursInTimestamps
             && ((isDuration && seconds >= 3600) || duration >= 3600)) {
             return toHHMMSS(seconds.toString());
@@ -189,8 +192,12 @@ const AudioPlayer = ({ playlist = [], id = 'audio-player', className, eventRoute
             currentFile && hasVtt(currentFile) && (React.createElement("track", { src: currentFile.transcriptUrl, kind: "captions", label: "English", srcLang: "en" }))),
         React.createElement("div", { className: CssClasses('video-controls', className) },
             React.createElement(ScrubBar, { defaultValue: progress, className: "video-controls__progress-bar", onClick: (pos) => {
+                    console.log(pos);
                     audioElem.current.currentTime = pos * duration;
-                } }),
+                    setTimestamp(pos * duration);
+                }, useTooltip: config.useTooltip || false, valueToTooltipString: (pos) => getTimestampString(audioElem.current
+                    ? pos * audioElem.current.duration
+                    : 0) }),
             React.createElement("label", { className: "sr-only", htmlFor: timeIndicatorId }, "Time elapsed"),
             React.createElement("input", { className: CssClasses('video-controls', className, 'time-elapsed'), id: timeIndicatorId, readOnly: true, ref: timeElapsedElem, value: getTimestampString(timestamp) }),
             config.showDuration && (React.createElement(React.Fragment, null,

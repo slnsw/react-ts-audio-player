@@ -3,3 +3,4 @@ node_modules/*
 !dist/.keep
 build
 reports
+npm-debug.log
