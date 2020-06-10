@@ -4,7 +4,7 @@
 import React from 'react';
 import debounce from 'debounce';
 
-// import CssClasses from './Util/CssClasses';
+import CssClasses from './Util/CssClasses';
 import { clampNumber } from './Util/Numbers';
 
 /**
@@ -182,7 +182,9 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
 
   return (
     <div
-      className={[className || ''].join(' ')}
+      className={CssClasses(className || '', '', '', [
+        scrubbing.current ? 'scrubbing' : ''
+      ])}
       onMouseOver={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onMouseDown={onDown}

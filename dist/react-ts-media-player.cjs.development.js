@@ -229,7 +229,7 @@ var ScrubBar = function ScrubBar(_ref3) {
     }
   }, [lastUpdate, offsetX]);
   return React.createElement("div", {
-    className: [className || ''].join(' '),
+    className: CssClasses(className || '', '', '', [scrubbing.current ? 'scrubbing' : '']),
     onMouseOver: function onMouseOver() {
       return setHover(true);
     },
