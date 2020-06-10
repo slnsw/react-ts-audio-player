@@ -111,7 +111,8 @@ var ScrubBarTooltip = function ScrubBarTooltip(_ref) {
 };
 
 var ScrubBarTooltipOuter = function ScrubBarTooltipOuter(_ref2) {
-  var tooltipClassName = _ref2.tooltipClassName,
+  var wrapperClassName = _ref2.wrapperClassName,
+      tooltipClassName = _ref2.tooltipClassName,
       _ref2$valueToTooltipS = _ref2.valueToTooltipString,
       valueToTooltipString = _ref2$valueToTooltipS === void 0 ? function () {
     return '';
@@ -130,16 +131,10 @@ var ScrubBarTooltipOuter = function ScrubBarTooltipOuter(_ref2) {
   var content = valueToTooltipString(value) || '';
   return React.createElement("div", {
     ref: outer,
-    style: {
-      position: 'absolute',
-      top: '-100%',
-      left: 0,
-      width: '100%',
-      height: '300%'
-    },
     onMouseMove: function onMouseMove(e) {
       setValue(getOffsetX(e) / outerWidth);
-    }
+    },
+    className: wrapperClassName
   }, show && content.length > 0 && React.createElement(ScrubBarTooltip, {
     title: valueToTooltipString(value),
     className: tooltipClassName,
@@ -239,6 +234,7 @@ var ScrubBar = function ScrubBar(_ref3) {
     onTouchStart: onDown,
     ref: outer
   }, useTooltip && React.createElement(ScrubBarTooltipOuter, {
+    wrapperClassName: className + "__wraptooltip",
     tooltipClassName: className + "__tooltip",
     show: hover || scrubbing.current,
     valueToTooltipString: valueToTooltipString,

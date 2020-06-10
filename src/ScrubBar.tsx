@@ -63,6 +63,7 @@ const ScrubBarTooltip: React.FunctionComponent<ITooltipProps> = ({
 };
 
 interface ITooltipOuterProps {
+  wrapperClassName?: string;
   tooltipClassName?: string;
   valueToTooltipString?: (pos: number) => string;
   defaultValue?: number;
@@ -70,6 +71,7 @@ interface ITooltipOuterProps {
 }
 
 const ScrubBarTooltipOuter: React.FunctionComponent<ITooltipOuterProps> = ({
+  wrapperClassName,
   tooltipClassName,
   valueToTooltipString = () => '',
   defaultValue = 0,
@@ -87,16 +89,10 @@ const ScrubBarTooltipOuter: React.FunctionComponent<ITooltipOuterProps> = ({
   return (
     <div
       ref={outer}
-      style={{
-        position: 'absolute',
-        top: '-100%',
-        left: 0,
-        width: '100%',
-        height: '300%'
-      }}
       onMouseMove={(e: React.MouseEvent) => {
         setValue(getOffsetX(e) / outerWidth);
       }}
+      className={wrapperClassName}
     >
       {show && content.length > 0 && (
         <ScrubBarTooltip
@@ -195,6 +191,7 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
     >
       {useTooltip && (
         <ScrubBarTooltipOuter
+          wrapperClassName={`${className}__wraptooltip`}
           tooltipClassName={`${className}__tooltip`}
           show={(hover || scrubbing.current)}
           valueToTooltipString={valueToTooltipString}
