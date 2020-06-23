@@ -15,6 +15,7 @@ interface IProps {
   className?: string;
   onClick?: (pos: number) => void;
   useTooltip?: boolean;
+  useRangeForScrubBar?: boolean;
   valueToTooltipString?: (pos: number) => string;
 }
 
@@ -110,6 +111,7 @@ const ScrubBarTooltipOuter: React.FunctionComponent<ITooltipOuterProps> = ({
 const ScrubBar: React.FunctionComponent<IProps> = ({
   defaultValue = 0,
   useTooltip = false,
+  useRangeForScrubBar = false,
   valueToTooltipString = () => '',
   className,
   onClick,
@@ -200,12 +202,26 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
           defaultValue={value}
         />
       )}
-      <div
-        className={[`${className}__fill`].join(' ')}
-        style={{ width: `${value}%` }}
-      >
-        <span className="sr-only">{`${value} percent`}</span>
-      </div>
+      {useRangeForScrubBar && (
+        <input
+          className={`${className}__scrubrange`}
+          type="range"
+          min="0"
+          max="100"
+          value={value}
+          onChange={(e) => {
+            setOffsetX(parseFloat(e.currentTarget.value) / 100.0 * outer.current.clientWidth);
+          }}
+        />
+      )}
+      {!useRangeForScrubBar && (
+        <div
+          className={[`${className}__fill`].join(' ')}
+          style={{ width: `${value}%` }}
+        >
+          <span className="sr-only">{`${value} percent`}</span>
+        </div>
+      )}
     </div>
   );
 };

@@ -155,6 +155,8 @@ var ScrubBar = function ScrubBar(_ref3) {
       defaultValue = _ref3$defaultValue === void 0 ? 0 : _ref3$defaultValue,
       _ref3$useTooltip = _ref3.useTooltip,
       useTooltip = _ref3$useTooltip === void 0 ? false : _ref3$useTooltip,
+      _ref3$useRangeForScru = _ref3.useRangeForScrubBar,
+      useRangeForScrubBar = _ref3$useRangeForScru === void 0 ? false : _ref3$useRangeForScru,
       _ref3$valueToTooltipS = _ref3.valueToTooltipString,
       valueToTooltipString = _ref3$valueToTooltipS === void 0 ? function () {
     return '';
@@ -245,7 +247,16 @@ var ScrubBar = function ScrubBar(_ref3) {
     show: hover || scrubbing.current,
     valueToTooltipString: valueToTooltipString,
     defaultValue: value
-  }), React.createElement("div", {
+  }), useRangeForScrubBar && React.createElement("input", {
+    className: className + "__scrubrange",
+    type: "range",
+    min: "0",
+    max: "100",
+    value: value,
+    onChange: function onChange(e) {
+      setOffsetX(parseFloat(e.currentTarget.value) / 100.0 * outer.current.clientWidth);
+    }
+  }), !useRangeForScrubBar && React.createElement("div", {
     className: [className + "__fill"].join(' '),
     style: {
       width: value + "%"
@@ -819,6 +830,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
       setTimestamp(pos * duration);
     },
     useTooltip: config.useTooltip || false,
+    useRangeForScrubBar: config.useRangeForScrubBar || false,
     valueToTooltipString: function valueToTooltipString(pos) {
       return getTimestampString(audioElem.current ? pos * audioElem.current.duration : 0);
     }

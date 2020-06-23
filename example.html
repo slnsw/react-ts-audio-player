@@ -213,6 +213,9 @@
         top: 0;
         margin-top: -3.4px;
       }
+      .video-controls__progress-bar__scrubrange {
+        width: 100%;
+      }
       .video-controls__progress-bar__wraptooltip {
         position: absolute;
         top: -100%;
@@ -319,7 +322,8 @@
 
       const config = Object.assign(AudioPlayer.defaultConfigs.FontAwesome5, {
         useHoursInTimestamps: true,
-        useTooltip: true
+        useTooltip: true,
+        useRangeForScrubBar: true,
       });
       console.log(config);
 
