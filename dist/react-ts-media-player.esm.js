@@ -232,8 +232,8 @@ var ScrubBar = function ScrubBar(_ref3) {
     onMouseLeave: function onMouseLeave() {
       return setHover(false);
     },
-    onMouseDown: onDown,
-    onTouchStart: onDown,
+    onMouseDown: useRangeForScrubBar ? function () {} : onDown,
+    onTouchStart: useRangeForScrubBar ? function () {} : onDown,
     ref: outer
   }, useTooltip && React.createElement(ScrubBarTooltipOuter, {
     wrapperClassName: className + "__wraptooltip",
@@ -247,6 +247,8 @@ var ScrubBar = function ScrubBar(_ref3) {
     min: "0",
     max: "100",
     value: value,
+    onMouseDown: onDown,
+    onTouchStart: onDown,
     onChange: function onChange(e) {
       setOffsetX(parseFloat(e.currentTarget.value) / 100.0 * outer.current.clientWidth);
     }

@@ -189,8 +189,8 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
       ])}
       onMouseOver={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onMouseDown={onDown}
-      onTouchStart={onDown}
+      onMouseDown={useRangeForScrubBar ? () => {} : onDown}
+      onTouchStart={useRangeForScrubBar ? () => {} : onDown}
       ref={outer}
     >
       {useTooltip && (
@@ -209,6 +209,8 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
           min="0"
           max="100"
           value={value}
+          onMouseDown={onDown}
+          onTouchStart={onDown}
           onChange={(e) => {
             setOffsetX(parseFloat(e.currentTarget.value) / 100.0 * outer.current.clientWidth);
           }}
