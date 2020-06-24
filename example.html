@@ -173,7 +173,6 @@
         flex: 1 1 auto;
       }
       .video-controls__progress-bar {
-        background-color: #f9f9f9;
         position: relative;
         cursor: pointer;
         flex: 0 0 100%;
@@ -181,7 +180,7 @@
         margin-top: 16px;
         margin-left: auto;
         margin-right: auto;
-        height: 5px;
+        height: auto;
       }
       @media (min-width: 768px) {
         .video-controls__progress-bar {
@@ -213,12 +212,22 @@
         top: 0;
         margin-top: -3.4px;
       }
+      .video-controls__progress-bar__progress {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+      }
+      .video-controls__progress-bar__scrubrange {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+      }
       .video-controls__progress-bar__wraptooltip {
         position: absolute;
         top: -100%;
         left: 0;
         width: 100%;
-        height: 300%;
+        height: 200%;
       }
       .video-controls__progress-bar__tooltip {
         position: absolute;
@@ -319,11 +328,7 @@
 
       const config = Object.assign(AudioPlayer.defaultConfigs.FontAwesome5, {
         useHoursInTimestamps: true,
-<<<<<<< Updated upstream
         useTooltip: true
-=======
-        useTooltip: true,
->>>>>>> Stashed changes
       });
       console.log(config);
 
@@ -380,7 +385,7 @@
             singleTrack: false,
             config: config,
             useRangeOnScrubBar: true,
-            useProgressOnScrubBar: true,
+            useProgressOnScrubBar: true
           }),
           document.getElementById('player'),
         );

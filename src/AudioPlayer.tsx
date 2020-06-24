@@ -291,11 +291,8 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             setTimestamp(pos * duration);
           }}
           useTooltip={config.useTooltip || false}
-<<<<<<< Updated upstream
-=======
           useRange={useRangeOnScrubBar}
           useProgress={useProgressOnScrubBar}
->>>>>>> Stashed changes
           valueToTooltipString={(pos) => getTimestampString(
             audioElem.current
               ? pos * audioElem.current.duration
