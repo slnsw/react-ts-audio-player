@@ -15,7 +15,8 @@ interface IProps {
   className?: string;
   onClick?: (pos: number) => void;
   useTooltip?: boolean;
-  useRangeForScrubBar?: boolean;
+  useRange?: boolean;
+  useProgress?: boolean;
   valueToTooltipString?: (pos: number) => string;
 }
 
@@ -111,7 +112,8 @@ const ScrubBarTooltipOuter: React.FunctionComponent<ITooltipOuterProps> = ({
 const ScrubBar: React.FunctionComponent<IProps> = ({
   defaultValue = 0,
   useTooltip = false,
-  useRangeForScrubBar = false,
+  useRange = false,
+  useProgress = false,
   valueToTooltipString = () => '',
   className,
   onClick,
@@ -189,8 +191,8 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
       ])}
       onMouseOver={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onMouseDown={useRangeForScrubBar ? () => {} : onDown}
-      onTouchStart={useRangeForScrubBar ? () => {} : onDown}
+      onMouseDown={useRange ? () => {} : onDown}
+      onTouchStart={useRange ? () => {} : onDown}
       ref={outer}
     >
       {useTooltip && (
@@ -202,7 +204,14 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
           defaultValue={value}
         />
       )}
-      {useRangeForScrubBar && (
+      {useProgress && (
+        <progress
+          max="100"
+          value={value}
+          className={`${className}__progress`}
+        />
+      )}
+      {useRange && (
         <input
           className={`${className}__scrubrange`}
           type="range"
@@ -216,7 +225,7 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
           }}
         />
       )}
-      {!useRangeForScrubBar && (
+      {!useRange && (
         <div
           className={[`${className}__fill`].join(' ')}
           style={{ width: `${value}%` }}

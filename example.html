@@ -212,6 +212,11 @@
         top: 0;
         margin-top: -3.4px;
       }
+      .video-controls__progress-bar__progress {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+      }
       .video-controls__progress-bar__scrubrange {
         position: relative;
         z-index: 2;
@@ -325,6 +330,7 @@
         useHoursInTimestamps: true,
         useTooltip: true,
         useRangeForScrubBar: true,
+        useProgressForScrubBar: true,
       });
       console.log(config);
 

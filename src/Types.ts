@@ -21,4 +21,5 @@ export interface IAudioPlayerConfig {
   useHoursInTimestamps?: boolean;
   useTooltip?: boolean;
   useRangeForScrubBar?: boolean;
+  useProgressForScrubBar?: boolean;
 }

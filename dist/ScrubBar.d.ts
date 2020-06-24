@@ -4,7 +4,8 @@ interface IProps {
     className?: string;
     onClick?: (pos: number) => void;
     useTooltip?: boolean;
-    useRangeForScrubBar?: boolean;
+    useRange?: boolean;
+    useProgress?: boolean;
     valueToTooltipString?: (pos: number) => string;
 }
 declare const ScrubBar: React.FunctionComponent<IProps>;
