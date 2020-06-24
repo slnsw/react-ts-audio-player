@@ -2,6 +2,8 @@ import React from 'react';
 interface IProps {
     defaultValue: number;
     className?: string;
+    id?: string;
+    label?: string;
     onClick?: (pos: number) => void;
     useTooltip?: boolean;
     useRange?: boolean;

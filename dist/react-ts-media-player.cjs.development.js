@@ -163,7 +163,9 @@ var ScrubBar = function ScrubBar(_ref3) {
       valueToTooltipString = _ref3$valueToTooltipS === void 0 ? function () {
     return '';
   } : _ref3$valueToTooltipS,
+      id = _ref3.id,
       className = _ref3.className,
+      label = _ref3.label,
       onClick = _ref3.onClick;
   var outer = React.useRef(null);
   var scrubbing = React.useRef(false);
@@ -184,6 +186,7 @@ var ScrubBar = function ScrubBar(_ref3) {
       lastUpdate = _React$useState5[0],
       setLastUpdate = _React$useState5[1];
 
+  var derivedId = id || 'scrub-bar';
   var debouncedOnClick = typeof onClick === 'function' ? debounce(onClick, ON_CLICK_DEBOUNCE) : function () {};
 
   var onDown = function onDown(e) {
@@ -249,12 +252,18 @@ var ScrubBar = function ScrubBar(_ref3) {
     show: hover || scrubbing.current,
     valueToTooltipString: valueToTooltipString,
     defaultValue: value
-  }), useProgress && React.createElement("progress", {
+  }), (useProgress || useRange) && React.createElement("label", {
+    htmlFor: useRange ? derivedId + "__scrubrange" : derivedId + "__progress"
+  }, React.createElement("span", {
+    className: "sr-only"
+  }, label || '', value + " percent"), useProgress && React.createElement("progress", {
     max: "100",
     value: value,
-    className: className + "__progress"
+    className: className + "__progress",
+    id: derivedId + "__progress"
   }), useRange && React.createElement("input", {
     className: className + "__scrubrange",
+    id: derivedId + "__scrubrange",
     type: "range",
     min: "0",
     max: "100",
@@ -264,14 +273,14 @@ var ScrubBar = function ScrubBar(_ref3) {
     onChange: function onChange(e) {
       setOffsetX(parseFloat(e.currentTarget.value) / 100.0 * outer.current.clientWidth);
     }
-  }), !useRange && React.createElement("div", {
+  })), !useRange && React.createElement("div", {
     className: [className + "__fill"].join(' '),
     style: {
       width: value + "%"
     }
   }, React.createElement("span", {
     className: "sr-only"
-  }, value + " percent")));
+  }, label || '', value + " percent")));
 };
 
 var memoiseTrack = function memoiseTrack(track) {

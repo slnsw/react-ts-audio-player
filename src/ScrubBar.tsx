@@ -13,6 +13,8 @@ import { clampNumber } from './Util/Numbers';
 interface IProps {
   defaultValue: number;
   className?: string;
+  id?: string;
+  label?: string;
   onClick?: (pos: number) => void;
   useTooltip?: boolean;
   useRange?: boolean;
@@ -115,7 +117,9 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
   useRange = false,
   useProgress = false,
   valueToTooltipString = () => '',
+  id,
   className,
+  label,
   onClick,
 }: IProps) => {
   const outer = React.useRef(null);
@@ -125,6 +129,8 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
   const [value, setValue] = React.useState(clampNumber(defaultValue, 0, 1));
   const [offsetX, setOffsetX] = React.useState(0);
   const [lastUpdate, setLastUpdate] = React.useState(0);
+
+  const derivedId = id || 'scrub-bar';
 
   const debouncedOnClick = typeof onClick === 'function'
     ? debounce(onClick, ON_CLICK_DEBOUNCE)
@@ -204,33 +210,50 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
           defaultValue={value}
         />
       )}
-      {useProgress && (
-        <progress
-          max="100"
-          value={value}
-          className={`${className}__progress`}
-        />
-      )}
-      {useRange && (
-        <input
-          className={`${className}__scrubrange`}
-          type="range"
-          min="0"
-          max="100"
-          value={value}
-          onMouseDown={onDown}
-          onTouchStart={onDown}
-          onChange={(e) => {
-            setOffsetX(parseFloat(e.currentTarget.value) / 100.0 * outer.current.clientWidth);
-          }}
-        />
+      {(useProgress || useRange) && (
+        <label htmlFor={
+          useRange
+            ? `${derivedId}__scrubrange`
+            : `${derivedId}__progress`
+        }>
+          <span className="sr-only">
+            {label || ''}
+            {`${value} percent`}
+          </span>
+          {useProgress && (
+            <progress
+              max="100"
+              value={value}
+              className={`${className}__progress`}
+              id={`${derivedId}__progress`}
+            />
+          )}
+          {useRange && (
+            <input
+              className={`${className}__scrubrange`}
+              id={`${derivedId}__scrubrange`}
+              type="range"
+              min="0"
+              max="100"
+              value={value}
+              onMouseDown={onDown}
+              onTouchStart={onDown}
+              onChange={(e) => {
+                setOffsetX(parseFloat(e.currentTarget.value) / 100.0 * outer.current.clientWidth);
+              }}
+            />
+          )}
+        </label>
       )}
       {!useRange && (
         <div
           className={[`${className}__fill`].join(' ')}
           style={{ width: `${value}%` }}
         >
-          <span className="sr-only">{`${value} percent`}</span>
+          <span className="sr-only">
+            {label || ''}
+            {`${value} percent`}
+          </span>
         </div>
       )}
     </div>
