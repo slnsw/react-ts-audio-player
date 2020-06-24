@@ -319,7 +319,11 @@
 
       const config = Object.assign(AudioPlayer.defaultConfigs.FontAwesome5, {
         useHoursInTimestamps: true,
+<<<<<<< Updated upstream
         useTooltip: true
+=======
+        useTooltip: true,
+>>>>>>> Stashed changes
       });
       console.log(config);
 
@@ -375,6 +379,8 @@
             crossOrigin: 'anonymous',
             singleTrack: false,
             config: config,
+            useRangeOnScrubBar: true,
+            useProgressOnScrubBar: true,
           }),
           document.getElementById('player'),
         );

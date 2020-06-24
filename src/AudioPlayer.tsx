@@ -32,6 +32,8 @@ interface IProps {
   onEndNextFile?: boolean;
   config?: IAudioPlayerConfig;
   singleTrack?: boolean;
+  useRangeOnScrubBar?: boolean;
+  useProgressOnScrubBar?: boolean;
 }
 
 const AudioPlayer: React.FunctionComponent<IProps> = ({
@@ -43,6 +45,8 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   onEndNextFile = false,
   config = {},
   singleTrack = false,
+  useRangeOnScrubBar = false,
+  useProgressOnScrubBar = false,
 }: IProps) => {
   const audioElem = React.useRef(null);
   const timeElapsedElem = React.useRef(null);
@@ -287,6 +291,11 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             setTimestamp(pos * duration);
           }}
           useTooltip={config.useTooltip || false}
+<<<<<<< Updated upstream
+=======
+          useRange={useRangeOnScrubBar}
+          useProgress={useProgressOnScrubBar}
+>>>>>>> Stashed changes
           valueToTooltipString={(pos) => getTimestampString(
             audioElem.current
               ? pos * audioElem.current.duration

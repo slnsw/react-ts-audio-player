@@ -532,7 +532,11 @@ var AudioPlayer = function AudioPlayer(_ref) {
       _ref$config = _ref.config,
       config = _ref$config === void 0 ? {} : _ref$config,
       _ref$singleTrack = _ref.singleTrack,
-      singleTrack = _ref$singleTrack === void 0 ? false : _ref$singleTrack;
+      singleTrack = _ref$singleTrack === void 0 ? false : _ref$singleTrack,
+      _ref$useRangeOnScrubB = _ref.useRangeOnScrubBar,
+      useRangeOnScrubBar = _ref$useRangeOnScrubB === void 0 ? false : _ref$useRangeOnScrubB,
+      _ref$useProgressOnScr = _ref.useProgressOnScrubBar,
+      useProgressOnScrubBar = _ref$useProgressOnScr === void 0 ? false : _ref$useProgressOnScr;
   var audioElem = React.useRef(null);
   var timeElapsedElem = React.useRef(null);
   var durationElem = React.useRef(null);
@@ -813,6 +817,11 @@ var AudioPlayer = function AudioPlayer(_ref) {
       setTimestamp(pos * duration);
     },
     useTooltip: config.useTooltip || false,
+<<<<<<< Updated upstream
+=======
+    useRange: useRangeOnScrubBar,
+    useProgress: useProgressOnScrubBar,
+>>>>>>> Stashed changes
     valueToTooltipString: function valueToTooltipString(pos) {
       return getTimestampString(audioElem.current ? pos * audioElem.current.duration : 0);
     }

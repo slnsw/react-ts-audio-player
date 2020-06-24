@@ -16,6 +16,8 @@ interface IProps {
     onEndNextFile?: boolean;
     config?: IAudioPlayerConfig;
     singleTrack?: boolean;
+    useRangeOnScrubBar?: boolean;
+    useProgressOnScrubBar?: boolean;
 }
 declare const AudioPlayer: React.FunctionComponent<IProps>;
 export default AudioPlayer;
