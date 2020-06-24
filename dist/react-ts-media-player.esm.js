@@ -149,6 +149,10 @@ var ScrubBar = function ScrubBar(_ref3) {
       defaultValue = _ref3$defaultValue === void 0 ? 0 : _ref3$defaultValue,
       _ref3$useTooltip = _ref3.useTooltip,
       useTooltip = _ref3$useTooltip === void 0 ? false : _ref3$useTooltip,
+      _ref3$useRange = _ref3.useRange,
+      useRange = _ref3$useRange === void 0 ? false : _ref3$useRange,
+      _ref3$useProgress = _ref3.useProgress,
+      useProgress = _ref3$useProgress === void 0 ? false : _ref3$useProgress,
       _ref3$valueToTooltipS = _ref3.valueToTooltipString,
       valueToTooltipString = _ref3$valueToTooltipS === void 0 ? function () {
     return '';
@@ -230,8 +234,8 @@ var ScrubBar = function ScrubBar(_ref3) {
     onMouseLeave: function onMouseLeave() {
       return setHover(false);
     },
-    onMouseDown: onDown,
-    onTouchStart: onDown,
+    onMouseDown: useRange ? function () {} : onDown,
+    onTouchStart: useRange ? function () {} : onDown,
     ref: outer
   }, useTooltip && React.createElement(ScrubBarTooltipOuter, {
     wrapperClassName: className + "__wraptooltip",
@@ -239,7 +243,22 @@ var ScrubBar = function ScrubBar(_ref3) {
     show: hover || scrubbing.current,
     valueToTooltipString: valueToTooltipString,
     defaultValue: value
-  }), React.createElement("div", {
+  }), useProgress && React.createElement("progress", {
+    max: "100",
+    value: value,
+    className: className + "__progress"
+  }), useRange && React.createElement("input", {
+    className: className + "__scrubrange",
+    type: "range",
+    min: "0",
+    max: "100",
+    value: value,
+    onMouseDown: onDown,
+    onTouchStart: onDown,
+    onChange: function onChange(e) {
+      setOffsetX(parseFloat(e.currentTarget.value) / 100.0 * outer.current.clientWidth);
+    }
+  }), !useRange && React.createElement("div", {
     className: [className + "__fill"].join(' '),
     style: {
       width: value + "%"
@@ -813,6 +832,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
       setTimestamp(pos * duration);
     },
     useTooltip: config.useTooltip || false,
+    useRange: config.useRangeForScrubBar || false,
+    useProgress: config.useProgressForScrubBar || false,
     valueToTooltipString: function valueToTooltipString(pos) {
       return getTimestampString(audioElem.current ? pos * audioElem.current.duration : 0);
     }

@@ -15,6 +15,8 @@ interface IProps {
   className?: string;
   onClick?: (pos: number) => void;
   useTooltip?: boolean;
+  useRange?: boolean;
+  useProgress?: boolean;
   valueToTooltipString?: (pos: number) => string;
 }
 
@@ -110,6 +112,8 @@ const ScrubBarTooltipOuter: React.FunctionComponent<ITooltipOuterProps> = ({
 const ScrubBar: React.FunctionComponent<IProps> = ({
   defaultValue = 0,
   useTooltip = false,
+  useRange = false,
+  useProgress = false,
   valueToTooltipString = () => '',
   className,
   onClick,
@@ -187,8 +191,8 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
       ])}
       onMouseOver={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onMouseDown={onDown}
-      onTouchStart={onDown}
+      onMouseDown={useRange ? () => {} : onDown}
+      onTouchStart={useRange ? () => {} : onDown}
       ref={outer}
     >
       {useTooltip && (
@@ -200,12 +204,35 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
           defaultValue={value}
         />
       )}
-      <div
-        className={[`${className}__fill`].join(' ')}
-        style={{ width: `${value}%` }}
-      >
-        <span className="sr-only">{`${value} percent`}</span>
-      </div>
+      {useProgress && (
+        <progress
+          max="100"
+          value={value}
+          className={`${className}__progress`}
+        />
+      )}
+      {useRange && (
+        <input
+          className={`${className}__scrubrange`}
+          type="range"
+          min="0"
+          max="100"
+          value={value}
+          onMouseDown={onDown}
+          onTouchStart={onDown}
+          onChange={(e) => {
+            setOffsetX(parseFloat(e.currentTarget.value) / 100.0 * outer.current.clientWidth);
+          }}
+        />
+      )}
+      {!useRange && (
+        <div
+          className={[`${className}__fill`].join(' ')}
+          style={{ width: `${value}%` }}
+        >
+          <span className="sr-only">{`${value} percent`}</span>
+        </div>
+      )}
     </div>
   );
 };

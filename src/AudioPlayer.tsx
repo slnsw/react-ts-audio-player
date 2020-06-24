@@ -287,6 +287,8 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             setTimestamp(pos * duration);
           }}
           useTooltip={config.useTooltip || false}
+          useRange={config.useRangeForScrubBar || false}
+          useProgress={config.useProgressForScrubBar || false}
           valueToTooltipString={(pos) => getTimestampString(
             audioElem.current
               ? pos * audioElem.current.duration
