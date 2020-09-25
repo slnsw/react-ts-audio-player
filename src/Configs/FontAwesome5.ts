@@ -41,4 +41,5 @@ export default {
     mute__false: null,
     mute__true: null,
   },
+  useHoursInTimestamps: true,
 };

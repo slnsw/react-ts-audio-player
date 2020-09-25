@@ -1,4 +1,5 @@
 import React from 'react';
+import debounce from 'debounce';
 
 var SrOnly = function SrOnly(_ref) {
   var _ref$config = _ref.config,
@@ -8,6 +9,33 @@ var SrOnly = function SrOnly(_ref) {
   return React.createElement("span", {
     className: classNames.join(' ')
   }, children);
+};
+
+var CssClasses = function CssClasses(defaultClassName, optionalClassName, suffix, states) {
+  if (optionalClassName === void 0) {
+    optionalClassName = '';
+  }
+
+  if (suffix === void 0) {
+    suffix = '';
+  }
+
+  if (states === void 0) {
+    states = [];
+  }
+
+  var classes = [].concat(defaultClassName.split(/\s+/)).concat(optionalClassName.split(/\s+/)).filter(function (c) {
+    return c && c.length;
+  }).map(function (c) {
+    return suffix.length ? c + "__" + suffix : c;
+  });
+  return classes.reduce(function (agg, className) {
+    return agg.concat([''].concat(states.filter(function (s) {
+      return s && s.length;
+    })).map(function (state) {
+      return "" + className + (state.length ? "--" + state : '');
+    }));
+  }, []).join(' ');
 };
 
 var ActionButton = function ActionButton(_ref) {
@@ -21,19 +49,38 @@ var ActionButton = function ActionButton(_ref) {
       className = _ref.className,
       _ref$config = _ref.config,
       config = _ref$config === void 0 ? {} : _ref$config;
-  var classNames = [className || ''].concat(config.classNames[btnType] || []);
-  var iconClassNames = [].concat(config.icons[btnType] || []);
-  var iconElem = config.icons[btnType] || null;
+  var defaultClassName = (config.classNames[btnType] || []).join(' ');
+  var iconClassNames = (config.icons[btnType] || []).join(' ');
+  var iconElem = config.iconElements[btnType] || null;
   return React.createElement("button", {
-    className: classNames.join(' '),
+    className: CssClasses(defaultClassName, className || ''),
     disabled: !enabled,
     hidden: hidden,
     onClick: onClick
   }, React.createElement(SrOnly, {
     config: config
   }, children), !iconElem && React.createElement("span", {
-    className: iconClassNames.join(' ')
+    className: CssClasses(iconClassNames, '')
   }), iconElem);
+};
+
+var clampNumber = function clampNumber(num, min, max) {
+  return Math.max(min, Math.min(max, num));
+};
+
+var getOffsetXNative = function getOffsetXNative(e, container) {
+  var offsetX = 0;
+  var rect = container.getBoundingClientRect();
+
+  if (e.type === 'mousemove') {
+    offsetX = e.pageX - rect.left;
+  }
+
+  if (e.type === 'touchmove') {
+    offsetX = e.targetTouches[0].pageX - rect.left;
+  }
+
+  return offsetX;
 };
 
 var getOffsetX = function getOffsetX(e) {
@@ -50,73 +97,184 @@ var getOffsetX = function getOffsetX(e) {
   return 0;
 };
 
-var ScrubBar = function ScrubBar(_ref) {
-  var _ref$defaultValue = _ref.defaultValue,
-      defaultValue = _ref$defaultValue === void 0 ? 0 : _ref$defaultValue,
+var ON_CLICK_DEBOUNCE = 250;
+
+var ScrubBarTooltip = function ScrubBarTooltip(_ref) {
+  var title = _ref.title,
       className = _ref.className,
-      onClick = _ref.onClick;
+      _ref$style = _ref.style,
+      style = _ref$style === void 0 ? {} : _ref$style;
+  return React.createElement("div", {
+    style: style,
+    className: className || ''
+  }, title);
+};
+
+var ScrubBarTooltipOuter = function ScrubBarTooltipOuter(_ref2) {
+  var wrapperClassName = _ref2.wrapperClassName,
+      tooltipClassName = _ref2.tooltipClassName,
+      _ref2$valueToTooltipS = _ref2.valueToTooltipString,
+      valueToTooltipString = _ref2$valueToTooltipS === void 0 ? function () {
+    return '';
+  } : _ref2$valueToTooltipS,
+      _ref2$defaultValue = _ref2.defaultValue,
+      defaultValue = _ref2$defaultValue === void 0 ? 0 : _ref2$defaultValue,
+      _ref2$show = _ref2.show,
+      show = _ref2$show === void 0 ? false : _ref2$show;
   var outer = React.useRef(null);
 
   var _React$useState = React.useState(defaultValue),
       value = _React$useState[0],
       setValue = _React$useState[1];
 
-  var _React$useState2 = React.useState(0),
-      offsetX = _React$useState2[0],
-      setOffsetX = _React$useState2[1];
-
-  var _React$useState3 = React.useState(false),
-      scrubbing = _React$useState3[0],
-      setScrubbing = _React$useState3[1];
-
-  React.useEffect(function () {
-    setValue(defaultValue);
-  }, [defaultValue]);
-  React.useEffect(function () {
-    if (scrubbing) {
-      var pos = offsetX / outer.current.clientWidth;
-      setValue(pos * 100);
-
-      if (typeof onClick === 'function') {
-        onClick(pos);
-      }
+  var outerWidth = outer.current ? outer.current.clientWidth : 0;
+  var content = valueToTooltipString(value) || '';
+  return React.createElement("div", {
+    ref: outer,
+    onMouseMove: function onMouseMove(e) {
+      setValue(getOffsetX(e) / outerWidth);
+    },
+    className: wrapperClassName
+  }, show && content.length > 0 && React.createElement(ScrubBarTooltip, {
+    title: valueToTooltipString(value),
+    className: tooltipClassName,
+    style: {
+      left: outerWidth * value + "px"
     }
-  }, [scrubbing, offsetX]);
+  }));
+};
+
+var ScrubBar = function ScrubBar(_ref3) {
+  var _ref3$defaultValue = _ref3.defaultValue,
+      defaultValue = _ref3$defaultValue === void 0 ? 0 : _ref3$defaultValue,
+      _ref3$useTooltip = _ref3.useTooltip,
+      useTooltip = _ref3$useTooltip === void 0 ? false : _ref3$useTooltip,
+      _ref3$useRange = _ref3.useRange,
+      useRange = _ref3$useRange === void 0 ? false : _ref3$useRange,
+      _ref3$useProgress = _ref3.useProgress,
+      useProgress = _ref3$useProgress === void 0 ? false : _ref3$useProgress,
+      _ref3$valueToTooltipS = _ref3.valueToTooltipString,
+      valueToTooltipString = _ref3$valueToTooltipS === void 0 ? function () {
+    return '';
+  } : _ref3$valueToTooltipS,
+      id = _ref3.id,
+      className = _ref3.className,
+      label = _ref3.label,
+      onClick = _ref3.onClick;
+  var outer = React.useRef(null);
+  var scrubbing = React.useRef(false);
+
+  var _React$useState2 = React.useState(false),
+      hover = _React$useState2[0],
+      setHover = _React$useState2[1];
+
+  var _React$useState3 = React.useState(clampNumber(defaultValue, 0, 1)),
+      value = _React$useState3[0],
+      setValue = _React$useState3[1];
+
+  var _React$useState4 = React.useState(0),
+      offsetX = _React$useState4[0],
+      setOffsetX = _React$useState4[1];
+
+  var _React$useState5 = React.useState(0),
+      lastUpdate = _React$useState5[0],
+      setLastUpdate = _React$useState5[1];
+
+  var derivedId = id || 'scrub-bar';
+  var debouncedOnClick = typeof onClick === 'function' ? debounce(onClick, ON_CLICK_DEBOUNCE) : function () {};
 
   var onDown = function onDown(e) {
-    setScrubbing(true);
+    scrubbing.current = true;
     setOffsetX(getOffsetX(e));
   };
 
   var onUp = function onUp() {
-    return setScrubbing(false);
+    if (scrubbing.current) {
+      scrubbing.current = false;
+      setLastUpdate(new Date().getTime());
+    }
   };
 
+  var onMouseMove = function onMouseMove(e) {
+    if (scrubbing.current) {
+      setOffsetX(getOffsetXNative(e, outer.current));
+    }
+  };
+
+  var onTouchMove = function onTouchMove(e) {
+    if (scrubbing.current) {
+      setOffsetX(getOffsetXNative(e, outer.current));
+    }
+  };
+
+  React.useEffect(function () {
+    document.addEventListener('mousemove', onMouseMove, false);
+    document.addEventListener('touchmove', onTouchMove, false);
+    document.addEventListener('mouseup', onUp, false);
+    document.addEventListener('touchend', onUp, false);
+    return function () {
+      document.removeEventListener('mousemove', onMouseMove, false);
+      document.removeEventListener('touchmove', onTouchMove, false);
+      document.removeEventListener('mouseup', onUp, false);
+      document.removeEventListener('touchend', onUp, false);
+    };
+  }, []);
+  React.useEffect(function () {
+    setValue(clampNumber(defaultValue, 0, 100));
+  }, [defaultValue]);
+  React.useEffect(function () {
+    if (scrubbing.current) {
+      var pos = clampNumber(offsetX / outer.current.clientWidth, 0, 1);
+      setValue(pos * 100);
+      debouncedOnClick(pos);
+    }
+  }, [lastUpdate, offsetX]);
   return React.createElement("div", {
-    className: [className || ''].join(' '),
-    onMouseDown: onDown,
-    onMouseUp: onUp,
-    onMouseMove: function onMouseMove(e) {
-      if (scrubbing) {
-        setOffsetX(getOffsetX(e));
-      }
+    className: CssClasses(className || '', '', '', [scrubbing.current ? 'scrubbing' : '']),
+    onMouseOver: function onMouseOver() {
+      return setHover(true);
     },
-    onTouchStart: onDown,
-    onTouchEnd: onUp,
-    onTouchMove: function onTouchMove(e) {
-      if (scrubbing) {
-        setOffsetX(getOffsetX(e));
-      }
+    onMouseLeave: function onMouseLeave() {
+      return setHover(false);
     },
+    onMouseDown: useRange ? function () {} : onDown,
+    onTouchStart: useRange ? function () {} : onDown,
     ref: outer
-  }, React.createElement("div", {
+  }, useTooltip && React.createElement(ScrubBarTooltipOuter, {
+    wrapperClassName: className + "__wraptooltip",
+    tooltipClassName: className + "__tooltip",
+    show: hover || scrubbing.current,
+    valueToTooltipString: valueToTooltipString,
+    defaultValue: value
+  }), (useProgress || useRange) && React.createElement("label", {
+    htmlFor: useRange ? derivedId + "__scrubrange" : derivedId + "__progress"
+  }, React.createElement("span", {
+    className: "sr-only"
+  }, label || '', value + " percent"), useProgress && React.createElement("progress", {
+    max: "100",
+    value: value,
+    className: className + "__progress",
+    id: derivedId + "__progress"
+  }), useRange && React.createElement("input", {
+    className: className + "__scrubrange",
+    id: derivedId + "__scrubrange",
+    type: "range",
+    min: "0",
+    max: "100",
+    value: value,
+    onMouseDown: onDown,
+    onTouchStart: onDown,
+    onChange: function onChange(e) {
+      setOffsetX(parseFloat(e.currentTarget.value) / 100.0 * outer.current.clientWidth);
+    }
+  })), !useRange && React.createElement("div", {
     className: [className + "__fill"].join(' '),
     style: {
       width: value + "%"
     }
   }, React.createElement("span", {
     className: "sr-only"
-  }, value + " percent")));
+  }, label || '', value + " percent")));
 };
 
 var memoiseTrack = function memoiseTrack(track) {
@@ -283,33 +441,6 @@ var SubtitleMenu = function SubtitleMenu(_ref) {
   }, languageOptions);
 };
 
-var CssClasses = function CssClasses(defaultClassName, optionalClassName, suffix, states) {
-  if (optionalClassName === void 0) {
-    optionalClassName = '';
-  }
-
-  if (suffix === void 0) {
-    suffix = '';
-  }
-
-  if (states === void 0) {
-    states = [];
-  }
-
-  var classes = [].concat(defaultClassName.split(/\s+/)).concat(optionalClassName.split(/\s+/)).filter(function (c) {
-    return c && c.length;
-  }).map(function (c) {
-    return suffix.length ? c + "__" + suffix : c;
-  });
-  return classes.reduce(function (agg, className) {
-    return agg.concat([''].concat(states.filter(function (s) {
-      return s && s.length;
-    })).map(function (state) {
-      return "" + className + (state.length ? "--" + state : '');
-    }));
-  }, []).join(' ');
-};
-
 var ToggleButton = function ToggleButton(_ref) {
   var _ref$enabled = _ref.enabled,
       enabled = _ref$enabled === void 0 ? true : _ref$enabled,
@@ -324,6 +455,10 @@ var ToggleButton = function ToggleButton(_ref) {
       _ref$config = _ref.config,
       config = _ref$config === void 0 ? {} : _ref$config;
   var defaultClassName = (config.classNames[btnType] || []).join(' ');
+  var iconClassNamesFalse = (config.icons[btnType + "__false"] || []).join(' ');
+  var iconClassNamesTrue = (config.icons[btnType + "__true"] || []).join(' ');
+  var iconElemFalse = config.iconElements[btnType + "__false"] || null;
+  var iconElemTrue = config.iconElements[btnType + "__true"] || null;
   return React.createElement("button", {
     className: CssClasses(defaultClassName, className || ''),
     disabled: !enabled,
@@ -331,13 +466,11 @@ var ToggleButton = function ToggleButton(_ref) {
     onClick: onClick
   }, React.createElement(SrOnly, {
     config: config
-  }, children), React.createElement("span", {
-    className: CssClasses(defaultClassName, '', 'icon', ['false']),
-    hidden: toggleState
-  }), React.createElement("span", {
-    className: CssClasses(defaultClassName, '', 'icon', ['false']),
-    hidden: !toggleState
-  }));
+  }, children), !toggleState && !iconElemFalse && React.createElement("span", {
+    className: CssClasses(iconClassNamesFalse)
+  }), !toggleState && iconElemFalse, toggleState && !iconElemTrue && React.createElement("span", {
+    className: CssClasses(iconClassNamesTrue)
+  }), toggleState && iconElemTrue);
 };
 
 var TracklistMenu = function TracklistMenu(_ref) {
@@ -389,8 +522,26 @@ var strPadLeft = function strPadLeft(n) {
 
   return n.toString();
 };
+
+var toHHMMSS = function toHHMMSS(str) {
+  var secNum = parseInt(str, 10);
+
+  if (isNaN(secNum)) {
+    return '';
+  }
+
+  var hours = Math.floor(secNum / 3600);
+  var minutes = Math.floor((secNum - hours * 3600) / 60);
+  var seconds = secNum - hours * 3600 - minutes * 60;
+  return strPadLeft(hours) + ":" + strPadLeft(minutes) + ":" + strPadLeft(seconds);
+};
 var toMMSS = function toMMSS(str) {
   var secNum = parseInt(str, 10);
+
+  if (isNaN(secNum)) {
+    return '';
+  }
+
   var minutes = Math.floor(secNum / 60);
   var seconds = secNum - minutes * 60;
   return strPadLeft(minutes) + ":" + strPadLeft(seconds);
@@ -409,60 +560,89 @@ var AudioPlayer = function AudioPlayer(_ref) {
       _ref$config = _ref.config,
       config = _ref$config === void 0 ? {} : _ref$config,
       _ref$singleTrack = _ref.singleTrack,
-      singleTrack = _ref$singleTrack === void 0 ? false : _ref$singleTrack;
+      singleTrack = _ref$singleTrack === void 0 ? false : _ref$singleTrack,
+      _ref$useRangeOnScrubB = _ref.useRangeOnScrubBar,
+      useRangeOnScrubBar = _ref$useRangeOnScrubB === void 0 ? false : _ref$useRangeOnScrubB,
+      _ref$useProgressOnScr = _ref.useProgressOnScrubBar,
+      useProgressOnScrubBar = _ref$useProgressOnScr === void 0 ? false : _ref$useProgressOnScr;
+  var audioElem = React.useRef(null);
+  var timeElapsedElem = React.useRef(null);
+  var durationElem = React.useRef(null);
 
-  var _React$useState = React.useState([]),
-      fileData = _React$useState[0],
-      setFileData = _React$useState[1];
+  var _React$useState = React.useState(0),
+      duration = _React$useState[0],
+      setDuration = _React$useState[1];
 
   var _React$useState2 = React.useState(0),
-      selectedFile = _React$useState2[0],
-      setSelectedFile = _React$useState2[1];
+      timestamp = _React$useState2[0],
+      setTimestamp = _React$useState2[1];
 
-  var _React$useState3 = React.useState(0),
-      progress = _React$useState3[0],
-      setProgress = _React$useState3[1];
+  var _React$useState3 = React.useState([]),
+      fileData = _React$useState3[0],
+      setFileData = _React$useState3[1];
 
-  var _React$useState4 = React.useState('00:00'),
-      timestamp = _React$useState4[0],
-      setTimestamp = _React$useState4[1];
+  var _React$useState4 = React.useState(0),
+      selectedFile = _React$useState4[0],
+      setSelectedFile = _React$useState4[1];
 
-  var _React$useState5 = React.useState(false),
-      playing = _React$useState5[0],
-      setPlaying = _React$useState5[1];
+  var _React$useState5 = React.useState(0),
+      progress = _React$useState5[0],
+      setProgress = _React$useState5[1];
 
   var _React$useState6 = React.useState(false),
-      ended = _React$useState6[0],
-      setEnded = _React$useState6[1];
+      playing = _React$useState6[0],
+      setPlaying = _React$useState6[1];
 
   var _React$useState7 = React.useState(false),
-      muted = _React$useState7[0],
-      setMuted = _React$useState7[1];
+      ended = _React$useState7[0],
+      setEnded = _React$useState7[1];
 
-  var _React$useState8 = React.useState(null),
-      selectedLanguage = _React$useState8[0],
-      setSelectedLanguage = _React$useState8[1];
+  var _React$useState8 = React.useState(false),
+      muted = _React$useState8[0],
+      setMuted = _React$useState8[1];
 
-  var _React$useState9 = React.useState(false),
-      showTrackListMenu = _React$useState9[0],
-      setShowTrackListMenu = _React$useState9[1];
+  var _React$useState9 = React.useState(null),
+      selectedLanguage = _React$useState9[0],
+      setSelectedLanguage = _React$useState9[1];
 
   var _React$useState10 = React.useState(false),
-      showSubtitleMenu = _React$useState10[0],
-      setShowSubtitleMenu = _React$useState10[1];
+      showTrackListMenu = _React$useState10[0],
+      setShowTrackListMenu = _React$useState10[1];
 
   var _React$useState11 = React.useState(false),
-      videoMetadataLoaded = _React$useState11[0],
-      setVideoMetadataLoaded = _React$useState11[1];
+      showSubtitleMenu = _React$useState11[0],
+      setShowSubtitleMenu = _React$useState11[1];
+
+  var _React$useState12 = React.useState(false),
+      videoMetadataLoaded = _React$useState12[0],
+      setVideoMetadataLoaded = _React$useState12[1];
 
   var captionsContainerId = id + "__captions";
   var timeIndicatorId = id + "__time-indicator";
   var durationIndicatorId = id + "__duration-indicator";
   var tracklistId = id + "__track-list";
   var subtitleMenuId = id + "__subtitle-menu";
-  var audioElem = React.useRef(null);
-  var timeElapsedElem = React.useRef(null);
-  var durationElem = React.useRef(null);
+
+  var getTimestampString = function getTimestampString(seconds, isDuration) {
+    if (seconds === void 0) {
+      seconds = 0;
+    }
+
+    if (isDuration === void 0) {
+      isDuration = false;
+    }
+
+    if (typeof seconds !== 'number') {
+      return '';
+    }
+
+    if (config.useHoursInTimestamps && (isDuration && seconds >= 3600 || duration >= 3600)) {
+      return toHHMMSS(seconds.toString());
+    }
+
+    return toMMSS(seconds.toString());
+  };
+
   React.useEffect(function () {
     audioElem.current.setAttribute('playsinline', 'playsinline');
   }, []);
@@ -507,13 +687,14 @@ var AudioPlayer = function AudioPlayer(_ref) {
   var onLoadedMetadata = function onLoadedMetadata() {
     setVideoMetadataLoaded(true);
     selectSubtitleLanguage(selectedLanguage);
+    setDuration(audioElem.current.duration);
   };
 
   var onTimeUpdate = function onTimeUpdate() {
-    if (audioElem.current.duration > 0) {
-      var value = 100 / audioElem.current.duration * audioElem.current.currentTime;
+    if (duration > 0) {
+      var value = 100 / duration * audioElem.current.currentTime;
       setProgress(value);
-      setTimestamp(toMMSS(audioElem.current.currentTime));
+      setTimestamp(audioElem.current.currentTime);
     }
   };
 
@@ -532,7 +713,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     }
 
     setPlaying(newPlaying);
-    setTimestamp(toMMSS(audioElem.current.currentTime));
+    setTimestamp(audioElem.current.currentTime);
 
     if (eventRouter) {
       eventRouter.emit('state.playing', newPlaying);
@@ -561,7 +742,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     }
 
     setEnded(true);
-    setTimestamp(toMMSS(audioElem.current.currentTime));
+    setTimestamp(audioElem.current.currentTime);
 
     if (eventRouter) {
       eventRouter.emit('state.playing', false);
@@ -588,7 +769,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
   var rewindAction = function rewindAction() {
     audioElem.current.currentTime = 0;
     setEnded(false);
-    setTimestamp(toMMSS(audioElem.current.currentTime));
+    setTimestamp(audioElem.current.currentTime);
     setProgress(0);
 
     if (eventRouter) {
@@ -658,9 +839,16 @@ var AudioPlayer = function AudioPlayer(_ref) {
     className: CssClasses('video-controls', className)
   }, React.createElement(ScrubBar, {
     defaultValue: progress,
-    className: "video-controls__progress-bar",
+    className: CssClasses('video-controls', className, 'progress-bar'),
     onClick: function onClick(pos) {
-      audioElem.current.currentTime = pos * audioElem.current.duration;
+      audioElem.current.currentTime = pos * duration;
+      setTimestamp(pos * duration);
+    },
+    useTooltip: config.useTooltip || false,
+    useRange: useRangeOnScrubBar,
+    useProgress: useProgressOnScrubBar,
+    valueToTooltipString: function valueToTooltipString(pos) {
+      return getTimestampString(audioElem.current ? pos * audioElem.current.duration : 0);
     }
   }), React.createElement("label", {
     className: "sr-only",
@@ -669,8 +857,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
     className: CssClasses('video-controls', className, 'time-elapsed'),
     id: timeIndicatorId,
     readOnly: true,
-    ref: durationElem,
-    value: timestamp
+    ref: timeElapsedElem,
+    value: getTimestampString(timestamp)
   }), config.showDuration && React.createElement(React.Fragment, null, React.createElement("label", {
     className: "sr-only",
     htmlFor: durationIndicatorId
@@ -678,8 +866,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
     className: CssClasses('video-controls', className, 'duration'),
     id: durationIndicatorId,
     readOnly: true,
-    ref: timeElapsedElem,
-    value: toMMSS(audioElem.current ? audioElem.current.duration : 0)
+    ref: durationElem,
+    value: getTimestampString(duration, true)
   })), React.createElement("div", {
     className: "w-100"
   }), React.createElement("div", {

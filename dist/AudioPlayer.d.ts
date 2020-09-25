@@ -16,6 +16,8 @@ interface IProps {
     onEndNextFile?: boolean;
     config?: IAudioPlayerConfig;
     singleTrack?: boolean;
+    useRangeOnScrubBar?: boolean;
+    useProgressOnScrubBar?: boolean;
 }
 declare const AudioPlayer: React.FunctionComponent<IProps>;
 export default AudioPlayer;
@@ -63,5 +65,6 @@ export declare const defaultConfigs: {
             mute__false: any;
             mute__true: any;
         };
+        useHoursInTimestamps: boolean;
     };
 };

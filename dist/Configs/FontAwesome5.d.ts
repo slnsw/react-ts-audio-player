@@ -41,5 +41,6 @@ declare const _default: {
         mute__false: any;
         mute__true: any;
     };
+    useHoursInTimestamps: boolean;
 };
 export default _default;

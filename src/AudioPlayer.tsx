@@ -13,7 +13,7 @@ import TracklistMenu from './TracklistMenu';
 
 import FontAwesome5 from './Configs/FontAwesome5';
 import CssClasses from './Util/CssClasses';
-import { toMMSS } from './TimeUtils';
+import { toHHMMSS, toMMSS } from './TimeUtils';
 import { IAudioPlayerConfig } from './Types';
 
 interface IPlaylistItem {
@@ -32,6 +32,8 @@ interface IProps {
   onEndNextFile?: boolean;
   config?: IAudioPlayerConfig;
   singleTrack?: boolean;
+  useRangeOnScrubBar?: boolean;
+  useProgressOnScrubBar?: boolean;
 }
 
 const AudioPlayer: React.FunctionComponent<IProps> = ({
@@ -43,11 +45,18 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   onEndNextFile = false,
   config = {},
   singleTrack = false,
+  useRangeOnScrubBar = false,
+  useProgressOnScrubBar = false,
 }: IProps) => {
+  const audioElem = React.useRef(null);
+  const timeElapsedElem = React.useRef(null);
+  const durationElem = React.useRef(null);
+
+  const [duration, setDuration] = React.useState(0);
+  const [timestamp, setTimestamp] = React.useState(0);
   const [fileData, setFileData] = React.useState([]);
   const [selectedFile, setSelectedFile] = React.useState(0);
   const [progress, setProgress] = React.useState(0);
-  const [timestamp, setTimestamp] = React.useState('00:00');
   const [playing, setPlaying] = React.useState(false);
   const [ended, setEnded] = React.useState(false);
   const [muted, setMuted] = React.useState(false);
@@ -62,9 +71,21 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   const tracklistId = `${id}__track-list`;
   const subtitleMenuId = `${id}__subtitle-menu`;
 
-  const audioElem = React.useRef(null);
-  const timeElapsedElem = React.useRef(null);
-  const durationElem = React.useRef(null);
+  const getTimestampString = (
+    seconds: number = 0,
+    isDuration: boolean = false,
+  ): string => {
+    if (typeof seconds !== 'number') {
+      return '';
+    }
+    if (
+      config.useHoursInTimestamps
+      && ((isDuration && seconds >= 3600) || duration >= 3600)
+    ) {
+      return toHHMMSS(seconds.toString());
+    }
+    return toMMSS(seconds.toString());
+  };
 
   React.useEffect(() => {
     audioElem.current.setAttribute('playsinline', 'playsinline');
@@ -112,6 +133,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   const onLoadedMetadata = () => {
     setVideoMetadataLoaded(true);
     selectSubtitleLanguage(selectedLanguage);
+    setDuration(audioElem.current.duration);
 
     // this.highlighter.selectedFile = this.state.selectedFile;
     // this.highlighter.updateVideoElement(this.videoElement);
@@ -119,11 +141,11 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   };
 
   const onTimeUpdate = () => {
-    if (audioElem.current.duration > 0) {
+    if (duration > 0) {
       const value =
-        (100 / audioElem.current.duration) * audioElem.current.currentTime;
+        (100 / duration) * audioElem.current.currentTime;
       setProgress(value);
-      setTimestamp(toMMSS(audioElem.current.currentTime));
+      setTimestamp(audioElem.current.currentTime);
     }
   };
 
@@ -139,7 +161,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       audioElem.current.pause();
     }
     setPlaying(newPlaying);
-    setTimestamp(toMMSS(audioElem.current.currentTime));
+    setTimestamp(audioElem.current.currentTime);
     if (eventRouter) {
       eventRouter.emit('state.playing', newPlaying);
     }
@@ -164,7 +186,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       return;
     }
     setEnded(true);
-    setTimestamp(toMMSS(audioElem.current.currentTime));
+    setTimestamp(audioElem.current.currentTime);
     if (eventRouter) {
       eventRouter.emit('state.playing', false);
       eventRouter.emit('state.ended', true);
@@ -188,7 +210,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   const rewindAction = () => {
     audioElem.current.currentTime = 0;
     setEnded(false);
-    setTimestamp(toMMSS(audioElem.current.currentTime));
+    setTimestamp(audioElem.current.currentTime);
     setProgress(0);
     if (eventRouter) {
       eventRouter.emit('state.ended', false);
@@ -263,10 +285,19 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       <div className={CssClasses('video-controls', className)}>
         <ScrubBar
           defaultValue={progress}
-          className="video-controls__progress-bar"
+          className={CssClasses('video-controls', className, 'progress-bar')}
           onClick={(pos: number) => {
-            audioElem.current.currentTime = pos * audioElem.current.duration;
+            audioElem.current.currentTime = pos * duration;
+            setTimestamp(pos * duration);
           }}
+          useTooltip={config.useTooltip || false}
+          useRange={useRangeOnScrubBar}
+          useProgress={useProgressOnScrubBar}
+          valueToTooltipString={(pos) => getTimestampString(
+            audioElem.current
+              ? pos * audioElem.current.duration
+              : 0
+          )}
         />
 
         <label className="sr-only" htmlFor={timeIndicatorId}>
@@ -277,8 +308,8 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
           className={CssClasses('video-controls', className, 'time-elapsed')}
           id={timeIndicatorId}
           readOnly
-          ref={durationElem}
-          value={timestamp}
+          ref={timeElapsedElem}
+          value={getTimestampString(timestamp)}
         />
 
         {config.showDuration && (
@@ -291,8 +322,8 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
               className={CssClasses('video-controls', className, 'duration')}
               id={durationIndicatorId}
               readOnly
-              ref={timeElapsedElem}
-              value={toMMSS(audioElem.current ? audioElem.current.duration : 0)}
+              ref={durationElem}
+              value={getTimestampString(duration, true)}
             />
           </>
         )}
