@@ -7,6 +7,11 @@ interface IPlaylistItem {
     audioUrl: string;
     transcriptUrl: string | null;
 }
+interface IPlaybackEvent {
+    fileData?: any[];
+    selectedFile?: number;
+    currentTime?: number;
+}
 interface IProps {
     playlist: IPlaylistItem[];
     id?: string;
@@ -18,6 +23,10 @@ interface IProps {
     singleTrack?: boolean;
     useRangeOnScrubBar?: boolean;
     useProgressOnScrubBar?: boolean;
+    onLoad?: (e?: IPlaybackEvent) => void;
+    onPlay?: (e?: IPlaybackEvent) => void;
+    onPause?: (e?: IPlaybackEvent) => void;
+    onEnd?: (e?: IPlaybackEvent) => void;
 }
 declare const AudioPlayer: React.FunctionComponent<IProps>;
 export default AudioPlayer;
