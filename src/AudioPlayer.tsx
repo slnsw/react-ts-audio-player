@@ -23,6 +23,12 @@ interface IPlaylistItem {
   transcriptUrl: string | null;
 }
 
+interface IPlaybackEvent {
+  fileData?: any[];
+  selectedFile?: number;
+  currentTime?: number;
+}
+
 interface IProps {
   playlist: IPlaylistItem[];
   id?: string;
@@ -34,6 +40,10 @@ interface IProps {
   singleTrack?: boolean;
   useRangeOnScrubBar?: boolean;
   useProgressOnScrubBar?: boolean;
+  onLoad?: (e?: IPlaybackEvent) => void,
+  onPlay?: (e?: IPlaybackEvent) => void,
+  onPause?: (e?: IPlaybackEvent) => void,
+  onEnd?: (e?: IPlaybackEvent) => void,
 }
 
 const AudioPlayer: React.FunctionComponent<IProps> = ({
@@ -47,6 +57,10 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   singleTrack = false,
   useRangeOnScrubBar = false,
   useProgressOnScrubBar = false,
+  onLoad,
+  onPlay,
+  onPause,
+  onEnd,
 }: IProps) => {
   const audioElem = React.useRef(null);
   const timeElapsedElem = React.useRef(null);
@@ -110,6 +124,9 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
     setEnded(false);
     setVideoMetadataLoaded(false);
     setSelectedFile(trackNumber);
+    if (typeof onLoad === 'function') {
+      onLoad({ fileData, selectedFile: trackNumber });
+    }
   };
 
   const hasVtt = (file: IPlaylistItem) => {
@@ -160,10 +177,20 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
     } else {
       audioElem.current.pause();
     }
+    const currentTime = audioElem.current.currentTime;
     setPlaying(newPlaying);
-    setTimestamp(audioElem.current.currentTime);
+    setTimestamp(currentTime);
     if (eventRouter) {
       eventRouter.emit('state.playing', newPlaying);
+    }
+    if (newPlaying) {
+      if (typeof onPlay === 'function') {
+        onPlay({ fileData, selectedFile, currentTime });
+      }
+    } else {
+      if (typeof onPause === 'function') {
+        onPause({ fileData, selectedFile, currentTime });
+      }
     }
   };
 
@@ -186,10 +213,14 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       return;
     }
     setEnded(true);
-    setTimestamp(audioElem.current.currentTime);
+    const currentTime = audioElem.current.currentTime;
+    setTimestamp(currentTime);
     if (eventRouter) {
       eventRouter.emit('state.playing', false);
       eventRouter.emit('state.ended', true);
+    }
+    if (typeof onEnd === 'function') {
+      onEnd({ fileData, selectedFile, currentTime });
     }
   };
 
