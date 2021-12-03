@@ -40,10 +40,10 @@ interface IProps {
   singleTrack?: boolean;
   useRangeOnScrubBar?: boolean;
   useProgressOnScrubBar?: boolean;
-  onLoad?: (e?: IPlaybackEvent) => void,
-  onPlay?: (e?: IPlaybackEvent) => void,
-  onPause?: (e?: IPlaybackEvent) => void,
-  onEnd?: (e?: IPlaybackEvent) => void,
+  onLoad?: (e?: IPlaybackEvent) => void;
+  onPlay?: (e?: IPlaybackEvent) => void;
+  onPause?: (e?: IPlaybackEvent) => void;
+  onEnd?: (e?: IPlaybackEvent) => void;
 }
 
 const AudioPlayer: React.FunctionComponent<IProps> = ({
@@ -93,8 +93,8 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       return '';
     }
     if (
-      config.useHoursInTimestamps
-      && ((isDuration && seconds >= 3600) || duration >= 3600)
+      config.useHoursInTimestamps &&
+      ((isDuration && seconds >= 3600) || duration >= 3600)
     ) {
       return toHHMMSS(seconds.toString());
     }
@@ -159,8 +159,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
 
   const onTimeUpdate = () => {
     if (duration > 0) {
-      const value =
-        (100 / duration) * audioElem.current.currentTime;
+      const value = (100 / duration) * audioElem.current.currentTime;
       setProgress(value);
       setTimestamp(audioElem.current.currentTime);
     }
@@ -228,14 +227,14 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
     if (!playable) {
       return;
     }
-    audioElem.current.currentTime -= (config.rewindTime || 5);
+    audioElem.current.currentTime -= config.rewindTime || 5;
   };
 
   const moveForwardAction = () => {
     if (!playable) {
       return;
     }
-    audioElem.current.currentTime += (config.fastForwardTime || 5);
+    audioElem.current.currentTime += config.fastForwardTime || 5;
   };
 
   const rewindAction = () => {
@@ -324,11 +323,11 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
           useTooltip={config.useTooltip || false}
           useRange={useRangeOnScrubBar}
           useProgress={useProgressOnScrubBar}
-          valueToTooltipString={(pos) => getTimestampString(
-            audioElem.current
-              ? pos * audioElem.current.duration
-              : 0
-          )}
+          valueToTooltipString={(pos) =>
+            getTimestampString(
+              audioElem.current ? pos * audioElem.current.duration : 0,
+            )
+          }
         />
 
         <label className="sr-only" htmlFor={timeIndicatorId}>
@@ -361,7 +360,9 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
 
         <div className="w-100" />
 
-        <div className={CssClasses('video-controls', className, 'button-wrapper')}>
+        <div
+          className={CssClasses('video-controls', className, 'button-wrapper')}
+        >
           <ToggleButton
             btnType="tracklist"
             aria-controls={tracklistId}
@@ -376,7 +377,13 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             Tracklist
           </ToggleButton>
 
-          <div className={CssClasses('video-controls', className, 'button-wrapper__space')} />
+          <div
+            className={CssClasses(
+              'video-controls',
+              className,
+              'button-wrapper__space',
+            )}
+          />
 
           <ActionButton
             btnType="previous-audio"
@@ -450,7 +457,13 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             Closed captioning
           </ToggleButton>
 
-          <div className={CssClasses('video-controls', className, 'button-wrapper__space')} />
+          <div
+            className={CssClasses(
+              'video-controls',
+              className,
+              'button-wrapper__space',
+            )}
+          />
 
           <ToggleButton
             btnType="mute"
