@@ -6,8 +6,8 @@
   "typings": "dist/index.d.ts",
   "scripts": {
     "start": "tsdx watch",
-    "build": "tsdx build",
-    "web-bundle": "tsc && webpack",
+    "build": "rm -rf dist/* && tsdx build",
+    "web-bundle": "rm -rf dist/* && tsc && webpack",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "lint": "tslint -p tsconfig.json",
     "eslint": "eslint --fix \"src/**/*.{ts,tsx}\"",
