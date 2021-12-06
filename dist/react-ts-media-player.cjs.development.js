@@ -574,7 +574,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
       onLoad = _ref.onLoad,
       onPlay = _ref.onPlay,
       onPause = _ref.onPause,
-      onEnd = _ref.onEnd;
+      onEnd = _ref.onEnd,
+      onTimeUpdate = _ref.onTimeUpdate;
   var audioElem = React.useRef(null);
   var timeElapsedElem = React.useRef(null);
   var durationElem = React.useRef(null);
@@ -677,7 +678,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
     if (typeof onLoad === 'function') {
       onLoad({
         fileData: fileData,
-        selectedFile: trackNumber
+        selectedFile: trackNumber,
+        duration: duration
       });
     }
   };
@@ -707,11 +709,22 @@ var AudioPlayer = function AudioPlayer(_ref) {
     setDuration(audioElem.current.duration);
   };
 
-  var onTimeUpdate = function onTimeUpdate() {
+  var internalOnTimeUpdate = function internalOnTimeUpdate() {
+    var currentTime = audioElem.current.currentTime;
+
     if (duration > 0) {
-      var value = 100 / duration * audioElem.current.currentTime;
+      var value = 100 / duration * currentTime;
       setProgress(value);
-      setTimestamp(audioElem.current.currentTime);
+      setTimestamp(currentTime);
+    }
+
+    if (typeof onTimeUpdate === 'function') {
+      onTimeUpdate({
+        fileData: fileData,
+        selectedFile: selectedFile,
+        currentTime: currentTime,
+        duration: duration
+      });
     }
   };
 
@@ -742,7 +755,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
         onPlay({
           fileData: fileData,
           selectedFile: selectedFile,
-          currentTime: currentTime
+          currentTime: currentTime,
+          duration: duration
         });
       }
     } else {
@@ -750,7 +764,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
         onPause({
           fileData: fileData,
           selectedFile: selectedFile,
-          currentTime: currentTime
+          currentTime: currentTime,
+          duration: duration
         });
       }
     }
@@ -790,7 +805,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
       onEnd({
         fileData: fileData,
         selectedFile: selectedFile,
-        currentTime: currentTime
+        currentTime: currentTime,
+        duration: duration
       });
     }
   };
@@ -870,7 +886,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     ref: audioElem,
     onLoadedMetadata: onLoadedMetadata,
     onEnded: onEnded,
-    onTimeUpdate: onTimeUpdate,
+    onTimeUpdate: internalOnTimeUpdate,
     "aria-describedby": captionsContainerId
   }, currentFile && React.createElement("source", {
     src: currentFile.audioUrl,

@@ -11,6 +11,7 @@ interface IPlaybackEvent {
     fileData?: any[];
     selectedFile?: number;
     currentTime?: number;
+    duration?: number;
 }
 interface IProps {
     playlist: IPlaylistItem[];
@@ -27,6 +28,7 @@ interface IProps {
     onPlay?: (e?: IPlaybackEvent) => void;
     onPause?: (e?: IPlaybackEvent) => void;
     onEnd?: (e?: IPlaybackEvent) => void;
+    onTimeUpdate?: (e?: IPlaybackEvent) => void;
 }
 declare const AudioPlayer: React.FunctionComponent<IProps>;
 export default AudioPlayer;
