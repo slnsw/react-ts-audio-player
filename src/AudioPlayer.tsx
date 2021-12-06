@@ -27,6 +27,7 @@ interface IPlaybackEvent {
   fileData?: any[];
   selectedFile?: number;
   currentTime?: number;
+  duration?: number;
 }
 
 interface IProps {
@@ -44,6 +45,7 @@ interface IProps {
   onPlay?: (e?: IPlaybackEvent) => void;
   onPause?: (e?: IPlaybackEvent) => void;
   onEnd?: (e?: IPlaybackEvent) => void;
+  onTimeUpdate?: (e?: IPlaybackEvent) => void;
 }
 
 const AudioPlayer: React.FunctionComponent<IProps> = ({
@@ -61,6 +63,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   onPlay,
   onPause,
   onEnd,
+  onTimeUpdate,
 }: IProps) => {
   const audioElem = React.useRef(null);
   const timeElapsedElem = React.useRef(null);
@@ -125,7 +128,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
     setVideoMetadataLoaded(false);
     setSelectedFile(trackNumber);
     if (typeof onLoad === 'function') {
-      onLoad({ fileData, selectedFile: trackNumber });
+      onLoad({ fileData, selectedFile: trackNumber, duration });
     }
   };
 
@@ -157,11 +160,15 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
     // this.highlighter.onVideoElementLoad();
   };
 
-  const onTimeUpdate = () => {
+  const internalOnTimeUpdate = () => {
+    const currentTime = audioElem.current.currentTime;
     if (duration > 0) {
-      const value = (100 / duration) * audioElem.current.currentTime;
+      const value = (100 / duration) * currentTime;
       setProgress(value);
-      setTimestamp(audioElem.current.currentTime);
+      setTimestamp(currentTime);
+    }
+    if (typeof onTimeUpdate === 'function') {
+      onTimeUpdate({ fileData, selectedFile, currentTime, duration });
     }
   };
 
@@ -184,11 +191,11 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
     }
     if (newPlaying) {
       if (typeof onPlay === 'function') {
-        onPlay({ fileData, selectedFile, currentTime });
+        onPlay({ fileData, selectedFile, currentTime, duration });
       }
     } else {
       if (typeof onPause === 'function') {
-        onPause({ fileData, selectedFile, currentTime });
+        onPause({ fileData, selectedFile, currentTime, duration });
       }
     }
   };
@@ -219,7 +226,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       eventRouter.emit('state.ended', true);
     }
     if (typeof onEnd === 'function') {
-      onEnd({ fileData, selectedFile, currentTime });
+      onEnd({ fileData, selectedFile, currentTime, duration });
     }
   };
 
@@ -298,7 +305,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
         ref={audioElem}
         onLoadedMetadata={onLoadedMetadata}
         onEnded={onEnded}
-        onTimeUpdate={onTimeUpdate}
+        onTimeUpdate={internalOnTimeUpdate}
         aria-describedby={captionsContainerId}
       >
         {currentFile && <source src={currentFile.audioUrl} type="audio/mpeg" />}
