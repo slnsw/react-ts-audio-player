@@ -1,11 +1,27 @@
 import React from 'react';
 import debounce from 'debounce';
 
+var collapseArrayProperty = function collapseArrayProperty(prop, delimiter) {
+  if (prop === void 0) {
+    prop = [];
+  }
+
+  if (delimiter === void 0) {
+    delimiter = ' ';
+  }
+
+  if (!Array.isArray(prop)) {
+    prop = [prop];
+  }
+
+  return prop.join(delimiter);
+};
+
 var SrOnly = function SrOnly(_ref) {
   var _ref$config = _ref.config,
       config = _ref$config === void 0 ? {} : _ref$config,
       children = _ref.children;
-  var classNames = [].concat(config.classNames['sr-only'] || []);
+  var classNames = [].concat(collapseArrayProperty(config.classNames['sr-only']));
   return React.createElement("span", {
     className: classNames.join(' ')
   }, children);
@@ -49,8 +65,8 @@ var ActionButton = function ActionButton(_ref) {
       className = _ref.className,
       _ref$config = _ref.config,
       config = _ref$config === void 0 ? {} : _ref$config;
-  var defaultClassName = (config.classNames[btnType] || []).join(' ');
-  var iconClassNames = (config.icons[btnType] || []).join(' ');
+  var defaultClassName = collapseArrayProperty(config.classNames[btnType]);
+  var iconClassNames = collapseArrayProperty(config.icons[btnType]);
   var iconElem = config.iconElements[btnType] || null;
   return React.createElement("button", {
     className: CssClasses(defaultClassName, className || ''),
@@ -454,9 +470,9 @@ var ToggleButton = function ToggleButton(_ref) {
       className = _ref.className,
       _ref$config = _ref.config,
       config = _ref$config === void 0 ? {} : _ref$config;
-  var defaultClassName = (config.classNames[btnType] || []).join(' ');
-  var iconClassNamesFalse = (config.icons[btnType + "__false"] || []).join(' ');
-  var iconClassNamesTrue = (config.icons[btnType + "__true"] || []).join(' ');
+  var defaultClassName = collapseArrayProperty(config.classNames[btnType]);
+  var iconClassNamesFalse = collapseArrayProperty(config.icons[btnType + "__false"]);
+  var iconClassNamesTrue = collapseArrayProperty(config.icons[btnType + "__true"]);
   var iconElemFalse = config.iconElements[btnType + "__false"] || null;
   var iconElemTrue = config.iconElements[btnType + "__true"] || null;
   return React.createElement("button", {
