@@ -1,11 +1,27 @@
 import React from 'react';
 import debounce from 'debounce';
 
+var collapseArrayProperty = function collapseArrayProperty(prop, delimiter) {
+  if (prop === void 0) {
+    prop = [];
+  }
+
+  if (delimiter === void 0) {
+    delimiter = ' ';
+  }
+
+  if (!Array.isArray(prop)) {
+    prop = [prop];
+  }
+
+  return prop.join(delimiter);
+};
+
 var SrOnly = function SrOnly(_ref) {
   var _ref$config = _ref.config,
       config = _ref$config === void 0 ? {} : _ref$config,
       children = _ref.children;
-  var classNames = [].concat(config.classNames['sr-only'] || []);
+  var classNames = [].concat(collapseArrayProperty(config.classNames['sr-only']));
   return React.createElement("span", {
     className: classNames.join(' ')
   }, children);
@@ -49,8 +65,8 @@ var ActionButton = function ActionButton(_ref) {
       className = _ref.className,
       _ref$config = _ref.config,
       config = _ref$config === void 0 ? {} : _ref$config;
-  var defaultClassName = (config.classNames[btnType] || []).join(' ');
-  var iconClassNames = (config.icons[btnType] || []).join(' ');
+  var defaultClassName = collapseArrayProperty(config.classNames[btnType]);
+  var iconClassNames = collapseArrayProperty(config.icons[btnType]);
   var iconElem = config.iconElements[btnType] || null;
   return React.createElement("button", {
     className: CssClasses(defaultClassName, className || ''),
@@ -454,9 +470,9 @@ var ToggleButton = function ToggleButton(_ref) {
       className = _ref.className,
       _ref$config = _ref.config,
       config = _ref$config === void 0 ? {} : _ref$config;
-  var defaultClassName = (config.classNames[btnType] || []).join(' ');
-  var iconClassNamesFalse = (config.icons[btnType + "__false"] || []).join(' ');
-  var iconClassNamesTrue = (config.icons[btnType + "__true"] || []).join(' ');
+  var defaultClassName = collapseArrayProperty(config.classNames[btnType]);
+  var iconClassNamesFalse = collapseArrayProperty(config.icons[btnType + "__false"]);
+  var iconClassNamesTrue = collapseArrayProperty(config.icons[btnType + "__true"]);
   var iconElemFalse = config.iconElements[btnType + "__false"] || null;
   var iconElemTrue = config.iconElements[btnType + "__true"] || null;
   return React.createElement("button", {
@@ -564,7 +580,12 @@ var AudioPlayer = function AudioPlayer(_ref) {
       _ref$useRangeOnScrubB = _ref.useRangeOnScrubBar,
       useRangeOnScrubBar = _ref$useRangeOnScrubB === void 0 ? false : _ref$useRangeOnScrubB,
       _ref$useProgressOnScr = _ref.useProgressOnScrubBar,
-      useProgressOnScrubBar = _ref$useProgressOnScr === void 0 ? false : _ref$useProgressOnScr;
+      useProgressOnScrubBar = _ref$useProgressOnScr === void 0 ? false : _ref$useProgressOnScr,
+      onLoad = _ref.onLoad,
+      onPlay = _ref.onPlay,
+      onPause = _ref.onPause,
+      onEnd = _ref.onEnd,
+      onTimeUpdate = _ref.onTimeUpdate;
   var audioElem = React.useRef(null);
   var timeElapsedElem = React.useRef(null);
   var durationElem = React.useRef(null);
@@ -663,6 +684,14 @@ var AudioPlayer = function AudioPlayer(_ref) {
     setEnded(false);
     setVideoMetadataLoaded(false);
     setSelectedFile(trackNumber);
+
+    if (typeof onLoad === 'function') {
+      onLoad({
+        fileData: fileData,
+        selectedFile: trackNumber,
+        duration: duration
+      });
+    }
   };
 
   var hasVtt = function hasVtt(file) {
@@ -690,11 +719,22 @@ var AudioPlayer = function AudioPlayer(_ref) {
     setDuration(audioElem.current.duration);
   };
 
-  var onTimeUpdate = function onTimeUpdate() {
+  var internalOnTimeUpdate = function internalOnTimeUpdate() {
+    var currentTime = audioElem.current.currentTime;
+
     if (duration > 0) {
-      var value = 100 / duration * audioElem.current.currentTime;
+      var value = 100 / duration * currentTime;
       setProgress(value);
-      setTimestamp(audioElem.current.currentTime);
+      setTimestamp(currentTime);
+    }
+
+    if (typeof onTimeUpdate === 'function') {
+      onTimeUpdate({
+        fileData: fileData,
+        selectedFile: selectedFile,
+        currentTime: currentTime,
+        duration: duration
+      });
     }
   };
 
@@ -712,11 +752,32 @@ var AudioPlayer = function AudioPlayer(_ref) {
       audioElem.current.pause();
     }
 
+    var currentTime = audioElem.current.currentTime;
     setPlaying(newPlaying);
-    setTimestamp(audioElem.current.currentTime);
+    setTimestamp(currentTime);
 
     if (eventRouter) {
       eventRouter.emit('state.playing', newPlaying);
+    }
+
+    if (newPlaying) {
+      if (typeof onPlay === 'function') {
+        onPlay({
+          fileData: fileData,
+          selectedFile: selectedFile,
+          currentTime: currentTime,
+          duration: duration
+        });
+      }
+    } else {
+      if (typeof onPause === 'function') {
+        onPause({
+          fileData: fileData,
+          selectedFile: selectedFile,
+          currentTime: currentTime,
+          duration: duration
+        });
+      }
     }
   };
 
@@ -742,11 +803,21 @@ var AudioPlayer = function AudioPlayer(_ref) {
     }
 
     setEnded(true);
-    setTimestamp(audioElem.current.currentTime);
+    var currentTime = audioElem.current.currentTime;
+    setTimestamp(currentTime);
 
     if (eventRouter) {
       eventRouter.emit('state.playing', false);
       eventRouter.emit('state.ended', true);
+    }
+
+    if (typeof onEnd === 'function') {
+      onEnd({
+        fileData: fileData,
+        selectedFile: selectedFile,
+        currentTime: currentTime,
+        duration: duration
+      });
     }
   };
 
@@ -825,7 +896,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     ref: audioElem,
     onLoadedMetadata: onLoadedMetadata,
     onEnded: onEnded,
-    onTimeUpdate: onTimeUpdate,
+    onTimeUpdate: internalOnTimeUpdate,
     "aria-describedby": captionsContainerId
   }, currentFile && React.createElement("source", {
     src: currentFile.audioUrl,

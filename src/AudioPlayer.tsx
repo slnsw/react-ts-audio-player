@@ -23,6 +23,13 @@ interface IPlaylistItem {
   transcriptUrl: string | null;
 }
 
+interface IPlaybackEvent {
+  fileData?: any[];
+  selectedFile?: number;
+  currentTime?: number;
+  duration?: number;
+}
+
 interface IProps {
   playlist: IPlaylistItem[];
   id?: string;
@@ -34,6 +41,11 @@ interface IProps {
   singleTrack?: boolean;
   useRangeOnScrubBar?: boolean;
   useProgressOnScrubBar?: boolean;
+  onLoad?: (e?: IPlaybackEvent) => void;
+  onPlay?: (e?: IPlaybackEvent) => void;
+  onPause?: (e?: IPlaybackEvent) => void;
+  onEnd?: (e?: IPlaybackEvent) => void;
+  onTimeUpdate?: (e?: IPlaybackEvent) => void;
 }
 
 const AudioPlayer: React.FunctionComponent<IProps> = ({
@@ -47,6 +59,11 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   singleTrack = false,
   useRangeOnScrubBar = false,
   useProgressOnScrubBar = false,
+  onLoad,
+  onPlay,
+  onPause,
+  onEnd,
+  onTimeUpdate,
 }: IProps) => {
   const audioElem = React.useRef(null);
   const timeElapsedElem = React.useRef(null);
@@ -79,8 +96,8 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       return '';
     }
     if (
-      config.useHoursInTimestamps
-      && ((isDuration && seconds >= 3600) || duration >= 3600)
+      config.useHoursInTimestamps &&
+      ((isDuration && seconds >= 3600) || duration >= 3600)
     ) {
       return toHHMMSS(seconds.toString());
     }
@@ -110,6 +127,9 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
     setEnded(false);
     setVideoMetadataLoaded(false);
     setSelectedFile(trackNumber);
+    if (typeof onLoad === 'function') {
+      onLoad({ fileData, selectedFile: trackNumber, duration });
+    }
   };
 
   const hasVtt = (file: IPlaylistItem) => {
@@ -140,12 +160,15 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
     // this.highlighter.onVideoElementLoad();
   };
 
-  const onTimeUpdate = () => {
+  const internalOnTimeUpdate = () => {
+    const currentTime = audioElem.current.currentTime;
     if (duration > 0) {
-      const value =
-        (100 / duration) * audioElem.current.currentTime;
+      const value = (100 / duration) * currentTime;
       setProgress(value);
-      setTimestamp(audioElem.current.currentTime);
+      setTimestamp(currentTime);
+    }
+    if (typeof onTimeUpdate === 'function') {
+      onTimeUpdate({ fileData, selectedFile, currentTime, duration });
     }
   };
 
@@ -160,10 +183,20 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
     } else {
       audioElem.current.pause();
     }
+    const currentTime = audioElem.current.currentTime;
     setPlaying(newPlaying);
-    setTimestamp(audioElem.current.currentTime);
+    setTimestamp(currentTime);
     if (eventRouter) {
       eventRouter.emit('state.playing', newPlaying);
+    }
+    if (newPlaying) {
+      if (typeof onPlay === 'function') {
+        onPlay({ fileData, selectedFile, currentTime, duration });
+      }
+    } else {
+      if (typeof onPause === 'function') {
+        onPause({ fileData, selectedFile, currentTime, duration });
+      }
     }
   };
 
@@ -186,10 +219,14 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       return;
     }
     setEnded(true);
-    setTimestamp(audioElem.current.currentTime);
+    const currentTime = audioElem.current.currentTime;
+    setTimestamp(currentTime);
     if (eventRouter) {
       eventRouter.emit('state.playing', false);
       eventRouter.emit('state.ended', true);
+    }
+    if (typeof onEnd === 'function') {
+      onEnd({ fileData, selectedFile, currentTime, duration });
     }
   };
 
@@ -197,14 +234,14 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
     if (!playable) {
       return;
     }
-    audioElem.current.currentTime -= (config.rewindTime || 5);
+    audioElem.current.currentTime -= config.rewindTime || 5;
   };
 
   const moveForwardAction = () => {
     if (!playable) {
       return;
     }
-    audioElem.current.currentTime += (config.fastForwardTime || 5);
+    audioElem.current.currentTime += config.fastForwardTime || 5;
   };
 
   const rewindAction = () => {
@@ -268,7 +305,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
         ref={audioElem}
         onLoadedMetadata={onLoadedMetadata}
         onEnded={onEnded}
-        onTimeUpdate={onTimeUpdate}
+        onTimeUpdate={internalOnTimeUpdate}
         aria-describedby={captionsContainerId}
       >
         {currentFile && <source src={currentFile.audioUrl} type="audio/mpeg" />}
@@ -293,11 +330,11 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
           useTooltip={config.useTooltip || false}
           useRange={useRangeOnScrubBar}
           useProgress={useProgressOnScrubBar}
-          valueToTooltipString={(pos) => getTimestampString(
-            audioElem.current
-              ? pos * audioElem.current.duration
-              : 0
-          )}
+          valueToTooltipString={(pos) =>
+            getTimestampString(
+              audioElem.current ? pos * audioElem.current.duration : 0,
+            )
+          }
         />
 
         <label className="sr-only" htmlFor={timeIndicatorId}>
@@ -330,7 +367,9 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
 
         <div className="w-100" />
 
-        <div className={CssClasses('video-controls', className, 'button-wrapper')}>
+        <div
+          className={CssClasses('video-controls', className, 'button-wrapper')}
+        >
           <ToggleButton
             btnType="tracklist"
             aria-controls={tracklistId}
@@ -345,7 +384,13 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             Tracklist
           </ToggleButton>
 
-          <div className={CssClasses('video-controls', className, 'button-wrapper__space')} />
+          <div
+            className={CssClasses(
+              'video-controls',
+              className,
+              'button-wrapper__space',
+            )}
+          />
 
           <ActionButton
             btnType="previous-audio"
@@ -419,7 +464,13 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             Closed captioning
           </ToggleButton>
 
-          <div className={CssClasses('video-controls', className, 'button-wrapper__space')} />
+          <div
+            className={CssClasses(
+              'video-controls',
+              className,
+              'button-wrapper__space',
+            )}
+          />
 
           <ToggleButton
             btnType="mute"

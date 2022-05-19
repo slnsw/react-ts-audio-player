@@ -4,6 +4,7 @@
 import React from 'react';
 
 import SrOnly from './SrOnly';
+import CollapseArrayProperty from './Util/CollapseArrayProperty';
 import CssClasses from './Util/CssClasses';
 
 import { IAudioPlayerConfig } from './Types';
@@ -27,8 +28,8 @@ const ActionButton: React.FunctionComponent<IProps> = ({
   className,
   config = {},
 }) => {
-  const defaultClassName = (config.classNames[btnType] || []).join(' ');
-  const iconClassNames = (config.icons[btnType] || []).join(' ');
+  const defaultClassName = CollapseArrayProperty(config.classNames[btnType]);
+  const iconClassNames = CollapseArrayProperty(config.icons[btnType]);
   const iconElem = config.iconElements[btnType] || null;
   return (
     <button

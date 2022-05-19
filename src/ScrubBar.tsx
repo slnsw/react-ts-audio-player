@@ -22,7 +22,10 @@ interface IProps {
   valueToTooltipString?: (pos: number) => string;
 }
 
-const getOffsetXNative = (e: MouseEvent | TouchEvent, container: HTMLDivElement) => {
+const getOffsetXNative = (
+  e: MouseEvent | TouchEvent,
+  container: HTMLDivElement,
+) => {
   let offsetX = 0;
   const rect = container.getBoundingClientRect();
   if (e.type === 'mousemove') {
@@ -61,7 +64,7 @@ const ScrubBarTooltip: React.FunctionComponent<ITooltipProps> = ({
 }) => {
   return (
     <div style={style} className={className || ''}>
-      { title }
+      {title}
     </div>
   );
 };
@@ -84,10 +87,8 @@ const ScrubBarTooltipOuter: React.FunctionComponent<ITooltipOuterProps> = ({
   const outer = React.useRef(null);
   const [value, setValue] = React.useState(defaultValue);
 
-  const outerWidth = outer.current
-    ? outer.current.clientWidth
-    : 0;
-  
+  const outerWidth = outer.current ? outer.current.clientWidth : 0;
+
   const content = valueToTooltipString(value) || '';
 
   return (
@@ -103,7 +104,7 @@ const ScrubBarTooltipOuter: React.FunctionComponent<ITooltipOuterProps> = ({
           title={valueToTooltipString(value)}
           className={tooltipClassName}
           style={{
-            left: `${outerWidth * value}px`
+            left: `${outerWidth * value}px`,
           }}
         />
       )}
@@ -132,9 +133,10 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
 
   const derivedId = id || 'scrub-bar';
 
-  const debouncedOnClick = typeof onClick === 'function'
-    ? debounce(onClick, ON_CLICK_DEBOUNCE)
-    : () => {};
+  const debouncedOnClick =
+    typeof onClick === 'function'
+      ? debounce(onClick, ON_CLICK_DEBOUNCE)
+      : () => {};
 
   const onDown = (e: React.TouchEvent | React.MouseEvent) => {
     scrubbing.current = true;
@@ -144,7 +146,7 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
   const onUp = () => {
     if (scrubbing.current) {
       scrubbing.current = false;
-      setLastUpdate((new Date()).getTime());
+      setLastUpdate(new Date().getTime());
     }
   };
 
@@ -162,7 +164,7 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
 
   // Set up cursor move and cursor up events on the entire document
   // so that the scrub can persist even when the user drags outside
-  // the scrub bar. 
+  // the scrub bar.
   React.useEffect(() => {
     document.addEventListener('mousemove', onMouseMove, false);
     document.addEventListener('touchmove', onTouchMove, false);
@@ -193,7 +195,7 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
   return (
     <div
       className={CssClasses(className || '', '', '', [
-        scrubbing.current ? 'scrubbing' : ''
+        scrubbing.current ? 'scrubbing' : '',
       ])}
       onMouseOver={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
@@ -205,17 +207,17 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
         <ScrubBarTooltipOuter
           wrapperClassName={`${className}__wraptooltip`}
           tooltipClassName={`${className}__tooltip`}
-          show={(hover || scrubbing.current)}
+          show={hover || scrubbing.current}
           valueToTooltipString={valueToTooltipString}
           defaultValue={value}
         />
       )}
       {(useProgress || useRange) && (
-        <label htmlFor={
-          useRange
-            ? `${derivedId}__scrubrange`
-            : `${derivedId}__progress`
-        }>
+        <label
+          htmlFor={
+            useRange ? `${derivedId}__scrubrange` : `${derivedId}__progress`
+          }
+        >
           <span className="sr-only">
             {label || ''}
             {`${value} percent`}
@@ -239,7 +241,10 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
               onMouseDown={onDown}
               onTouchStart={onDown}
               onChange={(e) => {
-                setOffsetX(parseFloat(e.currentTarget.value) / 100.0 * outer.current.clientWidth);
+                setOffsetX(
+                  (parseFloat(e.currentTarget.value) / 100.0) *
+                    outer.current.clientWidth,
+                );
               }}
             />
           )}
