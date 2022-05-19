@@ -6,5 +6,7 @@ declare global {
   }
 }
 
-export { AudioPlayer, defaultConfigs };
-export default AudioPlayer;
+if (typeof window !== 'undefined') {
+  window.AudioPlayer = AudioPlayer;
+  window.AudioPlayer.defaultConfigs = defaultConfigs;
+}

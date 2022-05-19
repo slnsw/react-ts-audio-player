@@ -13,7 +13,9 @@ interface IProps {
 }
 
 const SrOnly: React.FunctionComponent<IProps> = ({ config = {}, children }) => {
-  const classNames = [].concat(CollapseArrayProperty(config.classNames['sr-only']));
+  const classNames = [].concat(
+    CollapseArrayProperty(config?.classNames?.['sr-only']),
+  );
   return <span className={classNames.join(' ')}>{children}</span>;
 };
 

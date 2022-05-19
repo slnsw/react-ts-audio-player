@@ -2367,8 +2367,11 @@
     Plain: Plain_default
   };
 
-  // src/index.ts
-  var src_default = AudioPlayer_default;
+  // src/browser.ts
+  if (typeof window !== "undefined") {
+    window.AudioPlayer = AudioPlayer_default;
+    window.AudioPlayer.defaultConfigs = defaultConfigs;
+  }
 })();
 /*
 object-assign

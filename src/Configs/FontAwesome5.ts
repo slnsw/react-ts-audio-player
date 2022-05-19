@@ -1,3 +1,5 @@
+import { AudioPlayerVolumeControl } from '../Types';
+
 export default {
   classNames: {
     'sr-only': ['sr-only'],
@@ -42,4 +44,12 @@ export default {
     mute__true: null,
   },
   useHoursInTimestamps: true,
+  features: {
+    showTracklist: true,
+    showTrackNav: true,
+    volumeControl: 'mute' as AudioPlayerVolumeControl,
+    showFastForward: true,
+    showRewind: true,
+    showClosedCaptioning: true,
+  },
 };

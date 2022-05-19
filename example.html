@@ -10,7 +10,7 @@
       crossorigin
       src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"
     ></script>
-    <script src="./build/index.dev.js"></script>
+    <script src="./dist/Browser.js"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css"
@@ -323,10 +323,8 @@
   <body>
     <h1>Audio player test</h1>
     <div id="player"></div>
-    <script>
-      const AudioPlayer = window.AudioPlayer;
-
-      const config = Object.assign(AudioPlayer.defaultConfigs.FontAwesome5, {
+    <script type="module">
+      const config = Object.assign(AudioPlayer.defaultConfigs.Plain, {
         useHoursInTimestamps: true,
         useTooltip: true
       });

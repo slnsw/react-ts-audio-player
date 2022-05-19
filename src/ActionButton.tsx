@@ -28,9 +28,9 @@ const ActionButton: React.FunctionComponent<IProps> = ({
   className,
   config = {},
 }) => {
-  const defaultClassName = CollapseArrayProperty(config.classNames[btnType]);
-  const iconClassNames = CollapseArrayProperty(config.icons[btnType]);
-  const iconElem = config.iconElements[btnType] || null;
+  const defaultClassName = CollapseArrayProperty(config?.classNames?.[btnType]);
+  const iconClassNames = CollapseArrayProperty(config?.icons?.[btnType]);
+  const iconElem = config?.iconElements?.[btnType] || null;
   return (
     <button
       className={CssClasses(defaultClassName, className || '')}

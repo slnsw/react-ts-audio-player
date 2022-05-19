@@ -5,14 +5,48 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
-    "start": "tsdx watch",
-    "build": "rm -rf dist/* && tsdx build",
-    "web-bundle": "rm -rf dist/* && tsc && webpack",
+    "start": "rm -rf dist/* && tsup --watch",
+    "build": "rm -rf dist/* && tsup",
+    "web-bundle": "npm run build",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "lint": "tslint -p tsconfig.json",
     "eslint": "eslint --fix \"src/**/*.{ts,tsx}\"",
-    "browsersync": "npm run web-bundle && browser-sync start --server --startPath example.html --files . --config bs-config.js",
+    "browsersync:standalone": "browser-sync start --server --startPath example.html --files . --config bs-config.js",
+    "browsersync": "npm run build && npm run browsersync:standalone",
     "test": "jest"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./browser": {
+      "import": "./dist/browser.js",
+      "require": "./dist/browser.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/index.d.ts"
+      ],
+      "browser": [
+        "./dist/browser.d.ts"
+      ]
+    }
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts",
+      "src/browser.ts"
+    ],
+    "external": [
+      "react",
+      "react-dom"
+    ],
+    "splitting": false,
+    "sourcemap": true,
+    "clean": true
   },
   "author": "",
   "license": "ISC",
@@ -26,6 +60,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.7.7",
+    "@babel/plugin-proposal-optional-chaining": "^7.17.12",
     "@babel/preset-env": "^7.7.7",
     "@babel/preset-react": "^7.7.4",
     "@babel/register": "^7.7.7",
@@ -39,6 +74,7 @@
     "@typescript-eslint/eslint-plugin": "^2.15.0",
     "@typescript-eslint/parser": "^2.15.0",
     "babel-loader": "^8.0.6",
+    "esbuild": "^0.14.39",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-prettier": "^6.9.0",
@@ -52,11 +88,11 @@
     "js-loader": "^0.1.1",
     "prettier": "^1.19.1",
     "ts-jest": "^24.3.0",
-    "ts-loader": "^6.2.1",
-    "tsdx": "^0.13.2",
+    "ts-loader": "^6.2.2",
     "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.7.4",
+    "tsup": "^5.12.8",
+    "typescript": "^4.6.4",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"
   }

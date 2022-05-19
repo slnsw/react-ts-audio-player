@@ -38,8 +38,9 @@ const SubtitleContainer: React.FunctionComponent<IProps> = ({
     let i;
     for (i = 0; i < activeCues.length; i += 1) {
       cue = activeCues[i];
-      if (typeof cue.text !== 'undefined') {
-        newText += cue.text;
+      const cueAny = cue as any;
+      if (typeof cueAny.text !== 'undefined') {
+        newText += cueAny.text;
       }
     }
     setText(newText);

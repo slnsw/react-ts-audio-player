@@ -12,6 +12,7 @@ import ToggleButton from './ToggleButton';
 import TracklistMenu from './TracklistMenu';
 
 import FontAwesome5 from './Configs/FontAwesome5';
+import Plain from './Configs/Plain';
 import CssClasses from './Util/CssClasses';
 import { toHHMMSS, toMMSS } from './TimeUtils';
 import { IAudioPlayerConfig } from './Types';
@@ -69,6 +70,9 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   const timeElapsedElem = React.useRef(null);
   const durationElem = React.useRef(null);
 
+  const [activeConfig, setActiveConfig] = React.useState<IAudioPlayerConfig>(
+    {},
+  );
   const [duration, setDuration] = React.useState(0);
   const [timestamp, setTimestamp] = React.useState(0);
   const [fileData, setFileData] = React.useState([]);
@@ -88,6 +92,8 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   const tracklistId = `${id}__track-list`;
   const subtitleMenuId = `${id}__subtitle-menu`;
 
+  const { features = {} } = activeConfig;
+
   const getTimestampString = (
     seconds: number = 0,
     isDuration: boolean = false,
@@ -96,7 +102,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       return '';
     }
     if (
-      config.useHoursInTimestamps &&
+      activeConfig.useHoursInTimestamps &&
       ((isDuration && seconds >= 3600) || duration >= 3600)
     ) {
       return toHHMMSS(seconds.toString());
@@ -107,6 +113,24 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   React.useEffect(() => {
     audioElem.current.setAttribute('playsinline', 'playsinline');
   }, []);
+
+  React.useEffect(() => {
+    const newFeatures = {
+      showTracklist:
+        config.features.showTracklist || Plain.features.showTracklist,
+      showTrackNav: config.features.showTrackNav || Plain.features.showTrackNav,
+      volumeControl:
+        config.features.volumeControl || Plain.features.volumeControl,
+      showFastForward:
+        config.features.showFastForward || Plain.features.showFastForward,
+      showRewind: config.features.showRewind || Plain.features.showRewind,
+      showClosedCaptioning:
+        config.features.showClosedCaptioning ||
+        Plain.features.showClosedCaptioning,
+    };
+    const newConfig = { ...Plain, ...config, features: newFeatures };
+    setActiveConfig(newConfig as IAudioPlayerConfig);
+  }, [config]);
 
   React.useEffect(() => {
     setFileData(playlist);
@@ -234,14 +258,14 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
     if (!playable) {
       return;
     }
-    audioElem.current.currentTime -= config.rewindTime || 5;
+    audioElem.current.currentTime -= activeConfig.rewindTime || 5;
   };
 
   const moveForwardAction = () => {
     if (!playable) {
       return;
     }
-    audioElem.current.currentTime += config.fastForwardTime || 5;
+    audioElem.current.currentTime += activeConfig.fastForwardTime || 5;
   };
 
   const rewindAction = () => {
@@ -327,7 +351,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             audioElem.current.currentTime = pos * duration;
             setTimestamp(pos * duration);
           }}
-          useTooltip={config.useTooltip || false}
+          useTooltip={activeConfig.useTooltip || false}
           useRange={useRangeOnScrubBar}
           useProgress={useProgressOnScrubBar}
           valueToTooltipString={(pos) =>
@@ -349,7 +373,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
           value={getTimestampString(timestamp)}
         />
 
-        {config.showDuration && (
+        {activeConfig.showDuration && (
           <>
             <label className="sr-only" htmlFor={durationIndicatorId}>
               Duration
@@ -370,19 +394,21 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
         <div
           className={CssClasses('video-controls', className, 'button-wrapper')}
         >
-          <ToggleButton
-            btnType="tracklist"
-            aria-controls={tracklistId}
-            enabled={fileData.length > 0 && !singleTrack}
-            onClick={() => {
-              setShowSubtitleMenu(false);
-              setShowTrackListMenu(!showTrackListMenu);
-            }}
-            toggleState={showTrackListMenu}
-            config={config}
-          >
-            Tracklist
-          </ToggleButton>
+          {(features.showTracklist || false) && (
+            <ToggleButton
+              btnType="tracklist"
+              aria-controls={tracklistId}
+              enabled={fileData.length > 0 && !singleTrack}
+              onClick={() => {
+                setShowSubtitleMenu(false);
+                setShowTrackListMenu(!showTrackListMenu);
+              }}
+              toggleState={showTrackListMenu}
+              config={activeConfig}
+            >
+              Tracklist
+            </ToggleButton>
+          )}
 
           <div
             className={CssClasses(
@@ -400,7 +426,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
                 selectTrack(selectedFile - 1);
               }
             }}
-            config={config}
+            config={activeConfig}
           >
             Previous track
           </ActionButton>
@@ -408,7 +434,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
           <ActionButton
             btnType="backward"
             onClick={moveBackwardAction}
-            config={config}
+            config={activeConfig}
           >
             Rewind
           </ActionButton>
@@ -418,7 +444,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             hidden={ended}
             onClick={playPauseAction}
             toggleState={playing}
-            config={config}
+            config={activeConfig}
           >
             {playing ? 'Pause' : 'Play'}
           </ToggleButton>
@@ -428,7 +454,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             enabled={ended}
             hidden={!ended}
             onClick={rewindAction}
-            config={config}
+            config={activeConfig}
           >
             Restart
           </ActionButton>
@@ -436,7 +462,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
           <ActionButton
             btnType="forward"
             onClick={moveForwardAction}
-            config={config}
+            config={activeConfig}
           >
             Fast forward
           </ActionButton>
@@ -445,24 +471,26 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             btnType="next-audio"
             enabled={fileData.length > 1 && canPlayNext}
             onClick={nextTrackAction}
-            config={config}
+            config={activeConfig}
           >
             Next track
           </ActionButton>
 
-          <ToggleButton
-            btnType="closed-captioning"
-            aria-controls={subtitleMenuId}
-            enabled={videoMetadataLoaded && hasVtt(currentFile)}
-            onClick={() => {
-              setShowTrackListMenu(false);
-              setShowSubtitleMenu(!showSubtitleMenu);
-            }}
-            toggleState={showSubtitleMenu}
-            config={config}
-          >
-            Closed captioning
-          </ToggleButton>
+          {(features.showClosedCaptioning || false) && (
+            <ToggleButton
+              btnType="closed-captioning"
+              aria-controls={subtitleMenuId}
+              enabled={videoMetadataLoaded && hasVtt(currentFile)}
+              onClick={() => {
+                setShowTrackListMenu(false);
+                setShowSubtitleMenu(!showSubtitleMenu);
+              }}
+              toggleState={showSubtitleMenu}
+              config={activeConfig}
+            >
+              Closed captioning
+            </ToggleButton>
+          )}
 
           <div
             className={CssClasses(
@@ -476,38 +504,44 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
             btnType="mute"
             onClick={toggleMuteAction}
             toggleState={muted}
-            config={config}
+            config={activeConfig}
           >
             Mute
           </ToggleButton>
         </div>
       </div>
 
-      <SubtitleMenu
-        visible={showSubtitleMenu}
-        id={subtitleMenuId}
-        tracks={subtitleTracks()}
-        selected={selectedLanguage}
-        onSelect={selectSubtitleLanguage}
-      />
+      {(features.showClosedCaptioning || false) && (
+        <SubtitleMenu
+          visible={showSubtitleMenu}
+          id={subtitleMenuId}
+          tracks={subtitleTracks()}
+          selected={selectedLanguage}
+          onSelect={selectSubtitleLanguage}
+        />
+      )}
 
-      <TracklistMenu
-        visible={!singleTrack && showTrackListMenu}
-        id={tracklistId}
-        tracklist={fileData}
-        selected={selectedFile}
-        onSelect={(trackNumber) => {
-          setShowTrackListMenu(false);
-          selectTrack(trackNumber);
-        }}
-      />
+      {(features.showTracklist || false) && (
+        <TracklistMenu
+          visible={!singleTrack && showTrackListMenu}
+          id={tracklistId}
+          tracklist={fileData}
+          selected={selectedFile}
+          onSelect={(trackNumber) => {
+            setShowTrackListMenu(false);
+            selectTrack(trackNumber);
+          }}
+        />
+      )}
 
-      <SubtitleContainer
-        visible={selectedLanguage !== null}
-        lang={selectedLanguage}
-        tracks={subtitleTracks()}
-        id={captionsContainerId}
-      />
+      {(features.showClosedCaptioning || false) && (
+        <SubtitleContainer
+          visible={selectedLanguage !== null}
+          lang={selectedLanguage}
+          tracks={subtitleTracks()}
+          id={captionsContainerId}
+        />
+      )}
     </div>
   );
 };
@@ -516,4 +550,5 @@ export default AudioPlayer;
 
 export const defaultConfigs = {
   FontAwesome5,
+  Plain,
 };

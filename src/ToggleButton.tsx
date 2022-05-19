@@ -30,11 +30,15 @@ const ToggleButton: React.FunctionComponent<IProps> = ({
   className,
   config = {},
 }: IProps) => {
-  const defaultClassName = CollapseArrayProperty(config.classNames[btnType]);
-  const iconClassNamesFalse = CollapseArrayProperty(config.icons[`${btnType}__false`]);
-  const iconClassNamesTrue = CollapseArrayProperty(config.icons[`${btnType}__true`]);
-  const iconElemFalse = config.iconElements[`${btnType}__false`] || null;
-  const iconElemTrue = config.iconElements[`${btnType}__true`] || null;
+  const defaultClassName = CollapseArrayProperty(config?.classNames?.[btnType]);
+  const iconClassNamesFalse = CollapseArrayProperty(
+    config?.icons?.[`${btnType}__false`],
+  );
+  const iconClassNamesTrue = CollapseArrayProperty(
+    config?.icons?.[`${btnType}__true`],
+  );
+  const iconElemFalse = config?.iconElements?.[`${btnType}__false`] || null;
+  const iconElemTrue = config?.iconElements?.[`${btnType}__true`] || null;
   return (
     <button
       className={CssClasses(defaultClassName, className || '')}

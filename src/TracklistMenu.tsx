@@ -6,6 +6,9 @@ import React from 'react';
 import Menu from './Menu';
 import MenuItem from './MenuItem';
 
+// @see https://github.com/microsoft/TypeScript/issues/38544
+type AudioTrack = any;
+
 interface IProps {
   tracklist?: AudioTrack[];
   selected?: number;
