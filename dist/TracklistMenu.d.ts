@@ -1,6 +1,6 @@
 import React from 'react';
 interface IProps {
-    tracklist?: AudioTrack[];
+    tracklist?: any[];
     selected?: number;
     onSelect?: (track: number) => void;
     id?: string;

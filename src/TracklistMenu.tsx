@@ -7,7 +7,7 @@ import Menu from './Menu';
 import MenuItem from './MenuItem';
 
 interface IProps {
-  tracklist?: AudioTrack[];
+  tracklist?: any[];
   selected?: number;
   onSelect?: (track: number) => void;
   id?: string;
@@ -35,7 +35,7 @@ const TracklistMenu: React.FunctionComponent<IProps> = ({
     }
   };
 
-  const trackOptions = tracklist.map((track: AudioTrack, index: number) => {
+  const trackOptions = tracklist.map((track: any, index: number) => {
     return (
       <MenuItem
         key={index}
