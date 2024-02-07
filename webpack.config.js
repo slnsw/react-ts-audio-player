@@ -3,6 +3,8 @@
  * Webpack config.
  */
 
+require('./webpack-monkeypatch');
+
 const path = require('path');
 
 const suffix = process.env.NODE_ENV === 'production' ? '' : '.dev';

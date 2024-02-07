@@ -11,7 +11,8 @@
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "lint": "tslint -p tsconfig.json",
     "eslint": "eslint --fix \"src/**/*.{ts,tsx}\"",
-    "browsersync": "npm run web-bundle && browser-sync start --server --startPath example.html --files . --config bs-config.js",
+    "browsersync": "npm run web-bundle && npm run browsersync:run",
+    "browsersync:run": "browser-sync start --server --startPath example.html --files . --config bs-config.js",
     "test": "jest"
   },
   "author": "",
@@ -39,6 +40,7 @@
     "@typescript-eslint/eslint-plugin": "^2.15.0",
     "@typescript-eslint/parser": "^2.15.0",
     "babel-loader": "^8.0.6",
+    "browser-sync": "^3.0.2",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-prettier": "^6.9.0",
