@@ -7,7 +7,7 @@
   but intent is to make switchable
 
 For usage, see [example.html](example.html). This uses the bundled version
-generated using `npm run bundle` that works in a browser. For your Typescript
+generated using `npm run web-bundle` that works in a browser. For your Typescript
 project, you should probably just include the library directly.
 
 You'll be using something like the following:
@@ -15,6 +15,8 @@ You'll be using something like the following:
 ```typescript
 import AudioPlayer from '@slnsw/react-ts-media-player';
 ```
+
+For distribution, run `npm run build`.
 
 ## What isn't supported yet
 
