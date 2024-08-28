@@ -149,11 +149,13 @@ const AudioPlayer: React.FC<IProps> = ({
 
   const playable = fileData && fileData.length && videoMetadataLoaded;
 
+  // Subtitle language selection event.
   const selectSubtitleLanguage = (lang?: string) => {
     setShowSubtitleMenu(false);
     setSelectedLanguage(lang && lang.length ? lang : null);
   };
 
+  // Metadata loaded event.
   const onLoadedMetadata = () => {
     setVideoMetadataLoaded(true);
     selectSubtitleLanguage(selectedLanguage);
@@ -164,6 +166,7 @@ const AudioPlayer: React.FC<IProps> = ({
     // this.highlighter.onVideoElementLoad();
   };
 
+  // Handle playback progress updates.
   const internalOnTimeUpdate = () => {
     const { currentTime } = audioElem.current;
     if (duration > 0) {
@@ -233,12 +236,14 @@ const AudioPlayer: React.FC<IProps> = ({
     }
   };
 
+  // Switch to next track.
   const nextTrackAction = () => {
     if (canPlayNext) {
       selectTrack(selectedFile + 1);
     }
   };
 
+  // Switch to next track and play.
   const nextTrackAndPlayAction = () => {
     if (canPlayNext) {
       nextTrackAction();
@@ -246,6 +251,7 @@ const AudioPlayer: React.FC<IProps> = ({
     }
   };
 
+  // Handle ended event.
   const onEnded = () => {
     if (onEndNextFile) {
       nextTrackAndPlayAction();
@@ -263,6 +269,7 @@ const AudioPlayer: React.FC<IProps> = ({
     }
   };
 
+  // Move backward by a specific amount of time.
   const moveBackwardAction = () => {
     if (!playable) {
       return;
@@ -270,6 +277,7 @@ const AudioPlayer: React.FC<IProps> = ({
     audioElem.current.currentTime -= config.rewindTime || 5;
   };
 
+  // Move forward by a specific amount of time.
   const moveForwardAction = () => {
     if (!playable) {
       return;
@@ -277,13 +285,22 @@ const AudioPlayer: React.FC<IProps> = ({
     audioElem.current.currentTime += config.fastForwardTime || 5;
   };
 
+  // Set the current timestamp to a given value.
   const setTimeAction = (time: number = 0) => {
     audioElem.current.currentTime = time;
     setTimestamp(time);
     const value = (100 / duration) * time;
     setProgress(value);
+
+    // Determine whether time has been set to end.
+    const hasEnded = value >= 100;
+    setEnded(hasEnded);
+    if (eventRouter) {
+      eventRouter.emit('state.ended', hasEnded);
+    }
   };
 
+  // Rewind the audio file.
   const rewindAction = () => {
     audioElem.current.currentTime = 0;
     setEnded(false);
@@ -304,12 +321,14 @@ const AudioPlayer: React.FC<IProps> = ({
     }
   }, [selectedLanguage]);
 
+  // Handle mute toggling.
   const toggleMuteAction = () => {
     const newMute = !audioElem.current.muted;
     audioElem.current.muted = newMute;
     setMuted(newMute);
   };
 
+  // Handle remote events through eventRouter.
   const handleRemoteAction = (action: string, timestamp: number = 0) => {
     if (action === 'backward') {
       moveBackwardAction();
@@ -327,7 +346,6 @@ const AudioPlayer: React.FC<IProps> = ({
       setTimeAction(timestamp);
     }
   };
-
   React.useEffect(() => {
     if (eventRouter) {
       eventRouter.on('remote.action', handleRemoteAction);

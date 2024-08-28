@@ -13,9 +13,6 @@ interface IPlaybackEvent {
     currentTime?: number;
     duration?: number;
 }
-declare type IBufferEvent = IPlaybackEvent & {
-    buffering: boolean;
-};
 interface IProps {
     playlist: IPlaylistItem[];
     id?: string;
@@ -32,7 +29,7 @@ interface IProps {
     onPause?: (e?: IPlaybackEvent) => void;
     onEnd?: (e?: IPlaybackEvent) => void;
     onTimeUpdate?: (e?: IPlaybackEvent) => void;
-    onBufferingUpdate?: (e?: IBufferEvent) => void;
+    onBufferingUpdate?: (isBuffering: boolean) => void;
 }
 declare const AudioPlayer: React.FC<IProps>;
 export default AudioPlayer;

@@ -543,7 +543,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
     onPlay = _ref.onPlay,
     onPause = _ref.onPause,
     onEnd = _ref.onEnd,
-    onTimeUpdate = _ref.onTimeUpdate;
+    onTimeUpdate = _ref.onTimeUpdate,
+    onBufferingUpdate = _ref.onBufferingUpdate;
   var audioElem = React.useRef(null);
   var timeElapsedElem = React.useRef(null);
   var durationElem = React.useRef(null);
@@ -673,11 +674,18 @@ var AudioPlayer = function AudioPlayer(_ref) {
     if (!playable) {
       return;
     }
-    var newPlaying = false;
     if (buffering || !audioElem.current.paused) {
-      audioElem.current.pause();
-      setBuffering(false);
+      pauseAction();
     } else {
+      playAction();
+    }
+  };
+  var playAction = function playAction() {
+    if (!playable) {
+      return;
+    }
+    var newPlaying = false;
+    if (!buffering && audioElem.current.paused) {
       audioElem.current.play();
       newPlaying = true;
     }
@@ -687,16 +695,30 @@ var AudioPlayer = function AudioPlayer(_ref) {
     if (eventRouter) {
       eventRouter.emit('state.playing', newPlaying);
     }
-    if (newPlaying) {
-      if (typeof onPlay === 'function') {
-        onPlay({
-          fileData: fileData,
-          selectedFile: selectedFile,
-          currentTime: currentTime,
-          duration: duration
-        });
-      }
-    } else if (typeof onPause === 'function') {
+    if (newPlaying && typeof onPlay === 'function') {
+      onPlay({
+        fileData: fileData,
+        selectedFile: selectedFile,
+        currentTime: currentTime,
+        duration: duration
+      });
+    }
+  };
+  var pauseAction = function pauseAction() {
+    if (!playable) {
+      return;
+    }
+    if (buffering || !audioElem.current.paused) {
+      audioElem.current.pause();
+      setBuffering(false);
+    }
+    var currentTime = audioElem.current.currentTime;
+    setPlaying(false);
+    setTimestamp(currentTime);
+    if (eventRouter) {
+      eventRouter.emit('state.playing', false);
+    }
+    if (typeof onPause === 'function') {
       onPause({
         fileData: fileData,
         selectedFile: selectedFile,
@@ -751,6 +773,20 @@ var AudioPlayer = function AudioPlayer(_ref) {
     }
     audioElem.current.currentTime += config.fastForwardTime || 5;
   };
+  var setTimeAction = function setTimeAction(time) {
+    if (time === void 0) {
+      time = 0;
+    }
+    audioElem.current.currentTime = time;
+    setTimestamp(time);
+    var value = 100 / duration * time;
+    setProgress(value);
+    var hasEnded = value >= 100;
+    setEnded(hasEnded);
+    if (eventRouter) {
+      eventRouter.emit('state.ended', hasEnded);
+    }
+  };
   var rewindAction = function rewindAction() {
     audioElem.current.currentTime = 0;
     setEnded(false);
@@ -771,15 +807,24 @@ var AudioPlayer = function AudioPlayer(_ref) {
     audioElem.current.muted = newMute;
     setMuted(newMute);
   };
-  var handleRemoteAction = function handleRemoteAction(action) {
+  var handleRemoteAction = function handleRemoteAction(action, timestamp) {
+    if (timestamp === void 0) {
+      timestamp = 0;
+    }
     if (action === 'backward') {
       moveBackwardAction();
     } else if (action === 'play_pause') {
       playPauseAction();
+    } else if (action === 'play') {
+      playAction();
+    } else if (action === 'pause') {
+      pauseAction();
     } else if (action === 'reset') {
       rewindAction();
     } else if (action === 'forward') {
       moveForwardAction();
+    } else if (action === 'timestamp_update') {
+      setTimeAction(timestamp);
     }
   };
   React.useEffect(function () {
@@ -792,6 +837,14 @@ var AudioPlayer = function AudioPlayer(_ref) {
       }
     };
   }, []);
+  var onBufferingUpdateCallback = React.useCallback(function (buffering) {
+    if (typeof onBufferingUpdate === 'function') {
+      onBufferingUpdate(buffering);
+    }
+  }, [onBufferingUpdate]);
+  React.useEffect(function () {
+    onBufferingUpdateCallback(buffering);
+  }, [buffering]);
   var currentFile = fileData[selectedFile] || null;
   var audioTag = /*#__PURE__*/React.createElement("audio", {
     className: CssClasses('video-element', className),
