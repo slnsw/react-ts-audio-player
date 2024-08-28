@@ -78,5 +78,6 @@ export declare const defaultConfigs: {
             mute__true: any;
         };
         useHoursInTimestamps: boolean;
+        keepPlayVisibleOnEnded: boolean;
     };
 };

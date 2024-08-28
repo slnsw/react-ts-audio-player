@@ -16,5 +16,6 @@ export interface IAudioPlayerConfig {
     useTooltip?: boolean;
     useRangeForScrubBar?: boolean;
     useProgressForScrubBar?: boolean;
+    keepPlayVisibleOnEnded?: boolean;
 }
 export {};

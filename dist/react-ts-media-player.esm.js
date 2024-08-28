@@ -933,7 +933,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     config: config
   }, "Rewind"), /*#__PURE__*/createElement(ToggleButton, {
     btnType: "play",
-    hidden: ended,
+    hidden: !(config !== null && config !== void 0 && config.keepPlayVisibleOnEnded) && ended,
     onClick: playPauseAction,
     toggleState: playing,
     config: config
