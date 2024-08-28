@@ -30,10 +30,6 @@ interface IPlaybackEvent {
   duration?: number;
 }
 
-type IBufferEvent = IPlaybackEvent & {
-  buffering: boolean;
-};
-
 interface IProps {
   playlist: IPlaylistItem[];
   id?: string;
@@ -50,7 +46,7 @@ interface IProps {
   onPause?: (e?: IPlaybackEvent) => void;
   onEnd?: (e?: IPlaybackEvent) => void;
   onTimeUpdate?: (e?: IPlaybackEvent) => void;
-  onBufferingUpdate?: (e?: IBufferEvent) => void;
+  onBufferingUpdate?: (isBuffering: boolean) => void;
 }
 
 const AudioPlayer: React.FC<IProps> = ({
@@ -69,6 +65,7 @@ const AudioPlayer: React.FC<IProps> = ({
   onPause,
   onEnd,
   onTimeUpdate,
+  onBufferingUpdate,
 }: IProps) => {
   const audioElem = React.useRef(null);
   const timeElapsedElem = React.useRef(null);
@@ -179,31 +176,59 @@ const AudioPlayer: React.FC<IProps> = ({
     }
   };
 
+  // Combined play/pause toggle.
   const playPauseAction = () => {
     if (!playable) {
       return;
     }
-    let newPlaying = false;
 
     if (buffering || !audioElem.current.paused) {
-      audioElem.current.pause();
-      setBuffering(false);
+      pauseAction();
     } else {
+      playAction();
+    }
+  };
+
+  // Playback action.
+  const playAction = () => {
+    if (!playable) {
+      return;
+    }
+
+    let newPlaying = false;
+    if (!buffering && audioElem.current.paused) {
       audioElem.current.play();
       newPlaying = true;
     }
-
     const { currentTime } = audioElem.current;
     setPlaying(newPlaying);
     setTimestamp(currentTime);
     if (eventRouter) {
       eventRouter.emit('state.playing', newPlaying);
     }
-    if (newPlaying) {
-      if (typeof onPlay === 'function') {
-        onPlay({ fileData, selectedFile, currentTime, duration });
-      }
-    } else if (typeof onPause === 'function') {
+    if (newPlaying && typeof onPlay === 'function') {
+      onPlay({ fileData, selectedFile, currentTime, duration });
+    }
+  };
+
+  // Pause action.
+  const pauseAction = () => {
+    if (!playable) {
+      return;
+    }
+
+    if (buffering || !audioElem.current.paused) {
+      audioElem.current.pause();
+      setBuffering(false);
+    }
+
+    const { currentTime } = audioElem.current;
+    setPlaying(false);
+    setTimestamp(currentTime);
+    if (eventRouter) {
+      eventRouter.emit('state.playing', false);
+    }
+    if (typeof onPause === 'function') {
       onPause({ fileData, selectedFile, currentTime, duration });
     }
   };
@@ -290,6 +315,10 @@ const AudioPlayer: React.FC<IProps> = ({
       moveBackwardAction();
     } else if (action === 'play_pause') {
       playPauseAction();
+    } else if (action === 'play') {
+      playAction();
+    } else if (action === 'pause') {
+      pauseAction();
     } else if (action === 'reset') {
       rewindAction();
     } else if (action === 'forward') {
@@ -309,6 +338,16 @@ const AudioPlayer: React.FC<IProps> = ({
       }
     };
   }, []);
+
+  // Handle buffering status changes.
+  const onBufferingUpdateCallback = React.useCallback((buffering: boolean) => {
+    if (typeof onBufferingUpdate === 'function') {
+      onBufferingUpdate(buffering);
+    }
+  }, [onBufferingUpdate]);
+  React.useEffect(() => {
+    onBufferingUpdateCallback(buffering);
+  }, [buffering]);
 
   const currentFile = fileData[selectedFile] || null;
 
