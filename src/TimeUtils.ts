@@ -10,7 +10,7 @@ const strPadLeft = (n: number): string => {
 
 export const toHHMMSS = (str: string): string => {
   const secNum = parseInt(str, 10);
-  if (isNaN(secNum)) {
+  if (Number.isNaN(secNum)) {
     return '';
   }
   const hours = Math.floor(secNum / 3600);
@@ -22,7 +22,7 @@ export const toHHMMSS = (str: string): string => {
 
 export const toMMSS = (str: string): string => {
   const secNum = parseInt(str, 10);
-  if (isNaN(secNum)) {
+  if (Number.isNaN(secNum)) {
     return '';
   }
   const minutes = Math.floor(secNum / 60);

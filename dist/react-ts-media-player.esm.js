@@ -1,4 +1,4 @@
-import React from 'react';
+import React__default, { useRef, useState, useEffect, createElement, Fragment } from 'react';
 import debounce from 'debounce';
 
 var collapseArrayProperty = function collapseArrayProperty(prop, delimiter) {
@@ -8,10 +8,11 @@ var collapseArrayProperty = function collapseArrayProperty(prop, delimiter) {
   if (delimiter === void 0) {
     delimiter = ' ';
   }
-  if (!Array.isArray(prop)) {
-    prop = [prop];
+  var localProp = prop;
+  if (!Array.isArray(localProp)) {
+    localProp = [localProp];
   }
-  return prop.join(delimiter);
+  return localProp.join(delimiter);
 };
 
 var SrOnly = function SrOnly(_ref) {
@@ -19,7 +20,7 @@ var SrOnly = function SrOnly(_ref) {
     config = _ref$config === void 0 ? {} : _ref$config,
     children = _ref.children;
   var classNames = [].concat(collapseArrayProperty(config.classNames['sr-only']));
-  return /*#__PURE__*/React.createElement("span", {
+  return /*#__PURE__*/React__default.createElement("span", {
     className: classNames.join(' ')
   }, children);
 };
@@ -62,14 +63,14 @@ var ActionButton = function ActionButton(_ref) {
   var defaultClassName = collapseArrayProperty(config.classNames[btnType]);
   var iconClassNames = collapseArrayProperty(config.icons[btnType]);
   var iconElem = config.iconElements[btnType] || null;
-  return /*#__PURE__*/React.createElement("button", {
+  return /*#__PURE__*/React__default.createElement("button", {
     className: CssClasses(defaultClassName, className || ''),
     disabled: !enabled,
     hidden: hidden,
     onClick: onClick
-  }, /*#__PURE__*/React.createElement(SrOnly, {
+  }, /*#__PURE__*/React__default.createElement(SrOnly, {
     config: config
-  }, children), !iconElem && /*#__PURE__*/React.createElement("span", {
+  }, children), !iconElem && /*#__PURE__*/React__default.createElement("span", {
     className: CssClasses(iconClassNames, '')
   }), iconElem);
 };
@@ -106,7 +107,7 @@ var ScrubBarTooltip = function ScrubBarTooltip(_ref) {
     className = _ref.className,
     _ref$style = _ref.style,
     style = _ref$style === void 0 ? {} : _ref$style;
-  return /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React__default.createElement("div", {
     style: style,
     className: className || ''
   }, title);
@@ -122,19 +123,19 @@ var ScrubBarTooltipOuter = function ScrubBarTooltipOuter(_ref2) {
     defaultValue = _ref2$defaultValue === void 0 ? 0 : _ref2$defaultValue,
     _ref2$show = _ref2.show,
     show = _ref2$show === void 0 ? false : _ref2$show;
-  var outer = React.useRef(null);
-  var _React$useState = React.useState(defaultValue),
+  var outer = React__default.useRef(null);
+  var _React$useState = React__default.useState(defaultValue),
     value = _React$useState[0],
     setValue = _React$useState[1];
   var outerWidth = outer.current ? outer.current.clientWidth : 0;
   var content = valueToTooltipString(value) || '';
-  return /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React__default.createElement("div", {
     ref: outer,
     onMouseMove: function onMouseMove(e) {
       setValue(getOffsetX(e) / outerWidth);
     },
     className: wrapperClassName
-  }, show && content.length > 0 && ( /*#__PURE__*/React.createElement(ScrubBarTooltip, {
+  }, show && content.length > 0 && ( /*#__PURE__*/React__default.createElement(ScrubBarTooltip, {
     title: valueToTooltipString(value),
     className: tooltipClassName,
     style: {
@@ -159,18 +160,18 @@ var ScrubBar = function ScrubBar(_ref3) {
     className = _ref3.className,
     label = _ref3.label,
     onClick = _ref3.onClick;
-  var outer = React.useRef(null);
-  var scrubbing = React.useRef(false);
-  var _React$useState2 = React.useState(false),
+  var outer = React__default.useRef(null);
+  var scrubbing = React__default.useRef(false);
+  var _React$useState2 = React__default.useState(false),
     hover = _React$useState2[0],
     setHover = _React$useState2[1];
-  var _React$useState3 = React.useState(clampNumber(defaultValue, 0, 1)),
+  var _React$useState3 = React__default.useState(clampNumber(defaultValue, 0, 1)),
     value = _React$useState3[0],
     setValue = _React$useState3[1];
-  var _React$useState4 = React.useState(0),
+  var _React$useState4 = React__default.useState(0),
     offsetX = _React$useState4[0],
     setOffsetX = _React$useState4[1];
-  var _React$useState5 = React.useState(0),
+  var _React$useState5 = React__default.useState(0),
     lastUpdate = _React$useState5[0],
     setLastUpdate = _React$useState5[1];
   var derivedId = id || 'scrub-bar';
@@ -195,29 +196,35 @@ var ScrubBar = function ScrubBar(_ref3) {
       setOffsetX(getOffsetXNative(e, outer.current));
     }
   };
-  React.useEffect(function () {
-    document.addEventListener('mousemove', onMouseMove, false);
-    document.addEventListener('touchmove', onTouchMove, false);
-    document.addEventListener('mouseup', onUp, false);
-    document.addEventListener('touchend', onUp, false);
+  React__default.useEffect(function () {
+    var _window;
+    if (typeof window !== 'undefined' && (_window = window) !== null && _window !== void 0 && _window.document) {
+      window.document.addEventListener('mousemove', onMouseMove, false);
+      window.document.addEventListener('touchmove', onTouchMove, false);
+      window.document.addEventListener('mouseup', onUp, false);
+      window.document.addEventListener('touchend', onUp, false);
+    }
     return function () {
-      document.removeEventListener('mousemove', onMouseMove, false);
-      document.removeEventListener('touchmove', onTouchMove, false);
-      document.removeEventListener('mouseup', onUp, false);
-      document.removeEventListener('touchend', onUp, false);
+      var _window2;
+      if (typeof window !== 'undefined' && (_window2 = window) !== null && _window2 !== void 0 && _window2.document) {
+        window.document.removeEventListener('mousemove', onMouseMove, false);
+        window.document.removeEventListener('touchmove', onTouchMove, false);
+        window.document.removeEventListener('mouseup', onUp, false);
+        window.document.removeEventListener('touchend', onUp, false);
+      }
     };
   }, []);
-  React.useEffect(function () {
+  React__default.useEffect(function () {
     setValue(clampNumber(defaultValue, 0, 100));
   }, [defaultValue]);
-  React.useEffect(function () {
+  React__default.useEffect(function () {
     if (scrubbing.current) {
       var pos = clampNumber(offsetX / outer.current.clientWidth, 0, 1);
       setValue(pos * 100);
       debouncedOnClick(pos);
     }
   }, [lastUpdate, offsetX]);
-  return /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React__default.createElement("div", {
     className: CssClasses(className || '', '', '', [scrubbing.current ? 'scrubbing' : '']),
     onMouseOver: function onMouseOver() {
       return setHover(true);
@@ -228,22 +235,22 @@ var ScrubBar = function ScrubBar(_ref3) {
     onMouseDown: useRange ? function () {} : onDown,
     onTouchStart: useRange ? function () {} : onDown,
     ref: outer
-  }, useTooltip && ( /*#__PURE__*/React.createElement(ScrubBarTooltipOuter, {
+  }, useTooltip && ( /*#__PURE__*/React__default.createElement(ScrubBarTooltipOuter, {
     wrapperClassName: className + "__wraptooltip",
     tooltipClassName: className + "__tooltip",
     show: hover || scrubbing.current,
     valueToTooltipString: valueToTooltipString,
     defaultValue: value
-  })), (useProgress || useRange) && ( /*#__PURE__*/React.createElement("label", {
+  })), (useProgress || useRange) && ( /*#__PURE__*/React__default.createElement("label", {
     htmlFor: useRange ? derivedId + "__scrubrange" : derivedId + "__progress"
-  }, /*#__PURE__*/React.createElement("span", {
+  }, /*#__PURE__*/React__default.createElement("span", {
     className: "sr-only"
-  }, label || '', value + " percent"), useProgress && ( /*#__PURE__*/React.createElement("progress", {
+  }, label || '', value + " percent"), useProgress && ( /*#__PURE__*/React__default.createElement("progress", {
     max: "100",
     value: value,
     className: className + "__progress",
     id: derivedId + "__progress"
-  })), useRange && ( /*#__PURE__*/React.createElement("input", {
+  })), useRange && ( /*#__PURE__*/React__default.createElement("input", {
     className: className + "__scrubrange",
     id: derivedId + "__scrubrange",
     type: "range",
@@ -255,12 +262,12 @@ var ScrubBar = function ScrubBar(_ref3) {
     onChange: function onChange(e) {
       setOffsetX(parseFloat(e.currentTarget.value) / 100.0 * outer.current.clientWidth);
     }
-  })))), !useRange && ( /*#__PURE__*/React.createElement("div", {
+  })))), !useRange && ( /*#__PURE__*/React__default.createElement("div", {
     className: [className + "__fill"].join(' '),
     style: {
       width: value + "%"
     }
-  }, /*#__PURE__*/React.createElement("span", {
+  }, /*#__PURE__*/React__default.createElement("span", {
     className: "sr-only"
   }, label || '', value + " percent"))));
 };
@@ -283,10 +290,10 @@ var SubtitleContainer = function SubtitleContainer(_ref) {
     tracks = _ref$tracks === void 0 ? [] : _ref$tracks,
     id = _ref.id,
     className = _ref.className;
-  var _React$useState = React.useState(''),
+  var _React$useState = React__default.useState(''),
     text = _React$useState[0],
     setText = _React$useState[1];
-  var _React$useState2 = React.useState(null),
+  var _React$useState2 = React__default.useState(null),
     currentTrack = _React$useState2[0],
     setCurrentTrack = _React$useState2[1];
   var cueChange = function cueChange(e) {
@@ -302,7 +309,7 @@ var SubtitleContainer = function SubtitleContainer(_ref) {
     }
     setText(newText);
   };
-  React.useEffect(function () {
+  React__default.useEffect(function () {
     if (currentTrack) {
       currentTrack.addEventListener('cuechange', cueChange, false);
     }
@@ -312,7 +319,7 @@ var SubtitleContainer = function SubtitleContainer(_ref) {
       }
     };
   }, [memoiseTrack(currentTrack)]);
-  React.useEffect(function () {
+  React__default.useEffect(function () {
     if (lang && lang.length && tracks && tracks.length) {
       var track = null;
       var i;
@@ -325,7 +332,7 @@ var SubtitleContainer = function SubtitleContainer(_ref) {
       setCurrentTrack(track);
     }
   }, [lang, tracks]);
-  return /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React__default.createElement("div", {
     className: [className || '', 'video-wrapper__subtitle-container'].join(' '),
     hidden: !visible,
     "aria-hidden": !visible,
@@ -343,7 +350,7 @@ var Menu = function Menu(_ref) {
     visible = _ref$visible === void 0 ? false : _ref$visible,
     className = _ref.className,
     children = _ref.children;
-  return /*#__PURE__*/React.createElement("ol", {
+  return /*#__PURE__*/React__default.createElement("ol", {
     className: ['video-wrapper__popup-menu', className || ''].join(' '),
     id: id,
     hidden: !visible,
@@ -357,7 +364,7 @@ var MenuItem = function MenuItem(_ref) {
     _ref$selected = _ref.selected,
     selected = _ref$selected === void 0 ? false : _ref$selected,
     onSelect = _ref.onSelect;
-  return /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("button", {
+  return /*#__PURE__*/React__default.createElement("li", null, /*#__PURE__*/React__default.createElement("button", {
     "data-value": value,
     "data-state": selected ? 'active' : 'inactive',
     onClick: onSelect,
@@ -384,7 +391,7 @@ var SubtitleMenu = function SubtitleMenu(_ref) {
       onSelect(selectedLang);
     }
   };
-  var languageOptions = [/*#__PURE__*/React.createElement(MenuItem, {
+  var languageOptions = [/*#__PURE__*/React__default.createElement(MenuItem, {
     key: '_none_',
     label: 'Off',
     value: null,
@@ -396,7 +403,7 @@ var SubtitleMenu = function SubtitleMenu(_ref) {
   if (tracks && tracks.length) {
     for (i = 0; i < tracks.length; i += 1) {
       track = tracks[i];
-      languageOptions.push( /*#__PURE__*/React.createElement(MenuItem, {
+      languageOptions.push( /*#__PURE__*/React__default.createElement(MenuItem, {
         key: track.language + "-" + i,
         label: track.label,
         value: track.language,
@@ -405,7 +412,7 @@ var SubtitleMenu = function SubtitleMenu(_ref) {
       }));
     }
   }
-  return /*#__PURE__*/React.createElement(Menu, {
+  return /*#__PURE__*/React__default.createElement(Menu, {
     className: [className || '', 'subtitles-menu'].join(' '),
     id: id,
     visible: visible
@@ -430,16 +437,16 @@ var ToggleButton = function ToggleButton(_ref) {
   var iconClassNamesTrue = collapseArrayProperty(config.icons[btnType + "__true"]);
   var iconElemFalse = config.iconElements[btnType + "__false"] || null;
   var iconElemTrue = config.iconElements[btnType + "__true"] || null;
-  return /*#__PURE__*/React.createElement("button", {
+  return /*#__PURE__*/React__default.createElement("button", {
     className: CssClasses(defaultClassName, className || ''),
     disabled: !enabled,
     hidden: hidden,
     onClick: onClick
-  }, /*#__PURE__*/React.createElement(SrOnly, {
+  }, /*#__PURE__*/React__default.createElement(SrOnly, {
     config: config
-  }, children), !toggleState && !iconElemFalse && ( /*#__PURE__*/React.createElement("span", {
+  }, children), !toggleState && !iconElemFalse && ( /*#__PURE__*/React__default.createElement("span", {
     className: CssClasses(iconClassNamesFalse)
-  })), !toggleState && iconElemFalse, toggleState && !iconElemTrue && ( /*#__PURE__*/React.createElement("span", {
+  })), !toggleState && iconElemFalse, toggleState && !iconElemTrue && ( /*#__PURE__*/React__default.createElement("span", {
     className: CssClasses(iconClassNamesTrue)
   })), toggleState && iconElemTrue);
 };
@@ -466,7 +473,7 @@ var TracklistMenu = function TracklistMenu(_ref) {
     }
   };
   var trackOptions = tracklist.map(function (track, index) {
-    return /*#__PURE__*/React.createElement(MenuItem, {
+    return /*#__PURE__*/React__default.createElement(MenuItem, {
       key: index,
       label: track.label,
       value: index,
@@ -474,7 +481,7 @@ var TracklistMenu = function TracklistMenu(_ref) {
       onSelect: onSelectTrack
     });
   });
-  return /*#__PURE__*/React.createElement(Menu, {
+  return /*#__PURE__*/React__default.createElement(Menu, {
     className: [className || '', 'track-menu'].join(' '),
     id: id,
     visible: visible
@@ -489,7 +496,7 @@ var strPadLeft = function strPadLeft(n) {
 };
 var toHHMMSS = function toHHMMSS(str) {
   var secNum = parseInt(str, 10);
-  if (isNaN(secNum)) {
+  if (Number.isNaN(secNum)) {
     return '';
   }
   var hours = Math.floor(secNum / 3600);
@@ -499,7 +506,7 @@ var toHHMMSS = function toHHMMSS(str) {
 };
 var toMMSS = function toMMSS(str) {
   var secNum = parseInt(str, 10);
-  if (isNaN(secNum)) {
+  if (Number.isNaN(secNum)) {
     return '';
   }
   var minutes = Math.floor(secNum / 60);
@@ -530,45 +537,48 @@ var AudioPlayer = function AudioPlayer(_ref) {
     onPause = _ref.onPause,
     onEnd = _ref.onEnd,
     onTimeUpdate = _ref.onTimeUpdate;
-  var audioElem = React.useRef(null);
-  var timeElapsedElem = React.useRef(null);
-  var durationElem = React.useRef(null);
-  var _React$useState = React.useState(0),
+  var audioElem = useRef(null);
+  var timeElapsedElem = useRef(null);
+  var durationElem = useRef(null);
+  var _React$useState = useState(0),
     duration = _React$useState[0],
     setDuration = _React$useState[1];
-  var _React$useState2 = React.useState(0),
+  var _React$useState2 = useState(0),
     timestamp = _React$useState2[0],
     setTimestamp = _React$useState2[1];
-  var _React$useState3 = React.useState([]),
+  var _React$useState3 = useState([]),
     fileData = _React$useState3[0],
     setFileData = _React$useState3[1];
-  var _React$useState4 = React.useState(0),
+  var _React$useState4 = useState(0),
     selectedFile = _React$useState4[0],
     setSelectedFile = _React$useState4[1];
-  var _React$useState5 = React.useState(0),
+  var _React$useState5 = useState(0),
     progress = _React$useState5[0],
     setProgress = _React$useState5[1];
-  var _React$useState6 = React.useState(false),
+  var _React$useState6 = useState(false),
     playing = _React$useState6[0],
     setPlaying = _React$useState6[1];
-  var _React$useState7 = React.useState(false),
-    ended = _React$useState7[0],
-    setEnded = _React$useState7[1];
-  var _React$useState8 = React.useState(false),
-    muted = _React$useState8[0],
-    setMuted = _React$useState8[1];
-  var _React$useState9 = React.useState(null),
-    selectedLanguage = _React$useState9[0],
-    setSelectedLanguage = _React$useState9[1];
-  var _React$useState10 = React.useState(false),
-    showTrackListMenu = _React$useState10[0],
-    setShowTrackListMenu = _React$useState10[1];
-  var _React$useState11 = React.useState(false),
-    showSubtitleMenu = _React$useState11[0],
-    setShowSubtitleMenu = _React$useState11[1];
-  var _React$useState12 = React.useState(false),
-    videoMetadataLoaded = _React$useState12[0],
-    setVideoMetadataLoaded = _React$useState12[1];
+  var _React$useState7 = useState(false),
+    buffering = _React$useState7[0],
+    setBuffering = _React$useState7[1];
+  var _React$useState8 = useState(false),
+    ended = _React$useState8[0],
+    setEnded = _React$useState8[1];
+  var _React$useState9 = useState(false),
+    muted = _React$useState9[0],
+    setMuted = _React$useState9[1];
+  var _React$useState10 = useState(null),
+    selectedLanguage = _React$useState10[0],
+    setSelectedLanguage = _React$useState10[1];
+  var _React$useState11 = useState(false),
+    showTrackListMenu = _React$useState11[0],
+    setShowTrackListMenu = _React$useState11[1];
+  var _React$useState12 = useState(false),
+    showSubtitleMenu = _React$useState12[0],
+    setShowSubtitleMenu = _React$useState12[1];
+  var _React$useState13 = useState(false),
+    videoMetadataLoaded = _React$useState13[0],
+    setVideoMetadataLoaded = _React$useState13[1];
   var captionsContainerId = id + "__captions";
   var timeIndicatorId = id + "__time-indicator";
   var durationIndicatorId = id + "__duration-indicator";
@@ -589,22 +599,23 @@ var AudioPlayer = function AudioPlayer(_ref) {
     }
     return toMMSS(seconds.toString());
   };
-  React.useEffect(function () {
+  useEffect(function () {
     audioElem.current.setAttribute('playsinline', 'playsinline');
   }, []);
-  React.useEffect(function () {
+  useEffect(function () {
     setFileData(playlist);
     setSelectedFile(0);
   }, [playlist]);
   var canPlayPrev = selectedFile > 0;
   var canPlayNext = selectedFile < fileData.length - 1;
-  React.useEffect(function () {
+  useEffect(function () {
     audioElem.current.load();
     audioElem.current.currentTime = 0;
     setProgress(0);
   }, [selectedFile]);
   var selectTrack = function selectTrack(trackNumber) {
     setPlaying(false);
+    setBuffering(false);
     setEnded(false);
     setVideoMetadataLoaded(false);
     setSelectedFile(trackNumber);
@@ -656,11 +667,12 @@ var AudioPlayer = function AudioPlayer(_ref) {
       return;
     }
     var newPlaying = false;
-    if (audioElem.current.paused) {
+    if (buffering || !audioElem.current.paused) {
+      audioElem.current.pause();
+      setBuffering(false);
+    } else {
       audioElem.current.play();
       newPlaying = true;
-    } else {
-      audioElem.current.pause();
     }
     var currentTime = audioElem.current.currentTime;
     setPlaying(newPlaying);
@@ -677,15 +689,13 @@ var AudioPlayer = function AudioPlayer(_ref) {
           duration: duration
         });
       }
-    } else {
-      if (typeof onPause === 'function') {
-        onPause({
-          fileData: fileData,
-          selectedFile: selectedFile,
-          currentTime: currentTime,
-          duration: duration
-        });
-      }
+    } else if (typeof onPause === 'function') {
+      onPause({
+        fileData: fileData,
+        selectedFile: selectedFile,
+        currentTime: currentTime,
+        duration: duration
+      });
     }
   };
   var nextTrackAction = function nextTrackAction() {
@@ -743,7 +753,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
       eventRouter.emit('state.ended', false);
     }
   };
-  React.useEffect(function () {
+  useEffect(function () {
     var i;
     for (i = 0; i < audioElem.current.textTracks.length; i += 1) {
       audioElem.current.textTracks[i].mode = audioElem.current.textTracks[i].language === selectedLanguage ? 'showing' : 'hidden';
@@ -765,7 +775,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
       moveForwardAction();
     }
   };
-  React.useEffect(function () {
+  useEffect(function () {
     if (eventRouter) {
       eventRouter.on('remote.action', handleRemoteAction);
     }
@@ -776,9 +786,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     };
   }, []);
   var currentFile = fileData[selectedFile] || null;
-  return /*#__PURE__*/React.createElement("div", {
-    className: CssClasses('video-wrapper', className)
-  }, /*#__PURE__*/React.createElement("audio", {
+  var audioTag = /*#__PURE__*/createElement("audio", {
     className: CssClasses('video-element', className),
     "data-oh-audio-player": "1",
     crossOrigin: crossOrigin,
@@ -787,18 +795,30 @@ var AudioPlayer = function AudioPlayer(_ref) {
     onLoadedMetadata: onLoadedMetadata,
     onEnded: onEnded,
     onTimeUpdate: internalOnTimeUpdate,
+    onWaiting: function onWaiting() {
+      return setBuffering(true);
+    },
+    onCanPlay: function onCanPlay() {
+      return setBuffering(false);
+    },
+    onCanPlayThrough: function onCanPlayThrough() {
+      return setBuffering(false);
+    },
     "aria-describedby": captionsContainerId
-  }, currentFile && /*#__PURE__*/React.createElement("source", {
+  }, currentFile && /*#__PURE__*/createElement("source", {
     src: currentFile.audioUrl,
     type: "audio/mpeg"
-  }), currentFile && hasVtt(currentFile) && ( /*#__PURE__*/React.createElement("track", {
+  }), currentFile && hasVtt(currentFile) && ( /*#__PURE__*/createElement("track", {
     src: currentFile.transcriptUrl,
     kind: "captions",
     label: "English",
     srcLang: "en"
-  }))), /*#__PURE__*/React.createElement("div", {
+  })));
+  return /*#__PURE__*/createElement("div", {
+    className: CssClasses('video-wrapper', className)
+  }, audioTag, /*#__PURE__*/createElement("div", {
     className: CssClasses('video-controls', className)
-  }, /*#__PURE__*/React.createElement(ScrubBar, {
+  }, /*#__PURE__*/createElement(ScrubBar, {
     defaultValue: progress,
     className: CssClasses('video-controls', className, 'progress-bar'),
     onClick: function onClick(pos) {
@@ -811,29 +831,29 @@ var AudioPlayer = function AudioPlayer(_ref) {
     valueToTooltipString: function valueToTooltipString(pos) {
       return getTimestampString(audioElem.current ? pos * audioElem.current.duration : 0);
     }
-  }), /*#__PURE__*/React.createElement("label", {
+  }), /*#__PURE__*/createElement("label", {
     className: "sr-only",
     htmlFor: timeIndicatorId
-  }, "Time elapsed"), /*#__PURE__*/React.createElement("input", {
+  }, "Time elapsed"), /*#__PURE__*/createElement("input", {
     className: CssClasses('video-controls', className, 'time-elapsed'),
     id: timeIndicatorId,
     readOnly: true,
     ref: timeElapsedElem,
     value: getTimestampString(timestamp)
-  }), config.showDuration && ( /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+  }), config.showDuration && ( /*#__PURE__*/createElement(Fragment, null, /*#__PURE__*/createElement("label", {
     className: "sr-only",
     htmlFor: durationIndicatorId
-  }, "Duration"), /*#__PURE__*/React.createElement("input", {
+  }, "Duration"), /*#__PURE__*/createElement("input", {
     className: CssClasses('video-controls', className, 'duration'),
     id: durationIndicatorId,
     readOnly: true,
     ref: durationElem,
     value: getTimestampString(duration, true)
-  }))), /*#__PURE__*/React.createElement("div", {
+  }))), /*#__PURE__*/createElement("div", {
     className: "w-100"
-  }), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/createElement("div", {
     className: CssClasses('video-controls', className, 'button-wrapper')
-  }, /*#__PURE__*/React.createElement(ToggleButton, {
+  }, /*#__PURE__*/createElement(ToggleButton, {
     btnType: "tracklist",
     "aria-controls": tracklistId,
     enabled: fileData.length > 0 && !singleTrack,
@@ -843,9 +863,9 @@ var AudioPlayer = function AudioPlayer(_ref) {
     },
     toggleState: showTrackListMenu,
     config: config
-  }, "Tracklist"), /*#__PURE__*/React.createElement("div", {
+  }, "Tracklist"), /*#__PURE__*/createElement("div", {
     className: CssClasses('video-controls', className, 'button-wrapper__space')
-  }), /*#__PURE__*/React.createElement(ActionButton, {
+  }), /*#__PURE__*/createElement(ActionButton, {
     btnType: "previous-audio",
     enabled: fileData.length > 1 && canPlayPrev,
     onClick: function onClick() {
@@ -854,32 +874,32 @@ var AudioPlayer = function AudioPlayer(_ref) {
       }
     },
     config: config
-  }, "Previous track"), /*#__PURE__*/React.createElement(ActionButton, {
+  }, "Previous track"), /*#__PURE__*/createElement(ActionButton, {
     btnType: "backward",
     onClick: moveBackwardAction,
     config: config
-  }, "Rewind"), /*#__PURE__*/React.createElement(ToggleButton, {
+  }, "Rewind"), /*#__PURE__*/createElement(ToggleButton, {
     btnType: "play",
     hidden: ended,
     onClick: playPauseAction,
     toggleState: playing,
     config: config
-  }, playing ? 'Pause' : 'Play'), /*#__PURE__*/React.createElement(ActionButton, {
+  }, playing ? 'Pause' : 'Play'), /*#__PURE__*/createElement(ActionButton, {
     btnType: "reset",
     enabled: ended,
     hidden: !ended,
     onClick: rewindAction,
     config: config
-  }, "Restart"), /*#__PURE__*/React.createElement(ActionButton, {
+  }, "Restart"), /*#__PURE__*/createElement(ActionButton, {
     btnType: "forward",
     onClick: moveForwardAction,
     config: config
-  }, "Fast forward"), /*#__PURE__*/React.createElement(ActionButton, {
+  }, "Fast forward"), /*#__PURE__*/createElement(ActionButton, {
     btnType: "next-audio",
     enabled: fileData.length > 1 && canPlayNext,
     onClick: nextTrackAction,
     config: config
-  }, "Next track"), /*#__PURE__*/React.createElement(ToggleButton, {
+  }, "Next track"), /*#__PURE__*/createElement(ToggleButton, {
     btnType: "closed-captioning",
     "aria-controls": subtitleMenuId,
     enabled: videoMetadataLoaded && hasVtt(currentFile),
@@ -889,20 +909,20 @@ var AudioPlayer = function AudioPlayer(_ref) {
     },
     toggleState: showSubtitleMenu,
     config: config
-  }, "Closed captioning"), /*#__PURE__*/React.createElement("div", {
+  }, "Closed captioning"), /*#__PURE__*/createElement("div", {
     className: CssClasses('video-controls', className, 'button-wrapper__space')
-  }), /*#__PURE__*/React.createElement(ToggleButton, {
+  }), /*#__PURE__*/createElement(ToggleButton, {
     btnType: "mute",
     onClick: toggleMuteAction,
     toggleState: muted,
     config: config
-  }, "Mute"))), /*#__PURE__*/React.createElement(SubtitleMenu, {
+  }, "Mute"))), /*#__PURE__*/createElement(SubtitleMenu, {
     visible: showSubtitleMenu,
     id: subtitleMenuId,
     tracks: subtitleTracks(),
     selected: selectedLanguage,
     onSelect: selectSubtitleLanguage
-  }), /*#__PURE__*/React.createElement(TracklistMenu, {
+  }), /*#__PURE__*/createElement(TracklistMenu, {
     visible: !singleTrack && showTrackListMenu,
     id: tracklistId,
     tracklist: fileData,
@@ -911,7 +931,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
       setShowTrackListMenu(false);
       selectTrack(trackNumber);
     }
-  }), /*#__PURE__*/React.createElement(SubtitleContainer, {
+  }), /*#__PURE__*/createElement(SubtitleContainer, {
     visible: selectedLanguage !== null,
     lang: selectedLanguage,
     tracks: subtitleTracks(),

@@ -2,7 +2,7 @@
 // Audio player base component.
 
 import Emitter from 'eventemitter3';
-import React from 'react';
+import * as React from 'react';
 
 import ActionButton from './ActionButton';
 import ScrubBar from './ScrubBar';
@@ -30,6 +30,10 @@ interface IPlaybackEvent {
   duration?: number;
 }
 
+type IBufferEvent = IPlaybackEvent & {
+  buffering: boolean;
+};
+
 interface IProps {
   playlist: IPlaylistItem[];
   id?: string;
@@ -46,9 +50,10 @@ interface IProps {
   onPause?: (e?: IPlaybackEvent) => void;
   onEnd?: (e?: IPlaybackEvent) => void;
   onTimeUpdate?: (e?: IPlaybackEvent) => void;
+  onBufferingUpdate?: (e?: IBufferEvent) => void;
 }
 
-const AudioPlayer: React.FunctionComponent<IProps> = ({
+const AudioPlayer: React.FC<IProps> = ({
   playlist = [],
   id = 'audio-player',
   className,
@@ -75,6 +80,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   const [selectedFile, setSelectedFile] = React.useState(0);
   const [progress, setProgress] = React.useState(0);
   const [playing, setPlaying] = React.useState(false);
+  const [buffering, setBuffering] = React.useState(false);
   const [ended, setEnded] = React.useState(false);
   const [muted, setMuted] = React.useState(false);
   const [selectedLanguage, setSelectedLanguage] = React.useState(null);
@@ -124,6 +130,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
 
   const selectTrack = (trackNumber: number) => {
     setPlaying(false);
+    setBuffering(false);
     setEnded(false);
     setVideoMetadataLoaded(false);
     setSelectedFile(trackNumber);
@@ -161,7 +168,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
   };
 
   const internalOnTimeUpdate = () => {
-    const currentTime = audioElem.current.currentTime;
+    const { currentTime } = audioElem.current;
     if (duration > 0) {
       const value = (100 / duration) * currentTime;
       setProgress(value);
@@ -177,13 +184,16 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       return;
     }
     let newPlaying = false;
-    if (audioElem.current.paused) {
+
+    if (buffering || !audioElem.current.paused) {
+      audioElem.current.pause();
+      setBuffering(false);
+    } else {
       audioElem.current.play();
       newPlaying = true;
-    } else {
-      audioElem.current.pause();
     }
-    const currentTime = audioElem.current.currentTime;
+
+    const { currentTime } = audioElem.current;
     setPlaying(newPlaying);
     setTimestamp(currentTime);
     if (eventRouter) {
@@ -193,10 +203,8 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       if (typeof onPlay === 'function') {
         onPlay({ fileData, selectedFile, currentTime, duration });
       }
-    } else {
-      if (typeof onPause === 'function') {
-        onPause({ fileData, selectedFile, currentTime, duration });
-      }
+    } else if (typeof onPause === 'function') {
+      onPause({ fileData, selectedFile, currentTime, duration });
     }
   };
 
@@ -219,7 +227,7 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
       return;
     }
     setEnded(true);
-    const currentTime = audioElem.current.currentTime;
+    const { currentTime } = audioElem.current;
     setTimestamp(currentTime);
     if (eventRouter) {
       eventRouter.emit('state.playing', false);
@@ -295,29 +303,36 @@ const AudioPlayer: React.FunctionComponent<IProps> = ({
 
   const currentFile = fileData[selectedFile] || null;
 
+  const audioTag = (
+    <audio
+      className={CssClasses('video-element', className)}
+      data-oh-audio-player="1"
+      crossOrigin={crossOrigin}
+      preload="metadata"
+      ref={audioElem}
+      onLoadedMetadata={onLoadedMetadata}
+      onEnded={onEnded}
+      onTimeUpdate={internalOnTimeUpdate}
+      onWaiting={() => setBuffering(true)}
+      onCanPlay={() => setBuffering(false)}
+      onCanPlayThrough={() => setBuffering(false)}
+      aria-describedby={captionsContainerId}
+    >
+      {currentFile && <source src={currentFile.audioUrl} type="audio/mpeg" />}
+      {currentFile && hasVtt(currentFile) && (
+        <track
+          src={currentFile.transcriptUrl}
+          kind="captions"
+          label="English"
+          srcLang="en"
+        />
+      )}
+    </audio>
+  );
+
   return (
     <div className={CssClasses('video-wrapper', className)}>
-      <audio
-        className={CssClasses('video-element', className)}
-        data-oh-audio-player="1"
-        crossOrigin={crossOrigin}
-        preload="metadata"
-        ref={audioElem}
-        onLoadedMetadata={onLoadedMetadata}
-        onEnded={onEnded}
-        onTimeUpdate={internalOnTimeUpdate}
-        aria-describedby={captionsContainerId}
-      >
-        {currentFile && <source src={currentFile.audioUrl} type="audio/mpeg" />}
-        {currentFile && hasVtt(currentFile) && (
-          <track
-            src={currentFile.transcriptUrl}
-            kind="captions"
-            label="English"
-            srcLang="en"
-          />
-        )}
-      </audio>
+      {audioTag}
 
       <div className={CssClasses('video-controls', className)}>
         <ScrubBar

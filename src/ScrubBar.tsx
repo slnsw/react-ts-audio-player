@@ -166,16 +166,23 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
   // so that the scrub can persist even when the user drags outside
   // the scrub bar.
   React.useEffect(() => {
-    document.addEventListener('mousemove', onMouseMove, false);
-    document.addEventListener('touchmove', onTouchMove, false);
-    document.addEventListener('mouseup', onUp, false);
-    document.addEventListener('touchend', onUp, false);
+    /* eslint-disable no-undef */
+    if (typeof window !== 'undefined' && window?.document) {
+      window.document.addEventListener('mousemove', onMouseMove, false);
+      window.document.addEventListener('touchmove', onTouchMove, false);
+      window.document.addEventListener('mouseup', onUp, false);
+      window.document.addEventListener('touchend', onUp, false);
+    }
+
     return () => {
-      document.removeEventListener('mousemove', onMouseMove, false);
-      document.removeEventListener('touchmove', onTouchMove, false);
-      document.removeEventListener('mouseup', onUp, false);
-      document.removeEventListener('touchend', onUp, false);
+      if (typeof window !== 'undefined' && window?.document) {
+        window.document.removeEventListener('mousemove', onMouseMove, false);
+        window.document.removeEventListener('touchmove', onTouchMove, false);
+        window.document.removeEventListener('mouseup', onUp, false);
+        window.document.removeEventListener('touchend', onUp, false);
+      }
     };
+    /* eslint-enable no-undef */
   }, []);
 
   // Prop update -- set value, don't propagate.
