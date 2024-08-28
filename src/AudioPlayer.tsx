@@ -30,10 +30,6 @@ interface IPlaybackEvent {
   duration?: number;
 }
 
-type IBufferEvent = IPlaybackEvent & {
-  buffering: boolean;
-};
-
 interface IProps {
   playlist: IPlaylistItem[];
   id?: string;
@@ -50,7 +46,7 @@ interface IProps {
   onPause?: (e?: IPlaybackEvent) => void;
   onEnd?: (e?: IPlaybackEvent) => void;
   onTimeUpdate?: (e?: IPlaybackEvent) => void;
-  onBufferingUpdate?: (e?: IBufferEvent) => void;
+  onBufferingUpdate?: (isBuffering: boolean) => void;
 }
 
 const AudioPlayer: React.FC<IProps> = ({
@@ -69,6 +65,7 @@ const AudioPlayer: React.FC<IProps> = ({
   onPause,
   onEnd,
   onTimeUpdate,
+  onBufferingUpdate,
 }: IProps) => {
   const audioElem = React.useRef(null);
   const timeElapsedElem = React.useRef(null);
@@ -152,11 +149,13 @@ const AudioPlayer: React.FC<IProps> = ({
 
   const playable = fileData && fileData.length && videoMetadataLoaded;
 
+  // Subtitle language selection event.
   const selectSubtitleLanguage = (lang?: string) => {
     setShowSubtitleMenu(false);
     setSelectedLanguage(lang && lang.length ? lang : null);
   };
 
+  // Metadata loaded event.
   const onLoadedMetadata = () => {
     setVideoMetadataLoaded(true);
     selectSubtitleLanguage(selectedLanguage);
@@ -167,6 +166,7 @@ const AudioPlayer: React.FC<IProps> = ({
     // this.highlighter.onVideoElementLoad();
   };
 
+  // Handle playback progress updates.
   const internalOnTimeUpdate = () => {
     const { currentTime } = audioElem.current;
     if (duration > 0) {
@@ -179,41 +179,71 @@ const AudioPlayer: React.FC<IProps> = ({
     }
   };
 
+  // Combined play/pause toggle.
   const playPauseAction = () => {
     if (!playable) {
       return;
     }
-    let newPlaying = false;
 
     if (buffering || !audioElem.current.paused) {
-      audioElem.current.pause();
-      setBuffering(false);
+      pauseAction();
     } else {
+      playAction();
+    }
+  };
+
+  // Playback action.
+  const playAction = () => {
+    if (!playable) {
+      return;
+    }
+
+    let newPlaying = false;
+    if (!buffering && audioElem.current.paused) {
       audioElem.current.play();
       newPlaying = true;
     }
-
     const { currentTime } = audioElem.current;
     setPlaying(newPlaying);
     setTimestamp(currentTime);
     if (eventRouter) {
       eventRouter.emit('state.playing', newPlaying);
     }
-    if (newPlaying) {
-      if (typeof onPlay === 'function') {
-        onPlay({ fileData, selectedFile, currentTime, duration });
-      }
-    } else if (typeof onPause === 'function') {
+    if (newPlaying && typeof onPlay === 'function') {
+      onPlay({ fileData, selectedFile, currentTime, duration });
+    }
+  };
+
+  // Pause action.
+  const pauseAction = () => {
+    if (!playable) {
+      return;
+    }
+
+    if (buffering || !audioElem.current.paused) {
+      audioElem.current.pause();
+      setBuffering(false);
+    }
+
+    const { currentTime } = audioElem.current;
+    setPlaying(false);
+    setTimestamp(currentTime);
+    if (eventRouter) {
+      eventRouter.emit('state.playing', false);
+    }
+    if (typeof onPause === 'function') {
       onPause({ fileData, selectedFile, currentTime, duration });
     }
   };
 
+  // Switch to next track.
   const nextTrackAction = () => {
     if (canPlayNext) {
       selectTrack(selectedFile + 1);
     }
   };
 
+  // Switch to next track and play.
   const nextTrackAndPlayAction = () => {
     if (canPlayNext) {
       nextTrackAction();
@@ -221,6 +251,7 @@ const AudioPlayer: React.FC<IProps> = ({
     }
   };
 
+  // Handle ended event.
   const onEnded = () => {
     if (onEndNextFile) {
       nextTrackAndPlayAction();
@@ -238,6 +269,7 @@ const AudioPlayer: React.FC<IProps> = ({
     }
   };
 
+  // Move backward by a specific amount of time.
   const moveBackwardAction = () => {
     if (!playable) {
       return;
@@ -245,6 +277,7 @@ const AudioPlayer: React.FC<IProps> = ({
     audioElem.current.currentTime -= config.rewindTime || 5;
   };
 
+  // Move forward by a specific amount of time.
   const moveForwardAction = () => {
     if (!playable) {
       return;
@@ -252,6 +285,22 @@ const AudioPlayer: React.FC<IProps> = ({
     audioElem.current.currentTime += config.fastForwardTime || 5;
   };
 
+  // Set the current timestamp to a given value.
+  const setTimeAction = (time: number = 0) => {
+    audioElem.current.currentTime = time;
+    setTimestamp(time);
+    const value = (100 / duration) * time;
+    setProgress(value);
+
+    // Determine whether time has been set to end.
+    const hasEnded = value >= 100;
+    setEnded(hasEnded);
+    if (eventRouter) {
+      eventRouter.emit('state.ended', hasEnded);
+    }
+  };
+
+  // Rewind the audio file.
   const rewindAction = () => {
     audioElem.current.currentTime = 0;
     setEnded(false);
@@ -272,24 +321,31 @@ const AudioPlayer: React.FC<IProps> = ({
     }
   }, [selectedLanguage]);
 
+  // Handle mute toggling.
   const toggleMuteAction = () => {
     const newMute = !audioElem.current.muted;
     audioElem.current.muted = newMute;
     setMuted(newMute);
   };
 
-  const handleRemoteAction = (action: string) => {
+  // Handle remote events through eventRouter.
+  const handleRemoteAction = (action: string, timestamp: number = 0) => {
     if (action === 'backward') {
       moveBackwardAction();
     } else if (action === 'play_pause') {
       playPauseAction();
+    } else if (action === 'play') {
+      playAction();
+    } else if (action === 'pause') {
+      pauseAction();
     } else if (action === 'reset') {
       rewindAction();
     } else if (action === 'forward') {
       moveForwardAction();
+    } else if (action === 'timestamp_update') {
+      setTimeAction(timestamp);
     }
   };
-
   React.useEffect(() => {
     if (eventRouter) {
       eventRouter.on('remote.action', handleRemoteAction);
@@ -300,6 +356,16 @@ const AudioPlayer: React.FC<IProps> = ({
       }
     };
   }, []);
+
+  // Handle buffering status changes.
+  const onBufferingUpdateCallback = React.useCallback((buffering: boolean) => {
+    if (typeof onBufferingUpdate === 'function') {
+      onBufferingUpdate(buffering);
+    }
+  }, [onBufferingUpdate]);
+  React.useEffect(() => {
+    onBufferingUpdateCallback(buffering);
+  }, [buffering]);
 
   const currentFile = fileData[selectedFile] || null;
 
