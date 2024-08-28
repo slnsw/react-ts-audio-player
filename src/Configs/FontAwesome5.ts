@@ -42,4 +42,5 @@ export default {
     mute__true: null,
   },
   useHoursInTimestamps: true,
+  keepPlayVisibleOnEnded: false,
 };

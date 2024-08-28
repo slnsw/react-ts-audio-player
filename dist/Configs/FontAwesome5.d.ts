@@ -42,5 +42,6 @@ declare const _default: {
         mute__true: any;
     };
     useHoursInTimestamps: boolean;
+    keepPlayVisibleOnEnded: boolean;
 };
 export default _default;
