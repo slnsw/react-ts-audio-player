@@ -252,6 +252,13 @@ const AudioPlayer: React.FC<IProps> = ({
     audioElem.current.currentTime += config.fastForwardTime || 5;
   };
 
+  const setTimeAction = (time: number = 0) => {
+    audioElem.current.currentTime = time;
+    setTimestamp(time);
+    const value = (100 / duration) * time;
+    setProgress(value);
+  };
+
   const rewindAction = () => {
     audioElem.current.currentTime = 0;
     setEnded(false);
@@ -278,7 +285,7 @@ const AudioPlayer: React.FC<IProps> = ({
     setMuted(newMute);
   };
 
-  const handleRemoteAction = (action: string) => {
+  const handleRemoteAction = (action: string, timestamp: number = 0) => {
     if (action === 'backward') {
       moveBackwardAction();
     } else if (action === 'play_pause') {
@@ -287,6 +294,8 @@ const AudioPlayer: React.FC<IProps> = ({
       rewindAction();
     } else if (action === 'forward') {
       moveForwardAction();
+    } else if (action === 'timestamp_update') {
+      setTimeAction(timestamp);
     }
   };
 
