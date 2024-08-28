@@ -1,5 +1,5 @@
 import Emitter from 'eventemitter3';
-import React from 'react';
+import * as React from 'react';
 import { IAudioPlayerConfig } from './Types';
 interface IPlaylistItem {
     index: number;
@@ -13,6 +13,9 @@ interface IPlaybackEvent {
     currentTime?: number;
     duration?: number;
 }
+declare type IBufferEvent = IPlaybackEvent & {
+    buffering: boolean;
+};
 interface IProps {
     playlist: IPlaylistItem[];
     id?: string;
@@ -29,8 +32,9 @@ interface IProps {
     onPause?: (e?: IPlaybackEvent) => void;
     onEnd?: (e?: IPlaybackEvent) => void;
     onTimeUpdate?: (e?: IPlaybackEvent) => void;
+    onBufferingUpdate?: (e?: IBufferEvent) => void;
 }
-declare const AudioPlayer: React.FunctionComponent<IProps>;
+declare const AudioPlayer: React.FC<IProps>;
 export default AudioPlayer;
 export declare const defaultConfigs: {
     FontAwesome5: {
