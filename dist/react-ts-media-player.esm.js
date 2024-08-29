@@ -508,11 +508,88 @@ function _extends() {
 }
 
 var PlayerRemoteContext = /*#__PURE__*/React__default.createContext([]);
+var defaultMultiPlayerState = {};
 var DEFAULT_PLAYER_STATE = {
   lastUpdate: /*#__PURE__*/new Date().toISOString(),
   type: '',
   timestamp: 0
 };
+function remoteStateReducer(state, action) {
+  var _extends2;
+  var id = action.id,
+    type = action.type,
+    _action$timestamp = action.timestamp,
+    timestamp = _action$timestamp === void 0 ? 0 : _action$timestamp;
+  var currentState = (state === null || state === void 0 ? void 0 : state[id]) || _extends({}, DEFAULT_PLAYER_STATE);
+  switch (type) {
+    case "play_pause":
+      {
+        currentState = _extends({}, currentState, {
+          type: type,
+          lastUpdate: new Date().toISOString()
+        });
+        break;
+      }
+    case "play":
+      {
+        currentState = _extends({}, currentState, {
+          type: type,
+          lastUpdate: new Date().toISOString()
+        });
+        break;
+      }
+    case "pause":
+      {
+        currentState = _extends({}, currentState, {
+          type: type,
+          lastUpdate: new Date().toISOString()
+        });
+        break;
+      }
+    case "reset":
+      {
+        currentState = _extends({}, currentState, {
+          type: type,
+          lastUpdate: new Date().toISOString()
+        });
+        break;
+      }
+    case "backward":
+      {
+        currentState = _extends({}, currentState, {
+          type: type,
+          lastUpdate: new Date().toISOString()
+        });
+        break;
+      }
+    case "forward":
+      {
+        currentState = _extends({}, currentState, {
+          type: type,
+          lastUpdate: new Date().toISOString()
+        });
+        break;
+      }
+    case "timestamp_update":
+      {
+        currentState = _extends({}, currentState, {
+          type: type,
+          lastUpdate: new Date().toISOString(),
+          timestamp: timestamp
+        });
+        break;
+      }
+    case "":
+      {
+        break;
+      }
+    default:
+      {
+        throw new Error("Unsupported action type: " + type);
+      }
+  }
+  return _extends({}, state, (_extends2 = {}, _extends2[id] = currentState, _extends2));
+}
 var usePlayerRemote = function usePlayerRemote() {
   var context = React__default.useContext(PlayerRemoteContext);
   if (!context) {
@@ -544,6 +621,17 @@ var usePlayerRemoteById = function usePlayerRemoteById(id) {
       }, params));
     }
   };
+};
+var PlayerRemoteProvider = function PlayerRemoteProvider(props) {
+  var _React$useReducer = React__default.useReducer(remoteStateReducer, defaultMultiPlayerState),
+    state = _React$useReducer[0],
+    dispatch = _React$useReducer[1];
+  var value = React__default.useMemo(function () {
+    return [state, dispatch];
+  }, [state]);
+  return /*#__PURE__*/React__default.createElement(PlayerRemoteContext.Provider, Object.assign({
+    value: value
+  }, props));
 };
 
 var strPadLeft = function strPadLeft(n) {
@@ -1112,4 +1200,5 @@ var AudioPlayer = function AudioPlayer(_ref) {
 };
 
 export default AudioPlayer;
+export { DEFAULT_PLAYER_STATE, PlayerRemoteProvider, usePlayerRemote, usePlayerRemoteById };
 //# sourceMappingURL=react-ts-media-player.esm.js.map
