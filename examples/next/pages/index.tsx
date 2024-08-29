@@ -45,7 +45,7 @@ const Page = () => {
   return (
     <>
       <h1>Hello!</h1>
-      {/* <TestRemote id="audio-player" /> */}
+      <TestRemote id="audio-player" />
       <AudioPlayer
         id="audio-player"
         playlist={[

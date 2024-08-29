@@ -5,9 +5,9 @@ function MyApp({ Component, pageProps }) {
   return (
     <React.StrictMode>
       <div>
-        {/* <PlayerRemoteProvider> */}
+        <PlayerRemoteProvider>
           <Component {...pageProps} />
-        {/* </PlayerRemoteProvider> */}
+        </PlayerRemoteProvider>
       </div>
     </React.StrictMode>
   );
