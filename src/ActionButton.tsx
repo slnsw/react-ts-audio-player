@@ -17,6 +17,7 @@ interface IProps {
   children?: React.ReactNode;
   className?: string;
   config?: IAudioPlayerConfig;
+  ariaControls?: string;
 }
 
 const ActionButton: React.FunctionComponent<IProps> = ({
@@ -27,6 +28,7 @@ const ActionButton: React.FunctionComponent<IProps> = ({
   children,
   className,
   config = {},
+  ariaControls,
 }) => {
   const defaultClassName = CollapseArrayProperty(config.classNames[btnType]);
   const iconClassNames = CollapseArrayProperty(config.icons[btnType]);
@@ -37,6 +39,7 @@ const ActionButton: React.FunctionComponent<IProps> = ({
       disabled={!enabled}
       hidden={hidden}
       onClick={onClick}
+      aria-controls={ariaControls}
     >
       <SrOnly config={config}>{children}</SrOnly>
       {!iconElem && <span className={CssClasses(iconClassNames, '')}></span>}

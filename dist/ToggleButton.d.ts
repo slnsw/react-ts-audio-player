@@ -9,6 +9,7 @@ interface IProps {
     onClick?: (e: React.MouseEvent) => void;
     className?: string;
     config?: IAudioPlayerConfig;
+    ariaControls?: string;
 }
 declare const ToggleButton: React.FunctionComponent<IProps>;
 export default ToggleButton;

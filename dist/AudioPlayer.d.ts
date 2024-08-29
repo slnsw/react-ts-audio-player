@@ -30,6 +30,7 @@ interface IProps {
     onEnd?: (e?: IPlaybackEvent) => void;
     onTimeUpdate?: (e?: IPlaybackEvent) => void;
     onBufferingUpdate?: (isBuffering: boolean) => void;
+    debug?: boolean;
 }
 declare const AudioPlayer: React.FC<IProps>;
 export default AudioPlayer;

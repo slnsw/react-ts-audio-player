@@ -18,6 +18,7 @@ interface IProps {
   onClick?: (e: React.MouseEvent) => void;
   className?: string;
   config?: IAudioPlayerConfig;
+  ariaControls?: string;
 }
 
 const ToggleButton: React.FunctionComponent<IProps> = ({
@@ -29,6 +30,7 @@ const ToggleButton: React.FunctionComponent<IProps> = ({
   onClick,
   className,
   config = {},
+  ariaControls,
 }: IProps) => {
   const defaultClassName = CollapseArrayProperty(config.classNames[btnType]);
   const iconClassNamesFalse = CollapseArrayProperty(
@@ -45,6 +47,7 @@ const ToggleButton: React.FunctionComponent<IProps> = ({
       disabled={!enabled}
       hidden={hidden}
       onClick={onClick}
+      aria-controls={ariaControls}
     >
       <SrOnly config={config}>{children}</SrOnly>
       {!toggleState && !iconElemFalse && (

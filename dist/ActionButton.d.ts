@@ -8,6 +8,7 @@ interface IProps {
     children?: React.ReactNode;
     className?: string;
     config?: IAudioPlayerConfig;
+    ariaControls?: string;
 }
 declare const ActionButton: React.FunctionComponent<IProps>;
 export default ActionButton;

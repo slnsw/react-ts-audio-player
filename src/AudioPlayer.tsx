@@ -12,6 +12,7 @@ import ToggleButton from './ToggleButton';
 import TracklistMenu from './TracklistMenu';
 
 import FontAwesome5 from './Configs/FontAwesome5';
+import { usePlayerRemoteById } from './Context/PlayerRemote';
 import CssClasses from './Util/CssClasses';
 import { toHHMMSS, toMMSS } from './TimeUtils';
 import { IAudioPlayerConfig } from './Types';
@@ -47,6 +48,7 @@ interface IProps {
   onEnd?: (e?: IPlaybackEvent) => void;
   onTimeUpdate?: (e?: IPlaybackEvent) => void;
   onBufferingUpdate?: (isBuffering: boolean) => void;
+  debug?: boolean;
 }
 
 const AudioPlayer: React.FC<IProps> = ({
@@ -66,6 +68,7 @@ const AudioPlayer: React.FC<IProps> = ({
   onEnd,
   onTimeUpdate,
   onBufferingUpdate,
+  debug = false,
 }: IProps) => {
   const audioElem = React.useRef(null);
   const timeElapsedElem = React.useRef(null);
@@ -84,6 +87,7 @@ const AudioPlayer: React.FC<IProps> = ({
   const [showTrackListMenu, setShowTrackListMenu] = React.useState(false);
   const [showSubtitleMenu, setShowSubtitleMenu] = React.useState(false);
   const [videoMetadataLoaded, setVideoMetadataLoaded] = React.useState(false);
+  const { state: remoteState } = usePlayerRemoteById(id);
 
   const captionsContainerId = `${id}__captions`;
   const timeIndicatorId = `${id}__time-indicator`;
@@ -182,6 +186,7 @@ const AudioPlayer: React.FC<IProps> = ({
   // Combined play/pause toggle.
   const playPauseAction = React.useCallback(() => {
     if (!playable) {
+      console.warn('Not playable');
       return;
     }
 
@@ -195,6 +200,7 @@ const AudioPlayer: React.FC<IProps> = ({
   // Playback action.
   const playAction = React.useCallback(() => {
     if (!playable) {
+      console.warn('Not playable');
       return;
     }
 
@@ -217,6 +223,7 @@ const AudioPlayer: React.FC<IProps> = ({
   // Pause action.
   const pauseAction = React.useCallback(() => {
     if (!playable) {
+      console.warn('Not playable');
       return;
     }
 
@@ -272,6 +279,7 @@ const AudioPlayer: React.FC<IProps> = ({
   // Move backward by a specific amount of time.
   const moveBackwardAction = React.useCallback(() => {
     if (!playable) {
+      console.warn('Not playable');
       return;
     }
     audioElem.current.currentTime -= config.rewindTime || 5;
@@ -280,6 +288,7 @@ const AudioPlayer: React.FC<IProps> = ({
   // Move forward by a specific amount of time.
   const moveForwardAction = React.useCallback(() => {
     if (!playable) {
+      console.warn('Not playable');
       return;
     }
     audioElem.current.currentTime += config.fastForwardTime || 5;
@@ -329,7 +338,7 @@ const AudioPlayer: React.FC<IProps> = ({
   };
 
   // Handle remote events through eventRouter.
-  const handleRemoteAction = (action: string, timestamp: number = 0) => {
+  const handleRemoteAction = React.useCallback((action: string, timestamp: number = 0) => {
     if (action === 'backward') {
       moveBackwardAction();
     } else if (action === 'play_pause') {
@@ -345,7 +354,7 @@ const AudioPlayer: React.FC<IProps> = ({
     } else if (action === 'timestamp_update') {
       setTimeAction(timestamp);
     }
-  };
+  }, [playable]);
   React.useEffect(() => {
     if (eventRouter) {
       eventRouter.on('remote.action', handleRemoteAction);
@@ -356,6 +365,41 @@ const AudioPlayer: React.FC<IProps> = ({
       }
     };
   }, []);
+
+  // Handle remote state.
+  React.useEffect(() => {
+    const { type, timestamp = 0 } = remoteState;
+    switch (type) {
+      case 'play_pause': {
+        playPauseAction();
+        break;
+      }
+      case 'play': {
+        playAction();
+        break;
+      }
+      case 'pause': {
+        pauseAction();
+        break;
+      }
+      case 'reset': {
+        rewindAction();
+        break;
+      }
+      case 'backward': {
+        moveBackwardAction();
+        break;
+      }
+      case 'forward': {
+        moveForwardAction();
+        break;
+      }
+      case 'timestamp_update': {
+        setTimeAction(timestamp);
+        break;
+      }
+    }
+  }, [remoteState]);
 
   // Handle buffering status changes.
   const onBufferingUpdateCallback = React.useCallback((buffering: boolean) => {
@@ -372,6 +416,7 @@ const AudioPlayer: React.FC<IProps> = ({
   const audioTag = (
     <audio
       className={CssClasses('video-element', className)}
+      id={`${id}__player`}
       data-oh-audio-player="1"
       crossOrigin={crossOrigin}
       preload="metadata"
@@ -383,6 +428,7 @@ const AudioPlayer: React.FC<IProps> = ({
       onCanPlay={() => setBuffering(false)}
       onCanPlayThrough={() => setBuffering(false)}
       aria-describedby={captionsContainerId}
+      controls={debug}
     >
       {currentFile && <source src={currentFile.audioUrl} type="audio/mpeg" />}
       {currentFile && hasVtt(currentFile) && (
@@ -397,7 +443,7 @@ const AudioPlayer: React.FC<IProps> = ({
   );
 
   return (
-    <div className={CssClasses('video-wrapper', className)}>
+    <div id={id} className={CssClasses('video-wrapper', className)}>
       {audioTag}
 
       <div className={CssClasses('video-controls', className)}>
@@ -453,7 +499,7 @@ const AudioPlayer: React.FC<IProps> = ({
         >
           <ToggleButton
             btnType="tracklist"
-            aria-controls={tracklistId}
+            ariaControls={tracklistId}
             enabled={fileData.length > 0 && !singleTrack}
             onClick={() => {
               setShowSubtitleMenu(false);
@@ -482,6 +528,7 @@ const AudioPlayer: React.FC<IProps> = ({
               }
             }}
             config={config}
+            ariaControls={`${id}__player`}
           >
             Previous track
           </ActionButton>
@@ -490,6 +537,7 @@ const AudioPlayer: React.FC<IProps> = ({
             btnType="backward"
             onClick={moveBackwardAction}
             config={config}
+            ariaControls={`${id}__player`}
           >
             Rewind
           </ActionButton>
@@ -500,6 +548,7 @@ const AudioPlayer: React.FC<IProps> = ({
             onClick={playPauseAction}
             toggleState={playing}
             config={config}
+            ariaControls={`${id}__player`}
           >
             {playing ? 'Pause' : 'Play'}
           </ToggleButton>
@@ -510,6 +559,7 @@ const AudioPlayer: React.FC<IProps> = ({
             hidden={!ended}
             onClick={rewindAction}
             config={config}
+            ariaControls={`${id}__player`}
           >
             Restart
           </ActionButton>
@@ -518,6 +568,7 @@ const AudioPlayer: React.FC<IProps> = ({
             btnType="forward"
             onClick={moveForwardAction}
             config={config}
+            ariaControls={`${id}__player`}
           >
             Fast forward
           </ActionButton>
@@ -527,13 +578,14 @@ const AudioPlayer: React.FC<IProps> = ({
             enabled={fileData.length > 1 && canPlayNext}
             onClick={nextTrackAction}
             config={config}
+            ariaControls={`${id}__player`}
           >
             Next track
           </ActionButton>
 
           <ToggleButton
             btnType="closed-captioning"
-            aria-controls={subtitleMenuId}
+            ariaControls={subtitleMenuId}
             enabled={videoMetadataLoaded && hasVtt(currentFile)}
             onClick={() => {
               setShowTrackListMenu(false);
@@ -558,6 +610,7 @@ const AudioPlayer: React.FC<IProps> = ({
             onClick={toggleMuteAction}
             toggleState={muted}
             config={config}
+            ariaControls={`${id}__player`}
           >
             Mute
           </ToggleButton>

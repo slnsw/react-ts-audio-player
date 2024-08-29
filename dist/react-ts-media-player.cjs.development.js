@@ -66,7 +66,8 @@ var ActionButton = function ActionButton(_ref) {
     children = _ref.children,
     className = _ref.className,
     _ref$config = _ref.config,
-    config = _ref$config === void 0 ? {} : _ref$config;
+    config = _ref$config === void 0 ? {} : _ref$config,
+    ariaControls = _ref.ariaControls;
   var defaultClassName = collapseArrayProperty(config.classNames[btnType]);
   var iconClassNames = collapseArrayProperty(config.icons[btnType]);
   var iconElem = config.iconElements[btnType] || null;
@@ -74,7 +75,8 @@ var ActionButton = function ActionButton(_ref) {
     className: CssClasses(defaultClassName, className || ''),
     disabled: !enabled,
     hidden: hidden,
-    onClick: onClick
+    onClick: onClick,
+    "aria-controls": ariaControls
   }, /*#__PURE__*/React__default.createElement(SrOnly, {
     config: config
   }, children), !iconElem && /*#__PURE__*/React__default.createElement("span", {
@@ -438,7 +440,8 @@ var ToggleButton = function ToggleButton(_ref) {
     onClick = _ref.onClick,
     className = _ref.className,
     _ref$config = _ref.config,
-    config = _ref$config === void 0 ? {} : _ref$config;
+    config = _ref$config === void 0 ? {} : _ref$config,
+    ariaControls = _ref.ariaControls;
   var defaultClassName = collapseArrayProperty(config.classNames[btnType]);
   var iconClassNamesFalse = collapseArrayProperty(config.icons[btnType + "__false"]);
   var iconClassNamesTrue = collapseArrayProperty(config.icons[btnType + "__true"]);
@@ -448,7 +451,8 @@ var ToggleButton = function ToggleButton(_ref) {
     className: CssClasses(defaultClassName, className || ''),
     disabled: !enabled,
     hidden: hidden,
-    onClick: onClick
+    onClick: onClick,
+    "aria-controls": ariaControls
   }, /*#__PURE__*/React__default.createElement(SrOnly, {
     config: config
   }, children), !toggleState && !iconElemFalse && ( /*#__PURE__*/React__default.createElement("span", {
@@ -493,6 +497,60 @@ var TracklistMenu = function TracklistMenu(_ref) {
     id: id,
     visible: visible
   }, trackOptions);
+};
+
+function _extends() {
+  _extends = Object.assign ? Object.assign.bind() : function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+    return target;
+  };
+  return _extends.apply(this, arguments);
+}
+
+var PlayerRemoteContext = /*#__PURE__*/React__default.createContext([]);
+var DEFAULT_PLAYER_STATE = {
+  lastUpdate: /*#__PURE__*/new Date().toISOString(),
+  type: '',
+  timestamp: 0
+};
+var usePlayerRemote = function usePlayerRemote() {
+  var context = React__default.useContext(PlayerRemoteContext);
+  if (!context) {
+    console.log("PlayerRemoteProvider not found, remote player functionality disabled.");
+    return {
+      state: null,
+      dispatch: function dispatch() {}
+    };
+  }
+  var state = context[0],
+    dispatch = context[1];
+  return {
+    state: state,
+    dispatch: dispatch
+  };
+};
+var usePlayerRemoteById = function usePlayerRemoteById(id) {
+  var _usePlayerRemote = usePlayerRemote(),
+    state = _usePlayerRemote.state,
+    _dispatch = _usePlayerRemote.dispatch;
+  return {
+    state: (state === null || state === void 0 ? void 0 : state[id]) || DEFAULT_PLAYER_STATE,
+    dispatch: function dispatch(params) {
+      if (params === void 0) {
+        params = {};
+      }
+      return _dispatch(_extends({
+        id: id
+      }, params));
+    }
+  };
 };
 
 var strPadLeft = function strPadLeft(n) {
@@ -544,7 +602,9 @@ var AudioPlayer = function AudioPlayer(_ref) {
     onPause = _ref.onPause,
     onEnd = _ref.onEnd,
     onTimeUpdate = _ref.onTimeUpdate,
-    onBufferingUpdate = _ref.onBufferingUpdate;
+    onBufferingUpdate = _ref.onBufferingUpdate,
+    _ref$debug = _ref.debug,
+    debug = _ref$debug === void 0 ? false : _ref$debug;
   var audioElem = React.useRef(null);
   var timeElapsedElem = React.useRef(null);
   var durationElem = React.useRef(null);
@@ -587,6 +647,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
   var _React$useState13 = React.useState(false),
     videoMetadataLoaded = _React$useState13[0],
     setVideoMetadataLoaded = _React$useState13[1];
+  var _usePlayerRemoteById = usePlayerRemoteById(id),
+    remoteState = _usePlayerRemoteById.state;
   var captionsContainerId = id + "__captions";
   var timeIndicatorId = id + "__time-indicator";
   var durationIndicatorId = id + "__duration-indicator";
@@ -672,6 +734,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
   };
   var playPauseAction = React.useCallback(function () {
     if (!playable) {
+      console.warn('Not playable');
       return;
     }
     if (buffering || !audioElem.current.paused) {
@@ -682,6 +745,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
   }, [playable]);
   var playAction = React.useCallback(function () {
     if (!playable) {
+      console.warn('Not playable');
       return;
     }
     var newPlaying = false;
@@ -706,6 +770,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
   }, [playable]);
   var pauseAction = React.useCallback(function () {
     if (!playable) {
+      console.warn('Not playable');
       return;
     }
     if (buffering || !audioElem.current.paused) {
@@ -763,12 +828,14 @@ var AudioPlayer = function AudioPlayer(_ref) {
   }, [onEndNextFile]);
   var moveBackwardAction = React.useCallback(function () {
     if (!playable) {
+      console.warn('Not playable');
       return;
     }
     audioElem.current.currentTime -= config.rewindTime || 5;
   }, [playable]);
   var moveForwardAction = React.useCallback(function () {
     if (!playable) {
+      console.warn('Not playable');
       return;
     }
     audioElem.current.currentTime += config.fastForwardTime || 5;
@@ -807,7 +874,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     audioElem.current.muted = newMute;
     setMuted(newMute);
   };
-  var handleRemoteAction = function handleRemoteAction(action, timestamp) {
+  var handleRemoteAction = React.useCallback(function (action, timestamp) {
     if (timestamp === void 0) {
       timestamp = 0;
     }
@@ -826,7 +893,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     } else if (action === 'timestamp_update') {
       setTimeAction(timestamp);
     }
-  };
+  }, [playable]);
   React.useEffect(function () {
     if (eventRouter) {
       eventRouter.on('remote.action', handleRemoteAction);
@@ -837,6 +904,48 @@ var AudioPlayer = function AudioPlayer(_ref) {
       }
     };
   }, []);
+  React.useEffect(function () {
+    var type = remoteState.type,
+      _remoteState$timestam = remoteState.timestamp,
+      timestamp = _remoteState$timestam === void 0 ? 0 : _remoteState$timestam;
+    switch (type) {
+      case 'play_pause':
+        {
+          playPauseAction();
+          break;
+        }
+      case 'play':
+        {
+          playAction();
+          break;
+        }
+      case 'pause':
+        {
+          pauseAction();
+          break;
+        }
+      case 'reset':
+        {
+          rewindAction();
+          break;
+        }
+      case 'backward':
+        {
+          moveBackwardAction();
+          break;
+        }
+      case 'forward':
+        {
+          moveForwardAction();
+          break;
+        }
+      case 'timestamp_update':
+        {
+          setTimeAction(timestamp);
+          break;
+        }
+    }
+  }, [remoteState]);
   var onBufferingUpdateCallback = React.useCallback(function (buffering) {
     if (typeof onBufferingUpdate === 'function') {
       onBufferingUpdate(buffering);
@@ -848,6 +957,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
   var currentFile = fileData[selectedFile] || null;
   var audioTag = /*#__PURE__*/React.createElement("audio", {
     className: CssClasses('video-element', className),
+    id: id + "__player",
     "data-oh-audio-player": "1",
     crossOrigin: crossOrigin,
     preload: "metadata",
@@ -864,7 +974,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
     onCanPlayThrough: function onCanPlayThrough() {
       return setBuffering(false);
     },
-    "aria-describedby": captionsContainerId
+    "aria-describedby": captionsContainerId,
+    controls: debug
   }, currentFile && /*#__PURE__*/React.createElement("source", {
     src: currentFile.audioUrl,
     type: "audio/mpeg"
@@ -875,6 +986,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     srcLang: "en"
   })));
   return /*#__PURE__*/React.createElement("div", {
+    id: id,
     className: CssClasses('video-wrapper', className)
   }, audioTag, /*#__PURE__*/React.createElement("div", {
     className: CssClasses('video-controls', className)
@@ -915,7 +1027,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     className: CssClasses('video-controls', className, 'button-wrapper')
   }, /*#__PURE__*/React.createElement(ToggleButton, {
     btnType: "tracklist",
-    "aria-controls": tracklistId,
+    ariaControls: tracklistId,
     enabled: fileData.length > 0 && !singleTrack,
     onClick: function onClick() {
       setShowSubtitleMenu(false);
@@ -933,35 +1045,41 @@ var AudioPlayer = function AudioPlayer(_ref) {
         selectTrack(selectedFile - 1);
       }
     },
-    config: config
+    config: config,
+    ariaControls: id + "__player"
   }, "Previous track"), /*#__PURE__*/React.createElement(ActionButton, {
     btnType: "backward",
     onClick: moveBackwardAction,
-    config: config
+    config: config,
+    ariaControls: id + "__player"
   }, "Rewind"), /*#__PURE__*/React.createElement(ToggleButton, {
     btnType: "play",
     hidden: !(config !== null && config !== void 0 && config.keepPlayVisibleOnEnded) && ended,
     onClick: playPauseAction,
     toggleState: playing,
-    config: config
+    config: config,
+    ariaControls: id + "__player"
   }, playing ? 'Pause' : 'Play'), /*#__PURE__*/React.createElement(ActionButton, {
     btnType: "reset",
     enabled: ended,
     hidden: !ended,
     onClick: rewindAction,
-    config: config
+    config: config,
+    ariaControls: id + "__player"
   }, "Restart"), /*#__PURE__*/React.createElement(ActionButton, {
     btnType: "forward",
     onClick: moveForwardAction,
-    config: config
+    config: config,
+    ariaControls: id + "__player"
   }, "Fast forward"), /*#__PURE__*/React.createElement(ActionButton, {
     btnType: "next-audio",
     enabled: fileData.length > 1 && canPlayNext,
     onClick: nextTrackAction,
-    config: config
+    config: config,
+    ariaControls: id + "__player"
   }, "Next track"), /*#__PURE__*/React.createElement(ToggleButton, {
     btnType: "closed-captioning",
-    "aria-controls": subtitleMenuId,
+    ariaControls: subtitleMenuId,
     enabled: videoMetadataLoaded && hasVtt(currentFile),
     onClick: function onClick() {
       setShowTrackListMenu(false);
@@ -975,7 +1093,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
     btnType: "mute",
     onClick: toggleMuteAction,
     toggleState: muted,
-    config: config
+    config: config,
+    ariaControls: id + "__player"
   }, "Mute"))), /*#__PURE__*/React.createElement(SubtitleMenu, {
     visible: showSubtitleMenu,
     id: subtitleMenuId,
