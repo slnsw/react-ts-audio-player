@@ -12,15 +12,59 @@ project, you should probably just include the library directly.
 
 You'll be using something like the following:
 
-```typescript
+```tsx
 import AudioPlayer from '@slnsw/react-ts-media-player';
 ```
 
 For distribution, run `npm run build`.
 
+## Remotes
+
+If you want to implement remote controls, wrap the React root in `PlayerRemoteProvider` to provide a context for components inside.
+
+You can use `usePlayerRemote` to get state and dispatch, and `usePlayerRemoteById` to get state, but they won't work unless wrapped in `PlayerRemoteProvider` at the top level.
+
+### App-level
+
+```tsx
+import AudioPlayer from `@slnsw/react-ts-media-player`
+
+const { PlayerRemoteProvider } = AudioPlayer.PlayerRemote;
+
+const App = () => {
+    // Define AppInner somewhere.
+
+    return (
+        <PlayerRemoteProvider>
+            <AppInner />
+        </PlayerRemoteProvider>
+    );
+};
+
+export default App;
+```
+
+### Remote component (keyed to player ID)
+
+```tsx
+import AudioPlayer from `@slnsw/react-ts-media-player`
+
+const { usePlayerRemoteById } = AudioPlayer.PlayerRemote;
+
+const Remote = () => {
+    const { dispatch } = usePlayerRemoteById('audio-player');
+    return (
+        <button type="button" onClick={() => dispatch({ type: 'play' })}>
+            Play
+        </button>
+    );
+};
+
+export default Remote;
+```
+
 ## What isn't supported yet
 
-* Remote controls for the player
 * Highlighting supplied transcripts
 * A unified build method for local testing
 
