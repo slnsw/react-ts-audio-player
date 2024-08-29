@@ -68,6 +68,16 @@ export default Remote;
 * Highlighting supplied transcripts
 * A unified build method for local testing
 
+## Testing
+
+### Plain old HTML
+
+`npm run browsersync`
+
+### Next.js
+
+`npm run build && cd examples/next && npm i && npm run dev`
+
 ## About the example content
 
 The example content is sourced from our [Stories from our Migrant and Refugee Communities oral history & sound collection](https://oralhistories.sl.nsw.gov.au/) and consists of oral histories
