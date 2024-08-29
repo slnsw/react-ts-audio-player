@@ -180,7 +180,7 @@ const AudioPlayer: React.FC<IProps> = ({
   };
 
   // Combined play/pause toggle.
-  const playPauseAction = () => {
+  const playPauseAction = React.useCallback(() => {
     if (!playable) {
       return;
     }
@@ -190,10 +190,10 @@ const AudioPlayer: React.FC<IProps> = ({
     } else {
       playAction();
     }
-  };
+  }, [playable]);
 
   // Playback action.
-  const playAction = () => {
+  const playAction = React.useCallback(() => {
     if (!playable) {
       return;
     }
@@ -212,10 +212,10 @@ const AudioPlayer: React.FC<IProps> = ({
     if (newPlaying && typeof onPlay === 'function') {
       onPlay({ fileData, selectedFile, currentTime, duration });
     }
-  };
+  }, [playable]);
 
   // Pause action.
-  const pauseAction = () => {
+  const pauseAction = React.useCallback(() => {
     if (!playable) {
       return;
     }
@@ -234,25 +234,25 @@ const AudioPlayer: React.FC<IProps> = ({
     if (typeof onPause === 'function') {
       onPause({ fileData, selectedFile, currentTime, duration });
     }
-  };
+  }, [playable]);
 
   // Switch to next track.
-  const nextTrackAction = () => {
+  const nextTrackAction = React.useCallback(() => {
     if (canPlayNext) {
       selectTrack(selectedFile + 1);
     }
-  };
+  }, [canPlayNext]);
 
   // Switch to next track and play.
-  const nextTrackAndPlayAction = () => {
+  const nextTrackAndPlayAction = React.useCallback(() => {
     if (canPlayNext) {
       nextTrackAction();
       setTimeout(() => playPauseAction(), 500);
     }
-  };
+  }, [canPlayNext]);
 
   // Handle ended event.
-  const onEnded = () => {
+  const onEnded = React.useCallback(() => {
     if (onEndNextFile) {
       nextTrackAndPlayAction();
       return;
@@ -267,23 +267,23 @@ const AudioPlayer: React.FC<IProps> = ({
     if (typeof onEnd === 'function') {
       onEnd({ fileData, selectedFile, currentTime, duration });
     }
-  };
+  }, [onEndNextFile]);
 
   // Move backward by a specific amount of time.
-  const moveBackwardAction = () => {
+  const moveBackwardAction = React.useCallback(() => {
     if (!playable) {
       return;
     }
     audioElem.current.currentTime -= config.rewindTime || 5;
-  };
+  }, [playable]);
 
   // Move forward by a specific amount of time.
-  const moveForwardAction = () => {
+  const moveForwardAction = React.useCallback(() => {
     if (!playable) {
       return;
     }
     audioElem.current.currentTime += config.fastForwardTime || 5;
-  };
+  }, [playable]);
 
   // Set the current timestamp to a given value.
   const setTimeAction = (time: number = 0) => {

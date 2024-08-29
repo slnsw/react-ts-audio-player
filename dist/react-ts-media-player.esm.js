@@ -663,7 +663,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
       });
     }
   };
-  var playPauseAction = function playPauseAction() {
+  var playPauseAction = useCallback(function () {
     if (!playable) {
       return;
     }
@@ -672,8 +672,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
     } else {
       playAction();
     }
-  };
-  var playAction = function playAction() {
+  }, [playable]);
+  var playAction = useCallback(function () {
     if (!playable) {
       return;
     }
@@ -696,8 +696,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
         duration: duration
       });
     }
-  };
-  var pauseAction = function pauseAction() {
+  }, [playable]);
+  var pauseAction = useCallback(function () {
     if (!playable) {
       return;
     }
@@ -719,21 +719,21 @@ var AudioPlayer = function AudioPlayer(_ref) {
         duration: duration
       });
     }
-  };
-  var nextTrackAction = function nextTrackAction() {
+  }, [playable]);
+  var nextTrackAction = useCallback(function () {
     if (canPlayNext) {
       selectTrack(selectedFile + 1);
     }
-  };
-  var nextTrackAndPlayAction = function nextTrackAndPlayAction() {
+  }, [canPlayNext]);
+  var nextTrackAndPlayAction = useCallback(function () {
     if (canPlayNext) {
       nextTrackAction();
       setTimeout(function () {
         return playPauseAction();
       }, 500);
     }
-  };
-  var onEnded = function onEnded() {
+  }, [canPlayNext]);
+  var onEnded = useCallback(function () {
     if (onEndNextFile) {
       nextTrackAndPlayAction();
       return;
@@ -753,19 +753,19 @@ var AudioPlayer = function AudioPlayer(_ref) {
         duration: duration
       });
     }
-  };
-  var moveBackwardAction = function moveBackwardAction() {
+  }, [onEndNextFile]);
+  var moveBackwardAction = useCallback(function () {
     if (!playable) {
       return;
     }
     audioElem.current.currentTime -= config.rewindTime || 5;
-  };
-  var moveForwardAction = function moveForwardAction() {
+  }, [playable]);
+  var moveForwardAction = useCallback(function () {
     if (!playable) {
       return;
     }
     audioElem.current.currentTime += config.fastForwardTime || 5;
-  };
+  }, [playable]);
   var setTimeAction = function setTimeAction(time) {
     if (time === void 0) {
       time = 0;
