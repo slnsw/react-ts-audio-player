@@ -663,7 +663,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
       });
     }
   };
-  var playPauseAction = function playPauseAction() {
+  var playPauseAction = useCallback(function () {
     if (!playable) {
       return;
     }
@@ -672,8 +672,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
     } else {
       playAction();
     }
-  };
-  var playAction = function playAction() {
+  }, [playable]);
+  var playAction = useCallback(function () {
     if (!playable) {
       return;
     }
@@ -696,8 +696,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
         duration: duration
       });
     }
-  };
-  var pauseAction = function pauseAction() {
+  }, [playable]);
+  var pauseAction = useCallback(function () {
     if (!playable) {
       return;
     }
@@ -719,21 +719,21 @@ var AudioPlayer = function AudioPlayer(_ref) {
         duration: duration
       });
     }
-  };
-  var nextTrackAction = function nextTrackAction() {
+  }, [playable]);
+  var nextTrackAction = useCallback(function () {
     if (canPlayNext) {
       selectTrack(selectedFile + 1);
     }
-  };
-  var nextTrackAndPlayAction = function nextTrackAndPlayAction() {
+  }, [canPlayNext]);
+  var nextTrackAndPlayAction = useCallback(function () {
     if (canPlayNext) {
       nextTrackAction();
       setTimeout(function () {
         return playPauseAction();
       }, 500);
     }
-  };
-  var onEnded = function onEnded() {
+  }, [canPlayNext]);
+  var onEnded = useCallback(function () {
     if (onEndNextFile) {
       nextTrackAndPlayAction();
       return;
@@ -753,20 +753,20 @@ var AudioPlayer = function AudioPlayer(_ref) {
         duration: duration
       });
     }
-  };
-  var moveBackwardAction = function moveBackwardAction() {
+  }, [onEndNextFile]);
+  var moveBackwardAction = useCallback(function () {
     if (!playable) {
       return;
     }
     audioElem.current.currentTime -= config.rewindTime || 5;
-  };
-  var moveForwardAction = function moveForwardAction() {
+  }, [playable]);
+  var moveForwardAction = useCallback(function () {
     if (!playable) {
       return;
     }
     audioElem.current.currentTime += config.fastForwardTime || 5;
-  };
-  var setTimeAction = function setTimeAction(time) {
+  }, [playable]);
+  var setTimeAction = useCallback(function (time) {
     if (time === void 0) {
       time = 0;
     }
@@ -779,8 +779,8 @@ var AudioPlayer = function AudioPlayer(_ref) {
     if (eventRouter) {
       eventRouter.emit('state.ended', hasEnded);
     }
-  };
-  var rewindAction = function rewindAction() {
+  }, [playable]);
+  var rewindAction = useCallback(function () {
     audioElem.current.currentTime = 0;
     setEnded(false);
     setTimestamp(audioElem.current.currentTime);
@@ -788,7 +788,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     if (eventRouter) {
       eventRouter.emit('state.ended', false);
     }
-  };
+  }, [playable]);
   useEffect(function () {
     var i;
     for (i = 0; i < audioElem.current.textTracks.length; i += 1) {
