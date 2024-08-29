@@ -492,6 +492,53 @@ var TracklistMenu = function TracklistMenu(_ref) {
   }, trackOptions);
 };
 
+var FontAwesome5 = {
+  classNames: {
+    'sr-only': ['sr-only'],
+    tracklist: ['btn', 'btn-tracklist'],
+    'previous-audio': ['btn', 'btn-previous-audio'],
+    backward: ['btn', 'btn-backward'],
+    play: ['btn', 'btn-play'],
+    reset: ['btn', 'btn-reset'],
+    forward: ['btn', 'btn-forward'],
+    'next-audio': ['btn', 'btn-next-audio'],
+    'closed-captioning': ['btn', 'btn-closed-captioning'],
+    mute: ['btn', 'btn-mute']
+  },
+  icons: {
+    tracklist__false: ['fa', 'fa-list-ol'],
+    tracklist__true: ['fa', 'fa-window-close'],
+    'previous-audio': ['fa', 'fa-step-backward'],
+    backward: ['fa', 'fa-backward'],
+    play__false: ['fa', 'fa-play'],
+    play__true: ['fa', 'fa-pause'],
+    reset: ['fa', 'fa-undo'],
+    forward: ['fa', 'fa-forward'],
+    'next-audio': ['fa', 'fa-step-forward'],
+    'closed-captioning__false': ['fa', 'fa-closed-captioning'],
+    'closed-captioning__true': ['fa', 'fa-window-close'],
+    mute__false: ['fa', 'fa-volume-up'],
+    mute__true: ['fa', 'fa-volume-off']
+  },
+  iconElements: {
+    tracklist__false: null,
+    tracklist__true: null,
+    'previous-audio': null,
+    backward: null,
+    play__false: null,
+    play__true: null,
+    reset: null,
+    forward: null,
+    'next-audio': null,
+    'closed-captioning__false': null,
+    'closed-captioning__true': null,
+    mute__false: null,
+    mute__true: null
+  },
+  useHoursInTimestamps: true,
+  keepPlayVisibleOnEnded: false
+};
+
 function _extends() {
   _extends = Object.assign ? Object.assign.bind() : function (target) {
     for (var i = 1; i < arguments.length; i++) {
@@ -1199,6 +1246,10 @@ var AudioPlayer = function AudioPlayer(_ref) {
   }));
 };
 
+var defaultConfigs = {
+  FontAwesome5: FontAwesome5
+};
+
 export default AudioPlayer;
-export { DEFAULT_PLAYER_STATE, PlayerRemoteProvider, usePlayerRemote, usePlayerRemoteById };
+export { DEFAULT_PLAYER_STATE, PlayerRemoteProvider, defaultConfigs, usePlayerRemote, usePlayerRemoteById };
 //# sourceMappingURL=react-ts-media-player.esm.js.map
