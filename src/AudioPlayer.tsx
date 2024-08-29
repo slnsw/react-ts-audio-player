@@ -286,7 +286,7 @@ const AudioPlayer: React.FC<IProps> = ({
   }, [playable]);
 
   // Set the current timestamp to a given value.
-  const setTimeAction = (time: number = 0) => {
+  const setTimeAction = React.useCallback((time: number = 0) => {
     audioElem.current.currentTime = time;
     setTimestamp(time);
     const value = (100 / duration) * time;
@@ -298,10 +298,10 @@ const AudioPlayer: React.FC<IProps> = ({
     if (eventRouter) {
       eventRouter.emit('state.ended', hasEnded);
     }
-  };
+  }, [playable]);
 
   // Rewind the audio file.
-  const rewindAction = () => {
+  const rewindAction = React.useCallback(() => {
     audioElem.current.currentTime = 0;
     setEnded(false);
     setTimestamp(audioElem.current.currentTime);
@@ -309,7 +309,7 @@ const AudioPlayer: React.FC<IProps> = ({
     if (eventRouter) {
       eventRouter.emit('state.ended', false);
     }
-  };
+  }, [playable]);
 
   React.useEffect(() => {
     let i;
