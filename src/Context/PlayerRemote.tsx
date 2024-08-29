@@ -28,7 +28,7 @@ export const DEFAULT_PLAYER_STATE: RemoteState = {
   timestamp: 0,
 };
 
-function mediaReducer(state: MultiPlayerRemoteState, action: RemoteStateAction): MultiPlayerRemoteState {
+function remoteStateReducer(state: MultiPlayerRemoteState, action: RemoteStateAction): MultiPlayerRemoteState {
   const {
     id,
     type,
@@ -77,6 +77,7 @@ function mediaReducer(state: MultiPlayerRemoteState, action: RemoteStateAction):
   return { ...state, [id]: currentState };
 }
 
+// Global usePlayerRemote function. You'll need to pass the `id` into every dispatch call.
 export const usePlayerRemote = () => {
   const context = React.useContext(PlayerRemoteContext);
 
@@ -90,6 +91,7 @@ export const usePlayerRemote = () => {
   return { state, dispatch };
 };
 
+// usePlayerRemote keyed to player ID.
 export const usePlayerRemoteById = (id: string) => {
   const { state, dispatch } = usePlayerRemote();
   return {
@@ -98,8 +100,9 @@ export const usePlayerRemoteById = (id: string) => {
   };
 };
 
+// Context component, needs to be wrapped around App to make it work.
 export const PlayerRemoteProvider = (props: any) => {
-  const [state, dispatch] = React.useReducer(mediaReducer, defaultMultiPlayerState);
+  const [state, dispatch] = React.useReducer(remoteStateReducer, defaultMultiPlayerState);
   const value = React.useMemo(() => [state, dispatch], [state]);
   return <PlayerRemoteContext.Provider value={value} {...props} />;
 };
