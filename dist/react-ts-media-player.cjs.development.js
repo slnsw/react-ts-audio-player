@@ -499,6 +499,21 @@ var TracklistMenu = function TracklistMenu(_ref) {
   }, trackOptions);
 };
 
+function _extends() {
+  _extends = Object.assign ? Object.assign.bind() : function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+    return target;
+  };
+  return _extends.apply(this, arguments);
+}
+
 var PlayerRemoteContext = /*#__PURE__*/React__default.createContext([]);
 var DEFAULT_PLAYER_STATE = {
   lastUpdate: /*#__PURE__*/new Date().toISOString(),
@@ -523,9 +538,18 @@ var usePlayerRemote = function usePlayerRemote() {
 };
 var usePlayerRemoteById = function usePlayerRemoteById(id) {
   var _usePlayerRemote = usePlayerRemote(),
-    state = _usePlayerRemote.state;
+    state = _usePlayerRemote.state,
+    _dispatch = _usePlayerRemote.dispatch;
   return {
-    state: (state === null || state === void 0 ? void 0 : state[id]) || DEFAULT_PLAYER_STATE
+    state: (state === null || state === void 0 ? void 0 : state[id]) || DEFAULT_PLAYER_STATE,
+    dispatch: function dispatch(params) {
+      if (params === void 0) {
+        params = {};
+      }
+      return _dispatch(_extends({
+        id: id
+      }, params));
+    }
   };
 };
 

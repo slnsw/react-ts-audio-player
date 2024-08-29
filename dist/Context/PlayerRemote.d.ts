@@ -11,6 +11,7 @@ export declare const usePlayerRemote: () => {
 };
 export declare const usePlayerRemoteById: (id: string) => {
     state: any;
+    dispatch: (params?: {}) => any;
 };
 export declare const PlayerRemoteProvider: (props: any) => React.JSX.Element;
 export {};
