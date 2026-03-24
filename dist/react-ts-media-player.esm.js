@@ -137,7 +137,7 @@ var ScrubBarTooltipOuter = function ScrubBarTooltipOuter(_ref2) {
       setValue(getOffsetX(e) / outerWidth);
     },
     className: wrapperClassName
-  }, show && content.length > 0 && ( /*#__PURE__*/React__default.createElement(ScrubBarTooltip, {
+  }, show && content.length > 0 && (/*#__PURE__*/React__default.createElement(ScrubBarTooltip, {
     title: valueToTooltipString(value),
     className: tooltipClassName,
     style: {
@@ -237,22 +237,22 @@ var ScrubBar = function ScrubBar(_ref3) {
     onMouseDown: useRange ? function () {} : onDown,
     onTouchStart: useRange ? function () {} : onDown,
     ref: outer
-  }, useTooltip && ( /*#__PURE__*/React__default.createElement(ScrubBarTooltipOuter, {
+  }, useTooltip && (/*#__PURE__*/React__default.createElement(ScrubBarTooltipOuter, {
     wrapperClassName: className + "__wraptooltip",
     tooltipClassName: className + "__tooltip",
     show: hover || scrubbing.current,
     valueToTooltipString: valueToTooltipString,
     defaultValue: value
-  })), (useProgress || useRange) && ( /*#__PURE__*/React__default.createElement("label", {
+  })), (useProgress || useRange) && (/*#__PURE__*/React__default.createElement("label", {
     htmlFor: useRange ? derivedId + "__scrubrange" : derivedId + "__progress"
   }, /*#__PURE__*/React__default.createElement("span", {
     className: "sr-only"
-  }, label || '', value + " percent"), useProgress && ( /*#__PURE__*/React__default.createElement("progress", {
+  }, label || '', value + " percent"), useProgress && (/*#__PURE__*/React__default.createElement("progress", {
     max: "100",
     value: value,
     className: className + "__progress",
     id: derivedId + "__progress"
-  })), useRange && ( /*#__PURE__*/React__default.createElement("input", {
+  })), useRange && (/*#__PURE__*/React__default.createElement("input", {
     className: className + "__scrubrange",
     id: derivedId + "__scrubrange",
     type: "range",
@@ -264,7 +264,7 @@ var ScrubBar = function ScrubBar(_ref3) {
     onChange: function onChange(e) {
       setOffsetX(parseFloat(e.currentTarget.value) / 100.0 * outer.current.clientWidth);
     }
-  })))), !useRange && ( /*#__PURE__*/React__default.createElement("div", {
+  })))), !useRange && (/*#__PURE__*/React__default.createElement("div", {
     className: [className + "__fill"].join(' '),
     style: {
       width: value + "%"
@@ -405,7 +405,7 @@ var SubtitleMenu = function SubtitleMenu(_ref) {
   if (tracks && tracks.length) {
     for (i = 0; i < tracks.length; i += 1) {
       track = tracks[i];
-      languageOptions.push( /*#__PURE__*/React__default.createElement(MenuItem, {
+      languageOptions.push(/*#__PURE__*/React__default.createElement(MenuItem, {
         key: track.language + "-" + i,
         label: track.label,
         value: track.language,
@@ -448,9 +448,9 @@ var ToggleButton = function ToggleButton(_ref) {
     "aria-controls": ariaControls
   }, /*#__PURE__*/React__default.createElement(SrOnly, {
     config: config
-  }, children), !toggleState && !iconElemFalse && ( /*#__PURE__*/React__default.createElement("span", {
+  }, children), !toggleState && !iconElemFalse && (/*#__PURE__*/React__default.createElement("span", {
     className: CssClasses(iconClassNamesFalse)
-  })), !toggleState && iconElemFalse, toggleState && !iconElemTrue && ( /*#__PURE__*/React__default.createElement("span", {
+  })), !toggleState && iconElemFalse, toggleState && !iconElemTrue && (/*#__PURE__*/React__default.createElement("span", {
     className: CssClasses(iconClassNamesTrue)
   })), toggleState && iconElemTrue);
 };
@@ -540,18 +540,13 @@ var FontAwesome5 = {
 };
 
 function _extends() {
-  _extends = Object.assign ? Object.assign.bind() : function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
+  return _extends = Object.assign ? Object.assign.bind() : function (n) {
+    for (var e = 1; e < arguments.length; e++) {
+      var t = arguments[e];
+      for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
     }
-    return target;
-  };
-  return _extends.apply(this, arguments);
+    return n;
+  }, _extends.apply(null, arguments);
 }
 
 var PlayerRemoteContext = /*#__PURE__*/React__default.createContext([]);
@@ -763,18 +758,18 @@ var AudioPlayer = function AudioPlayer(_ref) {
   var _React$useState9 = useState(false),
     muted = _React$useState9[0],
     setMuted = _React$useState9[1];
-  var _React$useState10 = useState(null),
-    selectedLanguage = _React$useState10[0],
-    setSelectedLanguage = _React$useState10[1];
+  var _React$useState0 = useState(null),
+    selectedLanguage = _React$useState0[0],
+    setSelectedLanguage = _React$useState0[1];
+  var _React$useState1 = useState(false),
+    showTrackListMenu = _React$useState1[0],
+    setShowTrackListMenu = _React$useState1[1];
+  var _React$useState10 = useState(false),
+    showSubtitleMenu = _React$useState10[0],
+    setShowSubtitleMenu = _React$useState10[1];
   var _React$useState11 = useState(false),
-    showTrackListMenu = _React$useState11[0],
-    setShowTrackListMenu = _React$useState11[1];
-  var _React$useState12 = useState(false),
-    showSubtitleMenu = _React$useState12[0],
-    setShowSubtitleMenu = _React$useState12[1];
-  var _React$useState13 = useState(false),
-    videoMetadataLoaded = _React$useState13[0],
-    setVideoMetadataLoaded = _React$useState13[1];
+    videoMetadataLoaded = _React$useState11[0],
+    setVideoMetadataLoaded = _React$useState11[1];
   var _usePlayerRemoteById = usePlayerRemoteById(id),
     remoteState = _usePlayerRemoteById.state;
   var captionsContainerId = id + "__captions";
@@ -1107,7 +1102,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
   }, currentFile && /*#__PURE__*/createElement("source", {
     src: currentFile.audioUrl,
     type: "audio/mpeg"
-  }), currentFile && hasVtt(currentFile) && ( /*#__PURE__*/createElement("track", {
+  }), currentFile && hasVtt(currentFile) && (/*#__PURE__*/createElement("track", {
     src: currentFile.transcriptUrl,
     kind: "captions",
     label: "English",
@@ -1140,7 +1135,7 @@ var AudioPlayer = function AudioPlayer(_ref) {
     readOnly: true,
     ref: timeElapsedElem,
     value: getTimestampString(timestamp)
-  }), config.showDuration && ( /*#__PURE__*/createElement(Fragment, null, /*#__PURE__*/createElement("label", {
+  }), config.showDuration && (/*#__PURE__*/createElement(Fragment, null, /*#__PURE__*/createElement("label", {
     className: "sr-only",
     htmlFor: durationIndicatorId
   }, "Duration"), /*#__PURE__*/createElement("input", {

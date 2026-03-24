@@ -4,6 +4,9 @@
   "description": "React component representing an audio/video player.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
     "start": "tsdx watch",
     "build": "rm -rf dist/* && tsdx build",
@@ -22,8 +25,8 @@
     "eventemitter3": "^5.0.1"
   },
   "peerDependencies": {
-    "react": "^16.12.0 || ^17 || ^18",
-    "react-dom": "^16.12.0 || ^17 || ^18"
+    "react": "^16.12.0 || ^17 || ^18 || ^19",
+    "react-dom": "^16.12.0 || ^17 || ^18 || ^19"
   },
   "devDependencies": {
     "@babel/core": "^7.7.7",
@@ -51,7 +54,6 @@
     "eslint-plugin-react": "^7.17.0",
     "jest": "^24.9.0",
     "jest-junit": "^10.0.0",
-    "js-loader": "^0.1.1",
     "prettier": "^1.19.1",
     "ts-jest": "^24.3.0",
     "ts-loader": "^6.2.1",
@@ -61,5 +63,9 @@
     "typescript": "^4.6.3",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slnsw/react-ts-audio-player.git"
   }
 }
