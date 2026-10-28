@@ -1,11 +1,13 @@
 // @file
 // Generate BEM-scoped CSS classes.
 
+type CssClassState = string | false | null;
+
 const CssClasses = (
   defaultClassName: string,
   optionalClassName: string = '',
   suffix: string = '',
-  states: any[] = [],
+  states: CssClassState[] = [],
 ): string => {
   const classes = []
     .concat(defaultClassName.split(/\s+/))
@@ -18,8 +20,16 @@ const CssClasses = (
       (agg, className) =>
         agg.concat(
           ['']
-            .concat(states.filter((s) => s && s.length))
-            .map((state) => `${className}${state.length ? `--${state}` : ''}`),
+            .concat(
+              states.filter(
+                (s: CssClassState) =>
+                  typeof s === 'string' && (s || '').length > 0,
+              ) as string[],
+            )
+            .map(
+              (state: string) =>
+                `${className}${state.length ? `--${state}` : ''}`,
+            ),
         ),
       [],
     )

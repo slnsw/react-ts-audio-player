@@ -1,0 +1,11 @@
+__tests__/*
+examples/*
+bs-config.js
+cspell.json
+example.html
+pnpm-lock.yaml
+README.md
+vite.config.ts
+vitest.setup.ts
+webpack-monkeypatch.js
+webpack.config.js

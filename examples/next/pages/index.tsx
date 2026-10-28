@@ -7,28 +7,28 @@ const config = Object.assign(defaultConfigs.FontAwesome5, {
   useTooltip: true
 });
 
-const TestRemote = ({ id }) => {
+const TestRemote = ({ id, remoteId }) => {
   const { dispatch } = usePlayerRemoteById(id);
 
   return (
-    <div>
+    <div data-remote-id={remoteId}>
       <h2>Remote</h2>
-      <button type="button" onClick={() => dispatch({ type: 'play_pause' })}>
+      <button type="button" onClick={() => dispatch({ type: 'play_pause', remoteId })}>
         Play/pause
       </button>
-      <button type="button" onClick={() => dispatch({ type: 'play' })}>
+      <button type="button" onClick={() => dispatch({ type: 'play', remoteId })}>
         Play
       </button>
-      <button type="button" onClick={() => dispatch({ type: 'pause' })}>
+      <button type="button" onClick={() => dispatch({ type: 'pause', remoteId })}>
         Pause
       </button>
-      <button type="button" onClick={() => dispatch({ type: 'reset' })}>
+      <button type="button" onClick={() => dispatch({ type: 'reset', remoteId })}>
         Rewind
       </button>
-      <button type="button" onClick={() => dispatch({ type: 'backward' })}>
+      <button type="button" onClick={() => dispatch({ type: 'backward', remoteId })}>
         Backward
       </button>
-      <button type="button" onClick={() => dispatch({ type: 'forward' })}>
+      <button type="button" onClick={() => dispatch({ type: 'forward', remoteId })}>
         Forward
       </button>
       <input
@@ -45,7 +45,7 @@ const Page = () => {
   return (
     <>
       <h1>Hello!</h1>
-      <TestRemote id="audio-player" />
+      <TestRemote id="audio-player" remoteId="remote-id-01" />
       <AudioPlayer
         id="audio-player"
         playlist={[

@@ -1,3 +1,5 @@
+import { describe, it, expect } from 'vitest';
+
 import CssClasses from '../../../src/Util/CssClasses';
 
 describe('Basic CSS classes', () => {

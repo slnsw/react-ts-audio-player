@@ -1,72 +1,108 @@
-import React from "react";
-
-/* eslint-disable react/jsx-props-no-spreading */
+import React from 'react';
 
 const PlayerRemoteContext = React.createContext([]);
 
-type RemoteState = {
+interface RemoteState {
   lastUpdate: string;
   type: string;
   timestamp: number;
-};
+  remoteId?: string;
+}
 
-type MultiPlayerRemoteState = {
+interface MultiPlayerRemoteState {
   [id: string]: RemoteState;
-};
+}
 
-type RemoteStateAction = {
+interface RemoteStateAction {
   id: string;
   type: string;
   timestamp?: number;
-};
+  remoteId?: string;
+}
 
 const defaultMultiPlayerState: MultiPlayerRemoteState = {};
 
 export const DEFAULT_PLAYER_STATE: RemoteState = {
-  lastUpdate: (new Date()).toISOString(),
+  lastUpdate: new Date().toISOString(),
   type: '',
   timestamp: 0,
+  remoteId: null,
 };
 
-function remoteStateReducer(state: MultiPlayerRemoteState, action: RemoteStateAction): MultiPlayerRemoteState {
-  const {
-    id,
-    type,
-    timestamp = 0,
-  } = action;
+function remoteStateReducer(
+  state: MultiPlayerRemoteState,
+  action: RemoteStateAction,
+): MultiPlayerRemoteState {
+  const { id, type, timestamp = 0, remoteId = null } = action;
 
   let currentState = state?.[id] || { ...DEFAULT_PLAYER_STATE };
 
   switch (type) {
-    case "play_pause": {
-      currentState = { ...currentState, type, lastUpdate: (new Date()).toISOString() };
+    case 'play_pause': {
+      currentState = {
+        ...currentState,
+        type,
+        remoteId,
+        lastUpdate: new Date().toISOString(),
+      };
       break;
     }
-    case "play": {
-      currentState = { ...currentState, type, lastUpdate: (new Date()).toISOString() };
+    case 'play': {
+      currentState = {
+        ...currentState,
+        type,
+        remoteId,
+        lastUpdate: new Date().toISOString(),
+      };
       break;
     }
-    case "pause": {
-      currentState = { ...currentState, type, lastUpdate: (new Date()).toISOString() };
+    case 'pause': {
+      currentState = {
+        ...currentState,
+        type,
+        remoteId,
+        lastUpdate: new Date().toISOString(),
+      };
       break;
     }
-    case "reset": {
-      currentState = { ...currentState, type, lastUpdate: (new Date()).toISOString() };
+    case 'reset': {
+      currentState = {
+        ...currentState,
+        type,
+        remoteId,
+        lastUpdate: new Date().toISOString(),
+      };
       break;
     }
-    case "backward": {
-      currentState = { ...currentState, type, lastUpdate: (new Date()).toISOString() };
+    case 'backward': {
+      currentState = {
+        ...currentState,
+        type,
+        remoteId,
+        lastUpdate: new Date().toISOString(),
+      };
       break;
     }
-    case "forward": {
-      currentState = { ...currentState, type, lastUpdate: (new Date()).toISOString() };
+    case 'forward': {
+      currentState = {
+        ...currentState,
+        type,
+        remoteId,
+        lastUpdate: new Date().toISOString(),
+      };
       break;
     }
-    case "timestamp_update": {
-      currentState = { ...currentState, type, lastUpdate: (new Date()).toISOString(), timestamp };
+    case 'timestamp_update': {
+      currentState = {
+        ...currentState,
+        type,
+        remoteId,
+        lastUpdate: new Date().toISOString(),
+        timestamp,
+      };
       break;
     }
-    case "": {
+    case '': {
       break;
     }
     default: {
@@ -83,8 +119,10 @@ export const usePlayerRemote = () => {
 
   if (!context) {
     // throw new Error(`usePlayerRemote must be used within PlayerRemoteProvider`);
-    console.log(`PlayerRemoteProvider not found, remote player functionality disabled.`);
-    return { state: null, dispatch: () => { } };
+    console.log(
+      `PlayerRemoteProvider not found, remote player functionality disabled.`,
+    );
+    return { state: null, dispatch: () => {} };
   }
 
   const [state, dispatch] = context;
@@ -100,9 +138,14 @@ export const usePlayerRemoteById = (id: string) => {
   };
 };
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 // Context component, needs to be wrapped around App to make it work.
 export const PlayerRemoteProvider = (props: any) => {
-  const [state, dispatch] = React.useReducer(remoteStateReducer, defaultMultiPlayerState);
+  const [state, dispatch] = React.useReducer(
+    remoteStateReducer,
+    defaultMultiPlayerState,
+  );
   const value = React.useMemo(() => [state, dispatch], [state]);
   return <PlayerRemoteContext.Provider value={value} {...props} />;
 };
