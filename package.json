@@ -12,8 +12,7 @@
     "build": "rm -rf dist/* && tsdx build",
     "web-bundle": "rm -rf dist/* && tsc && webpack",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
-    "lint": "tslint -p tsconfig.json",
-    "eslint": "eslint --fix \"src/**/*.{ts,tsx}\"",
+    "lint": "eslint --fix \"src/**/*.{ts,tsx}\"",
     "browsersync": "npm run web-bundle && npm run browsersync:run",
     "browsersync:run": "browser-sync start --server --startPath example.html --files . --config bs-config.js",
     "test": "jest"
@@ -49,7 +48,9 @@
     "eslint-config-prettier": "^6.9.0",
     "eslint-config-react-app": "^5.1.0",
     "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-jsdoc": "^65.4.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.17.0",
     "jest": "^24.9.0",
@@ -58,8 +59,6 @@
     "ts-jest": "^24.3.0",
     "ts-loader": "^6.2.1",
     "tsdx": "^0.13.2",
-    "tslint": "^5.20.1",
-    "tslint-config-prettier": "^1.18.0",
     "typescript": "^4.6.3",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"

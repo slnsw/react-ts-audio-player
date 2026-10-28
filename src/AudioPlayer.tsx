@@ -13,9 +13,9 @@ import TracklistMenu from './TracklistMenu';
 
 import FontAwesome5 from './Configs/FontAwesome5';
 import { usePlayerRemoteById } from './Context/PlayerRemote';
-import CssClasses from './Util/CssClasses';
 import { toHHMMSS, toMMSS } from './TimeUtils';
 import { IAudioPlayerConfig } from './Types';
+import CssClasses from './Util/CssClasses';
 
 interface IPlaylistItem {
   index: number;

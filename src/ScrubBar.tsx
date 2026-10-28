@@ -1,8 +1,8 @@
 // @file
 // Functional component for an action button.
 
-import React from 'react';
 import debounce from 'debounce';
+import React from 'react';
 
 import CssClasses from './Util/CssClasses';
 import { clampNumber } from './Util/Numbers';

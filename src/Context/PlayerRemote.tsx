@@ -4,23 +4,23 @@ import React from "react";
 
 const PlayerRemoteContext = React.createContext([]);
 
-type RemoteState = {
+interface RemoteState {
   lastUpdate: string;
   type: string;
   timestamp: number;
   remoteId?: string;
-};
+}
 
-type MultiPlayerRemoteState = {
+interface MultiPlayerRemoteState {
   [id: string]: RemoteState;
-};
+}
 
-type RemoteStateAction = {
+interface RemoteStateAction {
   id: string;
   type: string;
   timestamp?: number;
   remoteId?: string;
-};
+}
 
 const defaultMultiPlayerState: MultiPlayerRemoteState = {};
 
