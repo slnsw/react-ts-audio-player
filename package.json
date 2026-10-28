@@ -16,6 +16,7 @@
     "build": "rm -rf dist/* && tsdx build",
     "web-bundle": "rm -rf dist/* && tsc && webpack",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "prettier": "pnpm format",
     "lint": "eslint --fix \"src/**/*.{ts,tsx}\"",
     "browsersync": "npm run web-bundle && npm run browsersync:run",
     "browsersync:run": "browser-sync start --server --startPath example.html --files . --config bs-config.js",
