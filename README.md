@@ -13,7 +13,7 @@ project, you should probably just include the library directly.
 You'll be using something like the following:
 
 ```tsx
-import AudioPlayer from '@slnsw/react-ts-media-player';
+import AudioPlayer from '@sgit lolnsw/react-ts-media-player';
 ```
 
 For distribution, run `npm run build`.
