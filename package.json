@@ -66,5 +66,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/slnsw/react-ts-audio-player.git"
-  }
+  },
+  "packageManager": "pnpm@10.30.3"
 }
