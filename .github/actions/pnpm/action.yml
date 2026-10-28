@@ -1,0 +1,83 @@
+name: PNPM Setup
+description: Set up PNPM and its dependencies.
+
+inputs:
+  node-version:
+    description: Node.js version
+    default: 24
+  build-update:
+    description: Build counter
+    default: 1
+  github-token:
+    description: GitHub personal access token required for installation
+    required: true
+  run-cypress:
+    required: false
+    default: false
+outputs: {}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v6.0.10
+      # with:
+      #   version: latest
+
+    - name: Cache node_modules
+      id: cache-pnpm
+      uses: actions/cache@v6.1.0
+      env:
+        cache-name: cache-node-modules
+      with:
+        path: node_modules
+        key: ${{ inputs.build-update }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ inputs.build-update }}-${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ inputs.build-update }}-${{ runner.os }}-build-
+          ${{ inputs.build-update }}-${{ runner.os }}-
+          ${{ inputs.build-update }}-
+
+    - name: Cache .cache
+      id: cache-dotcache
+      uses: actions/cache@v6.1.0
+      env:
+        cache-name: cache-dotcache
+      with:
+        path: .cache
+        key: ${{ inputs.build-update }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ inputs.build-update }}-${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ inputs.build-update }}-${{ runner.os }}-build-
+          ${{ inputs.build-update }}-${{ runner.os }}-
+          ${{ inputs.build-update }}-
+
+    - name: Configure workspace
+      shell: "bash"
+      run: |
+        cat <<EOF >pnpm-workspace.yaml
+        ignoredBuiltDependencies:
+          - cypress
+        onlyBuiltDependencies:
+          - canvas
+          - cypress
+        EOF
+      if: ${{ inputs.run-cypress != false }}
+
+    - name: Install NodeJS
+      uses: actions/setup-node@v7.0.0
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'pnpm'
+
+    - name: Build .npmrc file
+      shell: bash
+      run: |
+        cat <<EOF >>.npmrc
+        //npm.pkg.github.com/:_authToken=${{ inputs.github-token }}
+        @slnsw:registry=https://npm.pkg.github.com
+        EOF
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install
