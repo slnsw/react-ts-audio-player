@@ -15,7 +15,8 @@
     "lint": "eslint --fix \"src/**/*.{ts,tsx}\"",
     "browsersync": "npm run web-bundle && npm run browsersync:run",
     "browsersync:run": "browser-sync start --server --startPath example.html --files . --config bs-config.js",
-    "test": "vitest"
+    "test": "vitest",
+    "vitest:ci": "vitest run --coverage --reporter=verbose"
   },
   "author": "",
   "license": "ISC",

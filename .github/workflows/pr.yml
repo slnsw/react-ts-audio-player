@@ -25,22 +25,22 @@ jobs:
           build-update: ${{ env.BUILD_UPDATE }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-#   eslint:
-#     needs: [pr-init]
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v7.0.1
+  eslint:
+    needs: [pr-init]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7.0.1
       
-#       - name: Composite PNPM setup
-#         uses: ./.github/actions/pnpm
-#         with:
-#           node-version: ${{ env.NODE_VERSION }}
-#           build-update: ${{ env.BUILD_UPDATE }}
-#           github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Composite PNPM setup
+        uses: ./.github/actions/pnpm
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          build-update: ${{ env.BUILD_UPDATE }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-#       - name: Run eslint
-#         run: pnpm lint
+      - name: Run eslint
+        run: pnpm lint
 
 #   prettier:
 #     needs: [pr-init]
@@ -93,19 +93,19 @@ jobs:
 #       - name: Run cspell
 #         run: pnpm cspell
 
-#   vitest:
-#     needs: [pr-init]
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v7.0.1
+  vitest:
+    needs: [pr-init]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7.0.1
       
-#       - name: Composite PNPM setup
-#         uses: ./.github/actions/pnpm
-#         with:
-#           node-version: ${{ env.NODE_VERSION }}
-#           build-update: ${{ env.BUILD_UPDATE }}
-#           github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Composite PNPM setup
+        uses: ./.github/actions/pnpm
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          build-update: ${{ env.BUILD_UPDATE }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-#       - name: Run vitest
-#         run: pnpm vitest:ci
+      - name: Run vitest
+        run: pnpm vitest:ci
