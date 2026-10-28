@@ -38,9 +38,11 @@ const SubtitleContainer: React.FunctionComponent<IProps> = ({
     let i;
     for (i = 0; i < activeCues.length; i += 1) {
       cue = activeCues[i];
+      /* eslint-disable @typescript-eslint/no-explicit-any */
       if (typeof (cue as any).text !== 'undefined') {
         newText += (cue as any).text;
       }
+      /* eslint-enable @typescript-eslint/no-explicit-any */
     }
     setText(newText);
   };

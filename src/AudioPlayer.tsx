@@ -14,18 +14,11 @@ import TracklistMenu from './TracklistMenu';
 import FontAwesome5 from './Configs/FontAwesome5';
 import { usePlayerRemoteById } from './Context/PlayerRemote';
 import { toHHMMSS, toMMSS } from './TimeUtils';
-import { IAudioPlayerConfig } from './Types';
+import { IAudioPlayerConfig, IPlaylistItem } from './Types';
 import CssClasses from './Util/CssClasses';
 
-interface IPlaylistItem {
-  index: number;
-  label: string;
-  audioUrl: string;
-  transcriptUrl: string | null;
-}
-
 interface IPlaybackEvent {
-  fileData?: any[];
+  fileData?: IPlaylistItem[];
   selectedFile?: number;
   currentTime?: number;
   duration?: number;

@@ -6,8 +6,10 @@ import React from 'react';
 import Menu from './Menu';
 import MenuItem from './MenuItem';
 
+import { IPlaylistItem } from './Types';
+
 interface IProps {
-  tracklist?: any[];
+  tracklist?: IPlaylistItem[];
   selected?: number;
   onSelect?: (track: number) => void;
   id?: string;
@@ -35,7 +37,7 @@ const TracklistMenu: React.FunctionComponent<IProps> = ({
     }
   };
 
-  const trackOptions = tracklist.map((track: any, index: number) => {
+  const trackOptions = tracklist.map((track: IPlaylistItem, index: number) => {
     return (
       <MenuItem
         key={index}

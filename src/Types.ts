@@ -24,3 +24,10 @@ export interface IAudioPlayerConfig {
   useProgressForScrubBar?: boolean;
   keepPlayVisibleOnEnded?: boolean;
 }
+
+export interface IPlaylistItem {
+  index: number;
+  label: string;
+  audioUrl: string;
+  transcriptUrl: string | null;
+}

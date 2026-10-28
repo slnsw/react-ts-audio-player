@@ -54,7 +54,7 @@ const ON_CLICK_DEBOUNCE = 250;
 interface ITooltipProps {
   title?: string;
   className?: string;
-  style?: any;
+  style?: React.CSSProperties;
 }
 
 const ScrubBarTooltip: React.FunctionComponent<ITooltipProps> = ({
@@ -166,7 +166,7 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
   // so that the scrub can persist even when the user drags outside
   // the scrub bar.
   React.useEffect(() => {
-    /* eslint-disable no-undef */
+     
     if (typeof window !== 'undefined' && window?.document) {
       window.document.addEventListener('mousemove', onMouseMove, false);
       window.document.addEventListener('touchmove', onTouchMove, false);
@@ -182,7 +182,7 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
         window.document.removeEventListener('touchend', onUp, false);
       }
     };
-    /* eslint-enable no-undef */
+     
   }, []);
 
   // Prop update -- set value, don't propagate.

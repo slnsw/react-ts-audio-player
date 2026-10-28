@@ -1,6 +1,6 @@
 import React from "react";
 
-/* eslint-disable react/jsx-props-no-spreading */
+ 
 
 const PlayerRemoteContext = React.createContext([]);
 
@@ -103,6 +103,8 @@ export const usePlayerRemoteById = (id: string) => {
     dispatch: (params = {}) => dispatch({ id, ...params }),
   };
 };
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 // Context component, needs to be wrapped around App to make it work.
 export const PlayerRemoteProvider = (props: any) => {
