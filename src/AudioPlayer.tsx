@@ -302,19 +302,22 @@ const AudioPlayer: React.FC<IProps> = ({
   }, [playable]);
 
   // Set the current timestamp to a given value.
-  const setTimeAction = React.useCallback((time: number = 0) => {
-    audioElem.current.currentTime = time;
-    setTimestamp(time);
-    const value = (100 / duration) * time;
-    setProgress(value);
+  const setTimeAction = React.useCallback(
+    (time: number = 0) => {
+      audioElem.current.currentTime = time;
+      setTimestamp(time);
+      const value = (100 / duration) * time;
+      setProgress(value);
 
-    // Determine whether time has been set to end.
-    const hasEnded = value >= 100;
-    setEnded(hasEnded);
-    if (eventRouter) {
-      eventRouter.emit('state.ended', hasEnded);
-    }
-  }, [playable]);
+      // Determine whether time has been set to end.
+      const hasEnded = value >= 100;
+      setEnded(hasEnded);
+      if (eventRouter) {
+        eventRouter.emit('state.ended', hasEnded);
+      }
+    },
+    [playable],
+  );
 
   // Rewind the audio file.
   const rewindAction = React.useCallback(() => {
@@ -345,23 +348,26 @@ const AudioPlayer: React.FC<IProps> = ({
   };
 
   // Handle remote events through eventRouter.
-  const handleRemoteAction = React.useCallback((action: string, timestamp: number = 0) => {
-    if (action === 'backward') {
-      moveBackwardAction();
-    } else if (action === 'play_pause') {
-      playPauseAction();
-    } else if (action === 'play') {
-      playAction();
-    } else if (action === 'pause') {
-      pauseAction();
-    } else if (action === 'reset') {
-      rewindAction();
-    } else if (action === 'forward') {
-      moveForwardAction();
-    } else if (action === 'timestamp_update') {
-      setTimeAction(timestamp);
-    }
-  }, [playable]);
+  const handleRemoteAction = React.useCallback(
+    (action: string, timestamp: number = 0) => {
+      if (action === 'backward') {
+        moveBackwardAction();
+      } else if (action === 'play_pause') {
+        playPauseAction();
+      } else if (action === 'play') {
+        playAction();
+      } else if (action === 'pause') {
+        pauseAction();
+      } else if (action === 'reset') {
+        rewindAction();
+      } else if (action === 'forward') {
+        moveForwardAction();
+      } else if (action === 'timestamp_update') {
+        setTimeAction(timestamp);
+      }
+    },
+    [playable],
+  );
   React.useEffect(() => {
     if (eventRouter) {
       eventRouter.on('remote.action', handleRemoteAction);
@@ -409,11 +415,14 @@ const AudioPlayer: React.FC<IProps> = ({
   }, [remoteState]);
 
   // Handle buffering status changes.
-  const onBufferingUpdateCallback = React.useCallback((buffering: boolean) => {
-    if (typeof onBufferingUpdate === 'function') {
-      onBufferingUpdate(buffering);
-    }
-  }, [onBufferingUpdate]);
+  const onBufferingUpdateCallback = React.useCallback(
+    (buffering: boolean) => {
+      if (typeof onBufferingUpdate === 'function') {
+        onBufferingUpdate(buffering);
+      }
+    },
+    [onBufferingUpdate],
+  );
   React.useEffect(() => {
     onBufferingUpdateCallback(buffering);
   }, [buffering]);
@@ -483,7 +492,12 @@ const AudioPlayer: React.FC<IProps> = ({
           id={timeIndicatorId}
           readOnly
           ref={timeElapsedElem}
-          value={getTimestampString(timestamp, duration, false, config.useHoursInTimestamps)}
+          value={getTimestampString(
+            timestamp,
+            duration,
+            false,
+            config.useHoursInTimestamps,
+          )}
         />
 
         {config.showDuration && (
@@ -497,7 +511,12 @@ const AudioPlayer: React.FC<IProps> = ({
               id={durationIndicatorId}
               readOnly
               ref={durationElem}
-              value={getTimestampString(duration, duration, true, config.useHoursInTimestamps)}
+              value={getTimestampString(
+                duration,
+                duration,
+                true,
+                config.useHoursInTimestamps,
+              )}
             />
           </>
         )}
@@ -554,7 +573,7 @@ const AudioPlayer: React.FC<IProps> = ({
 
           <ToggleButton
             btnType="play"
-            hidden={!(config?.keepPlayVisibleOnEnded) && ended}
+            hidden={!config?.keepPlayVisibleOnEnded && ended}
             onClick={playPauseAction}
             toggleState={playing}
             config={config}

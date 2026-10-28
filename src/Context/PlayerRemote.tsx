@@ -1,6 +1,4 @@
-import React from "react";
-
- 
+import React from 'react';
 
 const PlayerRemoteContext = React.createContext([]);
 
@@ -25,52 +23,86 @@ interface RemoteStateAction {
 const defaultMultiPlayerState: MultiPlayerRemoteState = {};
 
 export const DEFAULT_PLAYER_STATE: RemoteState = {
-  lastUpdate: (new Date()).toISOString(),
+  lastUpdate: new Date().toISOString(),
   type: '',
   timestamp: 0,
   remoteId: null,
 };
 
-function remoteStateReducer(state: MultiPlayerRemoteState, action: RemoteStateAction): MultiPlayerRemoteState {
-  const {
-    id,
-    type,
-    timestamp = 0,
-    remoteId = null,
-  } = action;
+function remoteStateReducer(
+  state: MultiPlayerRemoteState,
+  action: RemoteStateAction,
+): MultiPlayerRemoteState {
+  const { id, type, timestamp = 0, remoteId = null } = action;
 
   let currentState = state?.[id] || { ...DEFAULT_PLAYER_STATE };
 
   switch (type) {
-    case "play_pause": {
-      currentState = { ...currentState, type, remoteId, lastUpdate: (new Date()).toISOString() };
+    case 'play_pause': {
+      currentState = {
+        ...currentState,
+        type,
+        remoteId,
+        lastUpdate: new Date().toISOString(),
+      };
       break;
     }
-    case "play": {
-      currentState = { ...currentState, type, remoteId, lastUpdate: (new Date()).toISOString() };
+    case 'play': {
+      currentState = {
+        ...currentState,
+        type,
+        remoteId,
+        lastUpdate: new Date().toISOString(),
+      };
       break;
     }
-    case "pause": {
-      currentState = { ...currentState, type, remoteId, lastUpdate: (new Date()).toISOString() };
+    case 'pause': {
+      currentState = {
+        ...currentState,
+        type,
+        remoteId,
+        lastUpdate: new Date().toISOString(),
+      };
       break;
     }
-    case "reset": {
-      currentState = { ...currentState, type, remoteId, lastUpdate: (new Date()).toISOString() };
+    case 'reset': {
+      currentState = {
+        ...currentState,
+        type,
+        remoteId,
+        lastUpdate: new Date().toISOString(),
+      };
       break;
     }
-    case "backward": {
-      currentState = { ...currentState, type, remoteId, lastUpdate: (new Date()).toISOString() };
+    case 'backward': {
+      currentState = {
+        ...currentState,
+        type,
+        remoteId,
+        lastUpdate: new Date().toISOString(),
+      };
       break;
     }
-    case "forward": {
-      currentState = { ...currentState, type, remoteId, lastUpdate: (new Date()).toISOString() };
+    case 'forward': {
+      currentState = {
+        ...currentState,
+        type,
+        remoteId,
+        lastUpdate: new Date().toISOString(),
+      };
       break;
     }
-    case "timestamp_update": {
-      currentState = { ...currentState, type, remoteId, lastUpdate: (new Date()).toISOString(), timestamp };
+    case 'timestamp_update': {
+      currentState = {
+        ...currentState,
+        type,
+        remoteId,
+        lastUpdate: new Date().toISOString(),
+        timestamp,
+      };
       break;
     }
-    case "": {
+    case '': {
       break;
     }
     default: {
@@ -87,8 +119,10 @@ export const usePlayerRemote = () => {
 
   if (!context) {
     // throw new Error(`usePlayerRemote must be used within PlayerRemoteProvider`);
-    console.log(`PlayerRemoteProvider not found, remote player functionality disabled.`);
-    return { state: null, dispatch: () => { } };
+    console.log(
+      `PlayerRemoteProvider not found, remote player functionality disabled.`,
+    );
+    return { state: null, dispatch: () => {} };
   }
 
   const [state, dispatch] = context;
@@ -108,7 +142,10 @@ export const usePlayerRemoteById = (id: string) => {
 
 // Context component, needs to be wrapped around App to make it work.
 export const PlayerRemoteProvider = (props: any) => {
-  const [state, dispatch] = React.useReducer(remoteStateReducer, defaultMultiPlayerState);
+  const [state, dispatch] = React.useReducer(
+    remoteStateReducer,
+    defaultMultiPlayerState,
+  );
   const value = React.useMemo(() => [state, dispatch], [state]);
   return <PlayerRemoteContext.Provider value={value} {...props} />;
 };

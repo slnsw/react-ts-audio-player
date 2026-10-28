@@ -166,7 +166,6 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
   // so that the scrub can persist even when the user drags outside
   // the scrub bar.
   React.useEffect(() => {
-     
     if (typeof window !== 'undefined' && window?.document) {
       window.document.addEventListener('mousemove', onMouseMove, false);
       window.document.addEventListener('touchmove', onTouchMove, false);
@@ -182,7 +181,6 @@ const ScrubBar: React.FunctionComponent<IProps> = ({
         window.document.removeEventListener('touchend', onUp, false);
       }
     };
-     
   }, []);
 
   // Prop update -- set value, don't propagate.

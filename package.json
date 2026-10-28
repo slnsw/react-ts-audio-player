@@ -20,7 +20,8 @@
     "browsersync": "npm run web-bundle && npm run browsersync:run",
     "browsersync:run": "browser-sync start --server --startPath example.html --files . --config bs-config.js",
     "test": "vitest",
-    "vitest:ci": "vitest run --coverage --reporter=verbose"
+    "vitest:ci": "vitest run --coverage --reporter=verbose",
+    "cspell": "cspell '**'"
   },
   "author": "",
   "license": "ISC",
@@ -50,6 +51,7 @@
     "@vitest/coverage-v8": "^5.0.5",
     "babel-loader": "^8.0.6",
     "browser-sync": "^3.0.2",
+    "cspell": "^10.4.0",
     "eslint": "^10.13.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^17.13.0",

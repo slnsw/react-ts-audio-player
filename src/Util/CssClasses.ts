@@ -1,7 +1,7 @@
 // @file
 // Generate BEM-scoped CSS classes.
 
-type CssClassState = string|false|null;
+type CssClassState = string | false | null;
 
 const CssClasses = (
   defaultClassName: string,
@@ -22,11 +22,13 @@ const CssClasses = (
           ['']
             .concat(
               states.filter(
-                (s: CssClassState) => typeof s === 'string' && (s || '').length > 0,
+                (s: CssClassState) =>
+                  typeof s === 'string' && (s || '').length > 0,
               ) as string[],
             )
             .map(
-              (state: string) => `${className}${state.length ? `--${state}` : ''}`,
+              (state: string) =>
+                `${className}${state.length ? `--${state}` : ''}`,
             ),
         ),
       [],
