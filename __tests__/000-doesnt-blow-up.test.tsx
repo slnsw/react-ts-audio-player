@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { afterEach, describe, it, expect } from 'vitest';
 import { render, cleanup } from '@testing-library/react';
 
 import AudioPlayer from '../src/AudioPlayer';
