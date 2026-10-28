@@ -25,6 +25,23 @@ jobs:
           build-update: ${{ env.BUILD_UPDATE }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+  build:
+    needs: [pr-init]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7.0.1
+      
+      - name: Composite PNPM setup
+        uses: ./.github/actions/pnpm
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          build-update: ${{ env.BUILD_UPDATE }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run build
+        run: pnpm build
+
   eslint:
     needs: [pr-init]
     runs-on: ubuntu-latest
