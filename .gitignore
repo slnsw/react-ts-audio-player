@@ -6,3 +6,4 @@ build
 reports
 npm-debug.log
 package-lock.json
+.parcel-cache
