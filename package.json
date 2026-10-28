@@ -1,6 +1,6 @@
 {
   "name": "@slnsw/react-ts-media-player",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "React component representing an audio/video player.",
   "type": "module",
   "typings": "dist/index.d.ts",
