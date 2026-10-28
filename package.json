@@ -2,8 +2,12 @@
   "name": "@slnsw/react-ts-media-player",
   "version": "0.2.0",
   "description": "React component representing an audio/video player.",
-  "main": "dist/index.js",
+  "type": "module",
   "typings": "dist/index.d.ts",
+  "source": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/react-ts-media-player.esm.mjs",
+  "types": "dist/index.d.ts",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
