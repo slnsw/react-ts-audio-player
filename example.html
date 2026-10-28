@@ -334,27 +334,27 @@
 
       const { PlayerRemoteProvider, usePlayerRemote } = AudioPlayer.PlayerRemote;
 
-      const TestRemote = ({}) => {
+      const TestRemote = ({ remoteId }) => {
         const { state, dispatch } = usePlayerRemote();
-        return React.createElement('div', { key: 'remote' },
+        return React.createElement('div', { key: 'remote', 'data-remote-id': remoteId },
           React.createElement('h2', {}, 'Remote'),
           React.createElement('button', {
-            onClick: () => dispatch({ id: 'audio-player', type: 'play_pause' }),
+            onClick: () => dispatch({ id: 'audio-player', type: 'play_pause', remoteId }),
           }, 'Play/pause'),
           React.createElement('button', {
-            onClick: () => dispatch({ id: 'audio-player', type: 'play' }),
+            onClick: () => dispatch({ id: 'audio-player', type: 'play', remoteId }),
           }, 'Play'),
           React.createElement('button', {
-            onClick: () => dispatch({ id: 'audio-player', type: 'pause' }),
+            onClick: () => dispatch({ id: 'audio-player', type: 'pause', remoteId }),
           }, 'Pause'),
           React.createElement('button', {
-            onClick: () => dispatch({ id: 'audio-player', type: 'reset' }),
+            onClick: () => dispatch({ id: 'audio-player', type: 'reset', remoteId }),
           }, 'Rewind'),
           React.createElement('button', {
-            onClick: () => dispatch({ id: 'audio-player', type: 'backward' }),
+            onClick: () => dispatch({ id: 'audio-player', type: 'backward', remoteId }),
           }, 'Backward'),
           React.createElement('button', {
-            onClick: () => dispatch({ id: 'audio-player', type: 'forward' }),
+            onClick: () => dispatch({ id: 'audio-player', type: 'forward', remoteId }),
           }, 'Forward'),
           React.createElement('input', {
             type: 'number',
@@ -366,7 +366,9 @@
         );
       };
 
-      const Remote = React.createElement(TestRemote, {});
+      const Remote = React.createElement(TestRemote, {
+        remoteId: 'remote-01',
+      });
 
       const Player = React.createElement(AudioPlayer, {
         key: 'player',

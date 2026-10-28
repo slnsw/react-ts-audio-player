@@ -8,6 +8,7 @@ type RemoteState = {
   lastUpdate: string;
   type: string;
   timestamp: number;
+  remoteId?: string;
 };
 
 type MultiPlayerRemoteState = {
@@ -18,6 +19,7 @@ type RemoteStateAction = {
   id: string;
   type: string;
   timestamp?: number;
+  remoteId?: string;
 };
 
 const defaultMultiPlayerState: MultiPlayerRemoteState = {};
@@ -26,6 +28,7 @@ export const DEFAULT_PLAYER_STATE: RemoteState = {
   lastUpdate: (new Date()).toISOString(),
   type: '',
   timestamp: 0,
+  remoteId: null,
 };
 
 function remoteStateReducer(state: MultiPlayerRemoteState, action: RemoteStateAction): MultiPlayerRemoteState {
@@ -33,37 +36,38 @@ function remoteStateReducer(state: MultiPlayerRemoteState, action: RemoteStateAc
     id,
     type,
     timestamp = 0,
+    remoteId = null,
   } = action;
 
   let currentState = state?.[id] || { ...DEFAULT_PLAYER_STATE };
 
   switch (type) {
     case "play_pause": {
-      currentState = { ...currentState, type, lastUpdate: (new Date()).toISOString() };
+      currentState = { ...currentState, type, remoteId, lastUpdate: (new Date()).toISOString() };
       break;
     }
     case "play": {
-      currentState = { ...currentState, type, lastUpdate: (new Date()).toISOString() };
+      currentState = { ...currentState, type, remoteId, lastUpdate: (new Date()).toISOString() };
       break;
     }
     case "pause": {
-      currentState = { ...currentState, type, lastUpdate: (new Date()).toISOString() };
+      currentState = { ...currentState, type, remoteId, lastUpdate: (new Date()).toISOString() };
       break;
     }
     case "reset": {
-      currentState = { ...currentState, type, lastUpdate: (new Date()).toISOString() };
+      currentState = { ...currentState, type, remoteId, lastUpdate: (new Date()).toISOString() };
       break;
     }
     case "backward": {
-      currentState = { ...currentState, type, lastUpdate: (new Date()).toISOString() };
+      currentState = { ...currentState, type, remoteId, lastUpdate: (new Date()).toISOString() };
       break;
     }
     case "forward": {
-      currentState = { ...currentState, type, lastUpdate: (new Date()).toISOString() };
+      currentState = { ...currentState, type, remoteId, lastUpdate: (new Date()).toISOString() };
       break;
     }
     case "timestamp_update": {
-      currentState = { ...currentState, type, lastUpdate: (new Date()).toISOString(), timestamp };
+      currentState = { ...currentState, type, remoteId, lastUpdate: (new Date()).toISOString(), timestamp };
       break;
     }
     case "": {

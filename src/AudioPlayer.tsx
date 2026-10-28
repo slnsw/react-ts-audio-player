@@ -51,6 +51,41 @@ interface IProps {
   debug?: boolean;
 }
 
+/**
+ * Whether a playlist item has a VTT transcript URL.
+ * @param {IPlaylistItem} file The file to check.
+ * @returns {boolean} TRUE if this file has a VTT URL.
+ */
+const hasVtt = (file: IPlaylistItem) => {
+  return file.transcriptUrl && file.transcriptUrl.length > 0;
+};
+
+/**
+ * Get formatted timestamp string.
+ * @param {number} seconds Number of seconds played back so far.
+ * @param {number} duration Total audio file duration.
+ * @param {boolean} isDuration Whether this denotes a duration.
+ * @param {boolean} useHoursInTimestamps Whether to use hours in timestamp string.
+ * @returns {string} Formatted timestamp string.
+ */
+const getTimestampString = (
+  seconds: number = 0,
+  duration: number = 0,
+  isDuration: boolean = false,
+  useHoursInTimestamps: boolean = false,
+): string => {
+  if (typeof seconds !== 'number') {
+    return '';
+  }
+  if (
+    useHoursInTimestamps &&
+    ((isDuration && seconds >= 3600) || duration >= 3600)
+  ) {
+    return toHHMMSS(seconds.toString());
+  }
+  return toMMSS(seconds.toString());
+};
+
 const AudioPlayer: React.FC<IProps> = ({
   playlist = [],
   id = 'audio-player',
@@ -76,7 +111,7 @@ const AudioPlayer: React.FC<IProps> = ({
 
   const [duration, setDuration] = React.useState(0);
   const [timestamp, setTimestamp] = React.useState(0);
-  const [fileData, setFileData] = React.useState([]);
+  const [fileData, setFileData] = React.useState<IPlaylistItem[]>([]);
   const [selectedFile, setSelectedFile] = React.useState(0);
   const [progress, setProgress] = React.useState(0);
   const [playing, setPlaying] = React.useState(false);
@@ -95,26 +130,12 @@ const AudioPlayer: React.FC<IProps> = ({
   const tracklistId = `${id}__track-list`;
   const subtitleMenuId = `${id}__subtitle-menu`;
 
-  const getTimestampString = (
-    seconds: number = 0,
-    isDuration: boolean = false,
-  ): string => {
-    if (typeof seconds !== 'number') {
-      return '';
-    }
-    if (
-      config.useHoursInTimestamps &&
-      ((isDuration && seconds >= 3600) || duration >= 3600)
-    ) {
-      return toHHMMSS(seconds.toString());
-    }
-    return toMMSS(seconds.toString());
-  };
-
+  // Forces playsinline on mount.
   React.useEffect(() => {
     audioElem.current.setAttribute('playsinline', 'playsinline');
   }, []);
 
+  // Initialises playlist on availability.
   React.useEffect(() => {
     setFileData(playlist);
     setSelectedFile(0);
@@ -123,6 +144,7 @@ const AudioPlayer: React.FC<IProps> = ({
   const canPlayPrev = selectedFile > 0;
   const canPlayNext = selectedFile < fileData.length - 1;
 
+  // Loads audio file for playback on selection.
   React.useEffect(() => {
     audioElem.current.load();
     audioElem.current.currentTime = 0;
@@ -140,10 +162,6 @@ const AudioPlayer: React.FC<IProps> = ({
     }
   };
 
-  const hasVtt = (file: IPlaylistItem) => {
-    return file.transcriptUrl && file.transcriptUrl.length > 0;
-  };
-
   const subtitleTracks = () => {
     if (!videoMetadataLoaded) {
       return [];
@@ -151,7 +169,7 @@ const AudioPlayer: React.FC<IProps> = ({
     return audioElem.current.textTracks;
   };
 
-  const playable = fileData && fileData.length && videoMetadataLoaded;
+  const playable = fileData?.length && videoMetadataLoaded;
 
   // Subtitle language selection event.
   const selectSubtitleLanguage = (lang?: string) => {
@@ -164,10 +182,6 @@ const AudioPlayer: React.FC<IProps> = ({
     setVideoMetadataLoaded(true);
     selectSubtitleLanguage(selectedLanguage);
     setDuration(audioElem.current.duration);
-
-    // this.highlighter.selectedFile = this.state.selectedFile;
-    // this.highlighter.updateVideoElement(this.videoElement);
-    // this.highlighter.onVideoElementLoad();
   };
 
   // Handle playback progress updates.
@@ -460,6 +474,9 @@ const AudioPlayer: React.FC<IProps> = ({
           valueToTooltipString={(pos) =>
             getTimestampString(
               audioElem.current ? pos * audioElem.current.duration : 0,
+              duration,
+              false,
+              config.useHoursInTimestamps,
             )
           }
         />
@@ -473,7 +490,7 @@ const AudioPlayer: React.FC<IProps> = ({
           id={timeIndicatorId}
           readOnly
           ref={timeElapsedElem}
-          value={getTimestampString(timestamp)}
+          value={getTimestampString(timestamp, duration, false, config.useHoursInTimestamps)}
         />
 
         {config.showDuration && (
@@ -487,7 +504,7 @@ const AudioPlayer: React.FC<IProps> = ({
               id={durationIndicatorId}
               readOnly
               ref={durationElem}
-              value={getTimestampString(duration, true)}
+              value={getTimestampString(duration, duration, true, config.useHoursInTimestamps)}
             />
           </>
         )}
